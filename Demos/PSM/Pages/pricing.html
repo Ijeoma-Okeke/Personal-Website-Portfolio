@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pricing — Parts Salvage Marketplace</title>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .page-hero { padding: calc(var(--nav-h) + 64px) 0 56px; text-align:center; background: radial-gradient(ellipse 700px 450px at 50% 60%, rgba(234,179,8,0.07) 0%, transparent 70%); }
+
+    /* Toggle */
+    .billing-toggle { display:inline-flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:99px;padding:6px 8px;margin:28px auto 0; }
+    .tog-opt { padding:7px 18px;border-radius:99px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;border:none;background:none;color:var(--muted); }
+    .tog-opt.on { background:var(--gold);color:#000; }
+    .tog-save { background:rgba(34,197,94,0.15);color:#4ADE80;font-family:var(--font-m);font-size:0.65rem;padding:3px 9px;border-radius:99px;border:1px solid rgba(34,197,94,0.3); }
+
+    /* Plans grid */
+    .plans-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px; }
+    .plan { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px 28px;position:relative;transition:transform 0.2s,border-color 0.2s; }
+    .plan:hover { transform:translateY(-4px); }
+    .plan.featured { border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 24px 64px rgba(234,179,8,0.12); }
+    .plan-popular { position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-family:var(--font-m);font-size:0.62rem;font-weight:700;padding:4px 14px;border-radius:99px;letter-spacing:1px;white-space:nowrap; }
+    .plan-name { font-family:var(--font-m);font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;display:block; }
+    .plan-free .plan-name  { color:#4ADE80; }
+    .plan-pro  .plan-name  { color:var(--gold); }
+    .plan-ent  .plan-name  { color:#93C5FD; }
+    .plan-price { font-size:3rem;font-weight:900;color:var(--white);line-height:1;margin-bottom:4px; }
+    .plan-price sup { font-size:1.2rem;vertical-align:top;margin-top:10px;display:inline-block; }
+    .plan-price sub { font-size:0.85rem;color:var(--muted);font-weight:400; }
+    .plan-desc { font-size:0.85rem;margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--border); }
+    .plan-features { list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px; }
+    .plan-features li { display:flex;gap:10px;align-items:flex-start;font-size:0.85rem; }
+    .feat-check { flex-shrink:0;margin-top:1px; }
+    .feat-check.yes  { color:#4ADE80; }
+    .feat-check.no   { color:var(--muted2); }
+    .feat-check.part { color:var(--gold); }
+
+    /* Commission row */
+    .commission-box { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:36px;margin-top:60px; }
+    .comm-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:28px; }
+    .comm-card { background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;text-align:center; }
+    .comm-icon { font-size:1.8rem;margin-bottom:8px;display:block; }
+    .comm-pct  { font-size:1.8rem;font-weight:900;color:var(--gold-lt);line-height:1;margin-bottom:4px; }
+    .comm-lbl  { font-size:0.78rem;font-weight:700;color:var(--white);margin-bottom:4px; }
+    .comm-desc { font-size:0.75rem;color:var(--muted); }
+
+    /* FAQ */
+    .faq-list { display:flex;flex-direction:column;gap:0;margin-top:32px; }
+    .faq-item { border-bottom:1px solid var(--border); }
+    .faq-q { display:flex;justify-content:space-between;align-items:center;padding:18px 0;cursor:pointer;gap:16px; }
+    .faq-q h4 { font-size:0.95rem;font-weight:700;color:var(--white); }
+    .faq-arrow { color:var(--gold);font-size:1rem;transition:transform 0.2s;flex-shrink:0; }
+    .faq-item.open .faq-arrow { transform:rotate(180deg); }
+    .faq-a { display:none;padding:0 0 18px;font-size:0.875rem;line-height:1.75; }
+    .faq-item.open .faq-a { display:block; }
+
+    /* Comparison table */
+    .compare-table { width:100%;border-collapse:collapse;margin-top:32px; }
+    .compare-table th { padding:14px 16px;text-align:left;font-family:var(--font-m);font-size:0.65rem;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid var(--border); }
+    .compare-table th:not(:first-child) { text-align:center; }
+    .compare-table td { padding:13px 16px;border-bottom:1px solid var(--border);font-size:0.85rem;color:var(--muted); }
+    .compare-table td:first-child { color:var(--cream2); }
+    .compare-table td:not(:first-child) { text-align:center; }
+    .compare-table tr:hover td { background:rgba(255,255,255,0.02); }
+    .check-y { color:#4ADE80;font-size:1rem; }
+    .check-n { color:var(--muted2);font-size:0.9rem; }
+    .check-p { color:var(--gold);font-size:0.78rem;font-weight:700; }
+
+    @media (max-width:900px) { .plans-grid { grid-template-columns:1fr; } .comm-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:560px) { .comm-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <script src="../assets/nav.js"></script>
+  <div class="pt-nav">
+
+    <!-- HERO -->
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="tag">💳 Pricing</span>
+        <h1 class="hero-title" style="margin-bottom:14px;">Simple, honest<br><span class="italic-accent">pricing.</span></h1>
+        <p style="font-size:1.05rem;max-width:520px;margin:0 auto;">Start free. Upgrade when you need more. Parts Salvage Marketplace only earns when you earn — through a small commission on completed sales.</p>
+        <div style="display:flex;justify-content:center;">
+          <div class="billing-toggle">
+            <button class="tog-opt on" id="tog-m" onclick="setToggle('monthly')">Monthly</button>
+            <button class="tog-opt"    id="tog-y" onclick="setToggle('yearly')">Yearly</button>
+            <span class="tog-save">Save 30%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANS -->
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div class="plans-grid">
+
+          <!-- FREE -->
+          <div class="plan plan-free" data-reveal data-d="1">
+            <span class="plan-name">Free</span>
+            <div class="plan-price">$<span>0</span></div>
+            <p class="plan-desc">Perfect for individual repair enthusiasts. No credit card required, ever.</p>
+            <ul class="plan-features">
+              <li><span class="feat-check yes">✓</span> Unlimited Vision Scans</li>
+              <li><span class="feat-check yes">✓</span> Free blueprint downloads</li>
+              <li><span class="feat-check yes">✓</span> 3 active Salvage Hub listings</li>
+              <li><span class="feat-check yes">✓</span> Compat Engine checks</li>
+              <li><span class="feat-check yes">✓</span> WhatsApp & email contact</li>
+              <li><span class="feat-check yes">✓</span> Shipping estimator</li>
+              <li><span class="feat-check no">✗</span> Premium blueprint library</li>
+              <li><span class="feat-check no">✗</span> Verified seller badge</li>
+              <li><span class="feat-check no">✗</span> API access</li>
+            </ul>
+            <button class="btn btn-outline" style="width:100%;" onclick="PF.openSub()">Get Started Free</button>
+          </div>
+
+          <!-- PRO -->
+          <div class="plan plan-pro featured" data-reveal data-d="2">
+            <span class="plan-popular">MOST POPULAR</span>
+            <span class="plan-name">Pro</span>
+            <div class="plan-price">
+              <sup>$</sup><span id="pro-price">4.99</span><sub id="pro-period">/month</sub>
+            </div>
+            <p class="plan-desc">For dedicated fixers, repair cafes, and small repair businesses.</p>
+            <ul class="plan-features">
+              <li><span class="feat-check yes">✓</span> Everything in Free</li>
+              <li><span class="feat-check yes">✓</span> Unlimited Salvage Hub listings</li>
+              <li><span class="feat-check yes">✓</span> Full premium blueprint library</li>
+              <li><span class="feat-check yes">✓</span> Verified seller badge</li>
+              <li><span class="feat-check yes">✓</span> Priority search ranking</li>
+              <li><span class="feat-check yes">✓</span> Repair history vault</li>
+              <li><span class="feat-check yes">✓</span> Advanced part analytics</li>
+              <li><span class="feat-check part">3%</span> Reduced transaction commission</li>
+              <li><span class="feat-check no">✗</span> API access</li>
+            </ul>
+            <button class="btn btn-gold" style="width:100%;" onclick="alert('Pro signup — payment flow coming in production. You will be redirected to checkout.')">Start Pro →</button>
+          </div>
+
+          <!-- ENTERPRISE -->
+          <div class="plan plan-ent" data-reveal data-d="3">
+            <span class="plan-name">Enterprise</span>
+            <div class="plan-price"><span style="font-size:1.8rem;">Custom</span></div>
+            <p class="plan-desc">For repair chains, OEMs, insurers, and platforms building on Parts Salvage Marketplace.</p>
+            <ul class="plan-features">
+              <li><span class="feat-check yes">✓</span> Everything in Pro</li>
+              <li><span class="feat-check yes">✓</span> White-label platform</li>
+              <li><span class="feat-check yes">✓</span> Full API access</li>
+              <li><span class="feat-check yes">✓</span> Custom compat databases</li>
+              <li><span class="feat-check yes">✓</span> Dedicated account manager</li>
+              <li><span class="feat-check yes">✓</span> SLA & uptime guarantee</li>
+              <li><span class="feat-check yes">✓</span> Volume blueprint licensing</li>
+              <li><span class="feat-check part">0%</span> No transaction commission</li>
+              <li><span class="feat-check yes">✓</span> Custom integrations</li>
+            </ul>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com?subject=Parts Salvage Marketplace+Enterprise+Enquiry" class="btn btn-outline" style="width:100%;display:flex;justify-content:center;">Contact Sales →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW WE EARN (COMMISSION) -->
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div class="commission-box" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+            <div>
+              <span class="tag" style="margin-bottom:12px;">💰 How Parts Salvage Marketplace Makes Money</span>
+              <h2 style="font-size:1.8rem;font-weight:800;color:var(--white);letter-spacing:-0.02em;margin-bottom:8px;">We only earn when you earn.</h2>
+              <p style="max-width:520px;">Parts Salvage Marketplace is free to use. We make money through small commissions on successful transactions, Pro subscriptions, and enterprise licensing — never from ads or selling your data.</p>
+            </div>
+          </div>
+          <div class="comm-grid">
+            <div class="comm-card">
+              <span class="comm-icon">🤝</span>
+              <div class="comm-pct">5%</div>
+              <div class="comm-lbl">Transaction Fee</div>
+              <div class="comm-desc">On every paid Salvage Hub sale. Free listings cost nothing. Pro users pay only 3%.</div>
+            </div>
+            <div class="comm-card">
+              <span class="comm-icon">⭐</span>
+              <div class="comm-pct">$4.99</div>
+              <div class="comm-lbl">Pro Subscriptions</div>
+              <div class="comm-desc">Monthly or annual Pro plans for power users, repair cafes, and small shops.</div>
+            </div>
+            <div class="comm-card">
+              <span class="comm-icon">📦</span>
+              <div class="comm-pct">Referral</div>
+              <div class="comm-lbl">Shipping Partners</div>
+              <div class="comm-desc">We earn a small referral fee from DHL, FedEx, and regional carriers when you book through Parts Salvage Marketplace.</div>
+            </div>
+            <div class="comm-card">
+              <span class="comm-icon">🏢</span>
+              <div class="comm-pct">Custom</div>
+              <div class="comm-lbl">Enterprise Licensing</div>
+              <div class="comm-desc">OEMs and repair platforms license our AI, blueprint library, and compat data at a custom rate.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARISON TABLE -->
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <span class="tag">📊 Compare Plans</span>
+        <h2 style="font-size:1.6rem;font-weight:800;color:var(--white);letter-spacing:-0.02em;margin-bottom:0;" data-reveal>Everything side by side</h2>
+        <div style="overflow-x:auto;">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th style="width:40%;">Feature</th>
+                <th>Free</th>
+                <th style="color:var(--gold);">Pro</th>
+                <th>Enterprise</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Vision Scans per month</td><td>Unlimited</td><td class="check-p">Unlimited</td><td>Unlimited</td></tr>
+              <tr><td>Blueprint downloads</td><td>Free library</td><td class="check-p">Full library</td><td>Full + Custom</td></tr>
+              <tr><td>Salvage Hub listings</td><td>3 active</td><td class="check-p">Unlimited</td><td>Unlimited</td></tr>
+              <tr><td>Compat Engine checks</td><td class="check-y">✓</td><td class="check-y">✓</td><td class="check-y">✓</td></tr>
+              <tr><td>WhatsApp & email contact</td><td class="check-y">✓</td><td class="check-y">✓</td><td class="check-y">✓</td></tr>
+              <tr><td>Shipping estimator</td><td class="check-y">✓</td><td class="check-y">✓</td><td class="check-y">✓</td></tr>
+              <tr><td>Verified seller badge</td><td class="check-n">✗</td><td class="check-y">✓</td><td class="check-y">✓</td></tr>
+              <tr><td>Priority search ranking</td><td class="check-n">✗</td><td class="check-y">✓</td><td class="check-y">✓</td></tr>
+              <tr><td>Repair history vault</td><td class="check-n">✗</td><td class="check-y">✓</td><td class="check-y">✓</td></tr>
+              <tr><td>API access</td><td class="check-n">✗</td><td class="check-n">✗</td><td class="check-y">✓</td></tr>
+              <tr><td>White-label platform</td><td class="check-n">✗</td><td class="check-n">✗</td><td class="check-y">✓</td></tr>
+              <tr><td>Transaction commission</td><td>5%</td><td class="check-p">3%</td><td>0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" style="padding-top:0;padding-bottom:80px;">
+      <div class="wrap" style="max-width:760px;">
+        <span class="tag">❓ FAQ</span>
+        <h2 style="font-size:1.6rem;font-weight:800;color:var(--white);letter-spacing:-0.02em;margin-bottom:0;" data-reveal>Common questions</h2>
+        <div class="faq-list" id="faq"></div>
+      </div>
+    </section>
+
+    <footer class="pf-footer">
+      <div class="wrap">
+        <div class="footer-bottom" style="border-top:none;padding-top:0;">
+          <p>© 2025 Parts Salvage Marketplace · <a href="../index.html" style="color:var(--gold);">← Home</a></p>
+          <span>TRANSPARENT PRICING</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const FAQS = [
+      {q:'Is Parts Salvage Marketplace really free to use?', a:'Yes — fully. Vision Scans, Compat Engine checks, free blueprint downloads, and up to 3 Salvage Hub listings are free forever with no credit card required. We only charge a 5% commission when a paid Salvage Hub transaction successfully completes.'},
+      {q:'How does the 5% commission work?', a:'When a buyer and seller agree on a paid transaction through Parts Salvage Marketplace, we collect 5% of the sale price. Free listings (parts given away at no cost) are always 100% free — no commission on those. Pro users get a reduced 3% rate.'},
+      {q:'How does international shipping work?', a:'Every Salvage Hub listing shows estimated shipping costs from multiple carriers (DHL, FedEx, local couriers) to your location before you even contact the seller. Once you agree on a deal, we provide a direct booking link for your chosen carrier at our negotiated rates.'},
+      {q:'Can I sell parts to someone in another country?', a:'Absolutely — that\'s a core use case. Sellers set their location and shipping preferences. Buyers worldwide can find your listing and see the shipping cost to their country. Parts Salvage Marketplace supports transactions across 94 countries and growing.'},
+      {q:'What payment methods are supported?', a:'In the current version, buyers and sellers agree on payment directly (bank transfer, PayPal, Wise, cash on pickup). Full in-platform payment processing with escrow is launching in Phase 2, which will automatically hold funds until the buyer confirms the part is received.'},
+      {q:'What if a part arrives damaged or is not as described?', a:'Our seller rating system and verified badge program help surface trusted sellers. Dispute resolution is handled via our support team. Enterprise and Pro sellers are held to stricter listing accuracy standards.'},
+      {q:'Can I cancel my Pro subscription?', a:'Yes — cancel anytime from your account settings. Your Pro benefits continue until the end of the billing period. No cancellation fees, no questions asked.'},
+      {q:'Do you share or sell my data?', a:'Never. Parts Salvage Marketplace does not display ads and does not sell user data to third parties. We earn through subscriptions, commissions, and carrier partnerships — not from your personal information.'},
+    ];
+
+    document.getElementById('faq').innerHTML = FAQS.map((f,i) => `
+      <div class="faq-item" id="faq-${i}">
+        <div class="faq-q" onclick="toggleFaq(${i})">
+          <h4>${f.q}</h4>
+          <span class="faq-arrow">▾</span>
+        </div>
+        <div class="faq-a">${f.a}</div>
+      </div>`).join('');
+
+    function toggleFaq(i) {
+      document.getElementById('faq-'+i).classList.toggle('open');
+    }
+
+    function setToggle(mode) {
+      document.getElementById('tog-m').classList.toggle('on', mode==='monthly');
+      document.getElementById('tog-y').classList.toggle('on', mode==='yearly');
+      document.getElementById('pro-price').textContent = mode==='monthly' ? '4.99' : '3.49';
+      document.getElementById('pro-period').textContent = mode==='monthly' ? '/month' : '/month, billed yearly';
+    }
+  </script>
+</body>
+</html>

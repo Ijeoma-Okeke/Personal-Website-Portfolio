@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Parts Salvage Marketplace — Global Repair Intelligence</title>
+  <meta name="description" content="Upload a photo of any broken part. AI identifies it and finds 3D blueprints, compatible parts, and global salvage listings with real shipping estimates."/>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <style>
+    .hero { min-height:100vh;padding-top:var(--nav-h);display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;position:relative;overflow:hidden; }
+    .hero::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse 600px 500px at 15% 60%,rgba(234,179,8,0.06) 0%,transparent 70%),radial-gradient(ellipse 400px 400px at 85% 30%,rgba(249,115,22,0.05) 0%,transparent 70%);pointer-events:none; }
+    .hero-grid-bg { position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse 80% 80% at 20% 50%,black 30%,transparent 100%); }
+    .hero-left { position:relative;z-index:1; }
+    .hero-eyebrow { display:flex;align-items:center;gap:12px;margin-bottom:24px; }
+    .live-dot { width:8px;height:8px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(234,179,8,0.5);}50%{box-shadow:0 0 0 8px rgba(234,179,8,0);} }
+    .hero-h1 { margin-bottom:20px; }
+    .hero-sub { font-size:1.05rem;max-width:480px;margin-bottom:36px; }
+    .hero-ctas { display:flex;gap:12px;flex-wrap:wrap;margin-bottom:52px; }
+    .hero-stats { display:flex;gap:36px;flex-wrap:wrap;padding-top:32px;border-top:1px solid var(--border); }
+    .hstat-n { font-size:1.8rem;font-weight:900;color:var(--gold-lt);line-height:1; }
+    .hstat-l { font-family:var(--font-m);font-size:0.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px; }
+    .hero-right { position:relative;z-index:1; }
+    .scan-card { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.5); }
+    .scan-card-bar { background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:7px; }
+    .sc-dot { width:11px;height:11px;border-radius:50%; }
+    .scan-card-bar span { font-family:var(--font-m);font-size:0.68rem;color:var(--gold);letter-spacing:1.5px;margin-left:6px;text-transform:uppercase; }
+    .scan-card-body { padding:24px; }
+    .drop-zone { border:2px dashed rgba(234,179,8,0.3);border-radius:8px;padding:44px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(234,179,8,0.02); }
+    .drop-zone:hover,.drop-zone.over { border-color:var(--gold);background:rgba(234,179,8,0.05); }
+    .drop-icon { font-size:2.8rem;display:block;margin-bottom:12px; }
+    .drop-zone h4 { font-size:1rem;font-weight:700;color:var(--white);margin-bottom:5px; }
+    .drop-zone p  { font-size:0.8rem; }
+    .scan-result { display:none;margin-top:16px; }
+    .scan-result.show { display:block; }
+    .result-head { display:flex;align-items:center;gap:14px;background:rgba(234,179,8,0.06);border:1px solid rgba(234,179,8,0.2);border-radius:8px;padding:14px 16px;margin-bottom:12px; }
+    .result-icon { font-size:2rem;width:46px;height:46px;background:rgba(234,179,8,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .result-name { font-size:0.92rem;font-weight:700;color:var(--white); }
+    .result-meta { font-family:var(--font-m);font-size:0.7rem;color:var(--muted);margin-top:3px; }
+    .result-bar { height:3px;background:var(--border);border-radius:2px;margin-bottom:14px;overflow:hidden; }
+    .result-bar-fill { height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--orange));transition:width 2s ease; }
+    .result-pills { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+    .rpill { background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:12px 8px;text-align:center; }
+    .rpill-n { font-size:1.5rem;font-weight:900;color:var(--gold-lt);line-height:1; }
+    .rpill-l { font-family:var(--font-m);font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-top:3px; }
+    .result-btns { display:flex;gap:8px;margin-top:12px; }
+    .rbtn { flex:1;text-align:center;padding:9px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;border-radius:4px;border:none;cursor:pointer;transition:all 0.15s; }
+    .rbtn-p { background:var(--gold);color:#000; }
+    .rbtn-s { background:rgba(255,255,255,0.06);color:var(--cream2);border:1px solid var(--border); }
+
+    .marquee { overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg2);padding:13px 0; }
+    .marquee-track { display:flex;gap:48px;width:max-content;animation:scroll 30s linear infinite; }
+    @keyframes scroll { from{transform:translateX(0);}to{transform:translateX(-50%);} }
+    .m-item { font-family:var(--font-m);font-size:0.68rem;color:var(--muted2);text-transform:uppercase;letter-spacing:2px;white-space:nowrap;display:flex;align-items:center;gap:14px; }
+    .m-item b { color:var(--gold); }
+
+    .problem-layout { display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center; }
+    .stat-stack { display:flex;flex-direction:column;gap:16px; }
+    .stat-row { display:flex;gap:20px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:var(--r);padding:20px; }
+    .stat-num { font-size:2.2rem;font-weight:900;color:#EF4444;line-height:1;min-width:90px;flex-shrink:0; }
+    .stat-text strong { display:block;font-size:0.92rem;color:var(--white);margin-bottom:3px; }
+    .stat-text span   { font-size:0.82rem;color:var(--muted); }
+
+    /* Global network */
+    .globe-section { background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
+    .globe-grid { display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center; }
+    .globe-visual { position:relative;height:320px;display:flex;align-items:center;justify-content:center; }
+    .globe-ring { position:absolute;border-radius:50%;border:1px solid rgba(234,179,8,0.15);animation:spin 20s linear infinite; }
+    .globe-ring:nth-child(2) { animation-direction:reverse;animation-duration:14s; }
+    .globe-ring:nth-child(3) { animation-duration:30s; }
+    @keyframes spin { from{transform:rotate(0);}to{transform:rotate(360deg);} }
+    .globe-dot { position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(234,179,8,0.6); }
+    .globe-center { width:70px;height:70px;border-radius:50%;background:rgba(234,179,8,0.1);border:2px solid var(--border-a);display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative;z-index:1; }
+    .flow-mini { display:flex;flex-direction:column;gap:12px; }
+    .flow-row { display:flex;gap:14px;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px; }
+    .flow-num { width:32px;height:32px;border-radius:50%;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--font-m);font-size:0.7rem;color:var(--gold);flex-shrink:0; }
+    .flow-row h4 { font-size:0.9rem;font-weight:800;color:var(--white);margin-bottom:3px; }
+    .flow-row p  { font-size:0.78rem; }
+
+    .feat-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:20px; }
+    .feat-card { display:block;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:30px 26px;transition:all 0.2s;position:relative;overflow:hidden; }
+    .feat-card::after { content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 0.25s; }
+    .feat-card:hover { border-color:var(--border-a);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.4); }
+    .feat-card:hover::after { transform:scaleX(1); }
+    .feat-em { font-size:2.2rem;display:block;margin-bottom:16px; }
+    .feat-card h3 { font-size:1.4rem;color:var(--white);margin-bottom:10px; }
+    .feat-card p  { font-size:0.875rem; }
+    .feat-link { display:inline-flex;align-items:center;gap:5px;color:var(--gold);font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:16px; }
+
+    .steps { display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative; }
+    .steps::before { content:'';position:absolute;top:24px;left:80px;right:80px;height:1px;background:linear-gradient(90deg,var(--gold),var(--orange),var(--gold));opacity:0.2; }
+    .step { position:relative;z-index:1; }
+    .step-n { width:50px;height:50px;border-radius:50%;border:2px solid var(--gold);background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:var(--gold);margin-bottom:18px; }
+    .step h4 { font-size:1rem;color:var(--white);margin-bottom:7px; }
+    .step p   { font-size:0.82rem; }
+
+    /* Pricing strip */
+    .pricing-strip { display:grid;grid-template-columns:repeat(3,1fr);gap:20px; }
+    .ps-card { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;transition:border-color 0.2s,transform 0.2s; }
+    .ps-card:hover { border-color:var(--border-a);transform:translateY(-3px); }
+    .ps-card.featured { border-color:var(--gold);box-shadow:0 0 0 1px var(--gold); }
+    .ps-tier { font-family:var(--font-m);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;display:block; }
+    .ps-free .ps-tier { color:#4ADE80; }
+    .ps-pro  .ps-tier { color:var(--gold); }
+    .ps-ent  .ps-tier { color:#93C5FD; }
+    .ps-price { font-size:2.4rem;font-weight:900;color:var(--white);line-height:1;margin-bottom:8px; }
+    .ps-price sub { font-size:0.9rem;color:var(--muted);font-weight:400; }
+    .ps-feat { display:flex;flex-direction:column;gap:7px;margin:14px 0 20px; }
+    .ps-feat span { font-size:0.82rem;color:var(--muted);display:flex;gap:8px; }
+    .ps-feat span b { color:#4ADE80; }
+
+    .testi-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:20px; }
+    .testi { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px; }
+    .stars { color:var(--gold);letter-spacing:2px;font-size:0.8rem;margin-bottom:14px; }
+    .testi-q { font-family:var(--font-s);font-style:italic;font-size:0.97rem;color:var(--cream2);line-height:1.7;margin-bottom:18px; }
+    .testi-who { display:flex;gap:10px;align-items:center; }
+    .testi-av { width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.82rem;color:#000;flex-shrink:0; }
+    .testi-name { font-size:0.875rem;font-weight:700;color:var(--white); }
+    .testi-role { font-size:0.72rem;color:var(--muted);margin-top:1px; }
+
+    .cta-box { background:var(--bg2);border:1px solid var(--border-a);border-radius:var(--r-lg);padding:72px 48px;text-align:center;position:relative;overflow:hidden; }
+    .cta-box::before { content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,rgba(234,179,8,0.1),transparent 70%); }
+    .cta-box h2 { font-size:clamp(1.8rem,4vw,3.5rem);letter-spacing:-0.02em;margin-bottom:12px; }
+    .cta-box p  { max-width:480px;margin:0 auto 32px; }
+    .cta-btns { display:flex;justify-content:center;gap:12px;flex-wrap:wrap; }
+
+    @media (max-width:1024px) { .hero{grid-template-columns:1fr;min-height:auto;padding:calc(var(--nav-h)+48px) 0 48px;} .steps{grid-template-columns:repeat(2,1fr);} .steps::before{display:none;} .globe-grid{grid-template-columns:1fr;} .globe-visual{display:none;} }
+    @media (max-width:768px) { .problem-layout,.feat-grid,.testi-grid,.pricing-strip{grid-template-columns:1fr;} }
+    @media (max-width:560px) { .hero-ctas{flex-direction:column;} .steps{grid-template-columns:1fr;} .cta-box{padding:48px 24px;} }
+  </style>
+</head>
+<body>
+  <script src="assets/nav.js"></script>
+  <div class="pt-nav">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid-bg"></div>
+      <div class="wrap hero-left">
+        <div class="hero-eyebrow">
+          <div class="live-dot"></div>
+          <span class="tag" style="margin-bottom:0;">🌍 Global Repair Intelligence</span>
+        </div>
+        <h1 class="hero-title hero-h1">Don't buy<br>new.<br><span class="italic-accent">Forge the fix.</span></h1>
+        <p class="hero-sub">Photograph any broken component. AI identifies it, finds 3D blueprints, compatible parts, and connects you to sellers worldwide, with real shipping costs before you even say hello.</p>
+        <div class="hero-ctas">
+          <a href="pages/visionscan.html" class="btn btn-gold">🔍 Scan a Part Free</a>
+          <a href="pages/salvagehub.html" class="btn btn-outline">🔧 Browse Salvage Hub →</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hstat-n">2.4M+</div><div class="hstat-l">Parts Identified</div></div>
+          <div><div class="hstat-n">180K</div><div class="hstat-l">3D Blueprints</div></div>
+          <div><div class="hstat-n">94</div><div class="hstat-l">Countries</div></div>
+          <div><div class="hstat-n">$847M</div><div class="hstat-l">Waste Diverted</div></div>
+        </div>
+      </div>
+      <div class="wrap hero-right">
+        <div class="scan-card">
+          <div class="scan-card-bar">
+            <div class="sc-dot" style="background:#EF4444;"></div>
+            <div class="sc-dot" style="background:#EAB308;"></div>
+            <div class="sc-dot" style="background:#22C55E;"></div>
+            <span>Parts Salvage Marketplace Vision Scan</span>
+          </div>
+          <div class="scan-card-body">
+            <div class="drop-zone" id="hz"
+              ondragover="event.preventDefault();this.classList.add('over')"
+              ondragleave="this.classList.remove('over')"
+              ondrop="event.preventDefault();this.classList.remove('over');doScan()"
+              onclick="document.getElementById('hfi').click()">
+              <span class="drop-icon">📷</span>
+              <h4>Drop a broken part photo</h4>
+              <p>Click to browse — any appliance component</p>
+              <input type="file" id="hfi" accept="image/*" style="display:none" onchange="doScan()"/>
+            </div>
+            <div class="scan-result" id="hsr">
+              <div class="result-head">
+                <div class="result-icon" id="h-icon">⚙️</div>
+                <div><div class="result-name" id="h-name">Identifying…</div><div class="result-meta" id="h-meta"></div></div>
+              </div>
+              <div class="result-bar"><div class="result-bar-fill" id="h-bar"></div></div>
+              <div class="result-pills">
+                <div class="rpill"><div class="rpill-n" id="h-bp">—</div><div class="rpill-l">Blueprints</div></div>
+                <div class="rpill"><div class="rpill-n" id="h-co">—</div><div class="rpill-l">Compat</div></div>
+                <div class="rpill"><div class="rpill-n" id="h-sa">—</div><div class="rpill-l">Salvage</div></div>
+              </div>
+              <div class="result-btns">
+                <a href="pages/blueprintvault.html" class="rbtn rbtn-p">📐 Blueprints</a>
+                <a href="pages/compatengine.html"   class="rbtn rbtn-s">⚙️ Compat</a>
+                <a href="pages/salvagehub.html"     class="rbtn rbtn-s">🔧 Salvage</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee">
+      <div class="marquee-track">
+        <span class="m-item"><b>Vision Scan</b> ◆ AI Part ID</span>
+        <span class="m-item"><b>Blueprint Vault</b> ◆ 180K Files</span>
+        <span class="m-item"><b>Salvage Hub</b> ◆ P2P Global Parts</span>
+        <span class="m-item"><b>Compat Engine</b> ◆ Cross-Model</span>
+        <span class="m-item"><b>WhatsApp</b> ◆ Instant Contact</span>
+        <span class="m-item"><b>94 Countries</b> ◆ Global Network</span>
+        <span class="m-item"><b>DHL · FedEx · Local</b> ◆ Shipping Estimates</span>
+        <span class="m-item"><b>Vision Scan</b> ◆ AI Part ID</span>
+        <span class="m-item"><b>Blueprint Vault</b> ◆ 180K Files</span>
+        <span class="m-item"><b>Salvage Hub</b> ◆ P2P Global Parts</span>
+        <span class="m-item"><b>WhatsApp</b> ◆ Instant Contact</span>
+        <span class="m-item"><b>DHL · FedEx · Local</b> ◆ Shipping Estimates</span>
+      </div>
+    </div>
+
+    <!-- PROBLEM -->
+    <section class="section">
+      <div class="wrap">
+        <div class="problem-layout">
+          <div>
+            <span class="tag">⚠️ The Problem</span>
+            <h2 class="section-title" style="margin-bottom:20px;" data-reveal>53 billion kilos of e-waste. Most of it<br><span class="italic-accent">didn't have to die.</span></h2>
+            <p data-reveal data-d="1">Many websites tell you how to fix something. But when the part can't be found or costs more than the machine, the repair dies. Parts Salvage Marketplace solves sourcing globally and precisely.</p>
+            <div style="margin-top:24px;" data-reveal data-d="2"><a href="pages/about.html" class="btn btn-outline">Read Our Mission →</a></div>
+          </div>
+          <div class="stat-stack" data-reveal data-d="1">
+            <div class="stat-row"><div class="stat-num">73%</div><div class="stat-text"><strong>Avoidable discard</strong><span>Appliances thrown away because a single part failed — the rest perfectly fine.</span></div></div>
+            <div class="stat-row"><div class="stat-num">$62B</div><div class="stat-text"><strong>Unnecessary spend</strong><span>Spent on new appliances annually that could have been repaired for under $20.</span></div></div>
+            <div class="stat-row"><div class="stat-num">1 in 3</div><div class="stat-text"><strong>Repairs fail</strong><span>Not because of skill — but because the right part simply cannot be found.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GLOBAL NETWORK -->
+    <section class="section globe-section">
+      <div class="wrap">
+        <div class="globe-grid">
+          <div>
+            <span class="tag">🌍 Global Network</span>
+            <h2 class="section-title" style="margin-bottom:20px;" data-reveal>Parts travel.<br><span class="italic-accent">So do repairs.</span></h2>
+            <p style="margin-bottom:28px;" data-reveal data-d="1">A seller in Berlin has the pump you need in Lagos. A repair shop in Seoul has the latch your dishwasher in Chicago is waiting for. Parts Salvage Marketplace closes that distance — with location search, shipping estimates built into every listing, and WhatsApp contact so deals close in minutes, not days.</p>
+            <div class="flow-mini" data-reveal data-d="2">
+              <div class="flow-row"><div class="flow-num">01</div><div><h4>Search near you first</h4><p>Enter your city. Results sort by proximity. Local pickup saves shipping entirely.</p></div></div>
+              <div class="flow-row"><div class="flow-num">02</div><div><h4>Expand the radius</h4><p>Slide from 50km to global. Every listing shows estimated DHL, FedEx, or local courier cost to your door.</p></div></div>
+              <div class="flow-row"><div class="flow-num">03</div><div><h4>Connect instantly</h4><p>WhatsApp, email, or pickup request — one tap. Parts Salvage Marketplace takes 5% only when a paid transaction completes.</p></div></div>
+            </div>
+            <div style="margin-top:24px;" data-reveal data-d="3"><a href="pages/salvagehub.html" class="btn btn-gold">Open Salvage Hub →</a></div>
+          </div>
+          <div class="globe-visual" data-reveal data-d="2">
+            <div class="globe-ring" style="width:280px;height:280px;"></div>
+            <div class="globe-ring" style="width:200px;height:200px;"></div>
+            <div class="globe-ring" style="width:330px;height:330px;opacity:0.07;"></div>
+            <div class="globe-center">🌍</div>
+            <div class="globe-dot" style="top:30%;left:20%;animation:pulse 2.2s infinite;"></div>
+            <div class="globe-dot" style="top:55%;left:72%;background:#F97316;animation:pulse 1.8s infinite 0.5s;"></div>
+            <div class="globe-dot" style="top:22%;left:58%;background:#4ADE80;animation:pulse 2.5s infinite 1s;"></div>
+            <div class="globe-dot" style="top:70%;left:40%;animation:pulse 2s infinite 0.3s;"></div>
+            <div class="globe-dot" style="top:42%;left:85%;background:#93C5FD;animation:pulse 1.6s infinite 0.8s;"></div>
+            <div style="position:absolute;top:27%;left:4%;font-family:var(--font-m);font-size:0.6rem;color:var(--gold);">📍 Lagos</div>
+            <div style="position:absolute;top:52%;left:74%;font-family:var(--font-m);font-size:0.6rem;color:var(--orange);">📍 Berlin</div>
+            <div style="position:absolute;top:19%;left:60%;font-family:var(--font-m);font-size:0.6rem;color:#4ADE80;">📍 Seoul</div>
+            <div style="position:absolute;top:67%;left:20%;font-family:var(--font-m);font-size:0.6rem;color:var(--gold);">📍 Chicago</div>
+            <div style="position:absolute;top:39%;left:68%;font-family:var(--font-m);font-size:0.6rem;color:#93C5FD;">📍 Dubai</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section">
+      <div class="wrap">
+        <div style="margin-bottom:44px;"><span class="tag">🛠️ Platform</span><h2 class="section-title" data-reveal>Everything you need<br><span class="italic-accent">to repair anything.</span></h2></div>
+        <div class="feat-grid">
+          <a href="pages/visionscan.html"    class="feat-card" data-reveal data-d="1"><span class="feat-em">🔍</span><h3>Vision Scan</h3><p>AI identifies any broken component from a photo — exact part, brand, and model range.</p><span class="feat-link">Explore →</span></a>
+          <a href="pages/blueprintvault.html" class="feat-card" data-reveal data-d="2"><span class="feat-em">📐</span><h3>Blueprint Vault</h3><p>180,000+ 3D-print files. Download and print the replacement part yourself for cents.</p><span class="feat-link">Browse →</span></a>
+          <a href="pages/salvagehub.html"    class="feat-card" data-reveal data-d="3"><span class="feat-em">🔧</span><h3>Salvage Hub</h3><p>Global P2P marketplace with location search, shipping estimates, and WhatsApp contact on every listing.</p><span class="feat-link">Visit Hub →</span></a>
+          <a href="pages/compatengine.html"  class="feat-card" data-reveal data-d="4"><span class="feat-em">⚙️</span><h3>Compat Engine</h3><p>Will this part fit your machine? Instant answer verified by thousands of community fitment reports.</p><span class="feat-link">Check →</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <div class="wrap">
+        <div style="text-align:center;margin-bottom:52px;"><span class="tag">⚡ Process</span><h2 class="section-title" data-reveal>Four steps to "fixed!"</h2></div>
+        <div class="steps">
+          <div class="step" data-reveal data-d="1"><div class="step-n">01</div><h4>Photograph</h4><p>Snap or upload any broken component. Multi-angle supported — even corroded pieces work.</p></div>
+          <div class="step" data-reveal data-d="2"><div class="step-n">02</div><h4>AI Identifies</h4><p>Vision model names exact part, brand, and model range from 14M reference images.</p></div>
+          <div class="step" data-reveal data-d="3"><div class="step-n">03</div><h4>Source It</h4><p>3D blueprints, compat alternatives, and global salvage listings with live shipping rates surface instantly.</p></div>
+          <div class="step" data-reveal data-d="4"><div class="step-n">04</div><h4>Repair It</h4><p>Download, print, or tap WhatsApp to message the seller. Done. The machine lives.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING TEASER -->
+    <section class="section">
+      <div class="wrap">
+        <div style="margin-bottom:36px;">
+          <span class="tag">💳 Pricing</span>
+          <h2 class="section-title" data-reveal>Free to use...<br><span class="italic-accent">We earn when you earn</span></h2>
+          <p style="max-width:480px;margin-top:12px;" data-reveal data-d="1">Listing and searching is always free. Parts Salvage Marketplace takes 5% only on completed paid sales so our incentives are aligned with yours.</p>
+        </div>
+        <div class="pricing-strip">
+          <div class="ps-card ps-free" data-reveal data-d="1">
+            <span class="ps-tier">Free Forever</span>
+            <div class="ps-price">$0</div>
+            <div class="ps-feat">
+              <span><b>✓</b> Unlimited Vision Scans</span>
+              <span><b>✓</b> Free blueprint downloads</span>
+              <span><b>✓</b> 3 Salvage Hub listings</span>
+              <span><b>✓</b> WhatsApp &amp; email contact</span>
+              <span><b>✓</b> Shipping estimator</span>
+            </div>
+            <a href="pages/pricing.html" class="btn btn-outline" style="width:100%;display:flex;justify-content:center;">See All Features</a>
+          </div>
+          <div class="ps-card ps-pro featured" data-reveal data-d="2">
+            <span class="ps-tier">Pro · Most Popular</span>
+            <div class="ps-price">$4.99<sub>/mo</sub></div>
+            <div class="ps-feat">
+              <span><b>✓</b> Unlimited listings</span>
+              <span><b>✓</b> Full premium blueprint library</span>
+              <span><b>✓</b> Verified seller badge</span>
+              <span><b>✓</b> Priority search ranking</span>
+              <span><b>✓</b> Reduced 3% commission</span>
+            </div>
+            <a href="pages/pricing.html" class="btn btn-gold" style="width:100%;display:flex;justify-content:center;">Start Pro →</a>
+          </div>
+          <div class="ps-card ps-ent" data-reveal data-d="3">
+            <span class="ps-tier">Enterprise</span>
+            <div class="ps-price" style="font-size:1.8rem;">Custom</div>
+            <div class="ps-feat">
+              <span><b>✓</b> White-label platform</span>
+              <span><b>✓</b> Full API access</span>
+              <span><b>✓</b> Custom compat databases</span>
+              <span><b>✓</b> OEM integrations</span>
+              <span><b>✓</b> Zero commission</span>
+            </div>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com?subject=Parts Salvage Marketplace+Enterprise" class="btn btn-outline" style="width:100%;display:flex;justify-content:center;">Contact Sales →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div style="margin-bottom:40px;"><span class="tag">💬 Community</span><h2 class="section-title" data-reveal>Repairers around the world.</h2></div>
+        <div class="testi-grid">
+          <div class="testi" data-reveal data-d="1"><div class="stars">★★★★★</div><p class="testi-q">"Found the 3D blueprint for my LG dishwasher door latch in 30 seconds. Printed for $0.40 instead of a $90 OEM part."</p><div class="testi-who"><div class="testi-av">MO</div><div><div class="testi-name">Marcus O.</div><div class="testi-role">Lagos, Nigeria</div></div></div></div>
+          <div class="testi" data-reveal data-d="2"><div class="stars">★★★★★</div><p class="testi-q">"Listed a dead Bosch washer. Three buyers contacted me on WhatsApp within an hour. All got the exact parts they needed."</p><div class="testi-who"><div class="testi-av">SR</div><div><div class="testi-name">Sigrid R.</div><div class="testi-role">Stockholm, Sweden</div></div></div></div>
+          <div class="testi" data-reveal data-d="3"><div class="stars">★★★★★</div><p class="testi-q">"Saw the DHL shipping estimate to Seoul before I even messaged the seller in Chicago. Knew exactly what I was paying. Part arrived in 5 days."</p><div class="testi-who"><div class="testi-av">JL</div><div><div class="testi-name">Jin-ho L.</div><div class="testi-role">Seoul, South Korea</div></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-sm" style="padding-bottom:96px;">
+      <div class="wrap">
+        <div class="cta-box" data-reveal>
+          <span class="tag" style="margin-bottom:18px;">🚀 Join the Movement</span>
+          <h2>The planet can't afford<br><span class="italic-accent">"buy new" forever.</span></h2>
+          <p>Parts Salvage Marketplace shifts the economy toward precision repair. Start with one broken part.</p>
+          <div class="cta-btns">
+            <a href="pages/visionscan.html" class="btn btn-gold">Start Scanning Free</a>
+            <a href="pages/salvagehub.html" class="btn btn-outline">Browse Salvage Hub →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="pf-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <span style="font-family:var(--font);font-weight:900;font-size:1.2rem;color:var(--white);">PSM <span style="color:var(--gold);">MARKETPLACE</span></span>
+            <p>Precision Repair Intelligence for a world drowning in discarded machines. Fix more. Buy less. Waste nothing.</p>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Platform</span>
+            <a href="pages/visionscan.html">Vision Scan</a>
+            <a href="pages/blueprintvault.html">Blueprint Vault</a>
+            <a href="pages/salvagehub.html">Salvage Hub</a>
+            <a href="pages/compatengine.html">Compat Engine</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Company</span>
+            <a href="pages/pricing.html">Pricing</a>
+            <a href="pages/about.html">About Us</a>
+            <a href="pages/about.html#mission">Mission</a>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com">Contact</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Community</span>
+            <a href="pages/salvagehub.html">List a Machine</a>
+            <a href="pages/blueprintvault.html">Submit Blueprint</a>
+            <a href="#" onclick="PF.openSub();return false;">Newsletter</a>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com">Partner With Us</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2026 Parts Salvage Marketplace. Global P2P marketplace for salvaged appliance parts. Fix more. Buy less.</p>
+          <span>REPAIR · REUSE · REIMAGINE</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const PARTS=[{icon:'💧',name:'Samsung WF Pump Seal — DC31-00054A',meta:'97.3% · Samsung WF-Series 2016–2023',bp:12,co:34,sa:8},{icon:'🔐',name:'LG Dishwasher Door Latch — AEJ73110306',meta:'94.1% · LG TrueSteam 2014–2022',bp:7,co:19,sa:3},{icon:'🔥',name:'Whirlpool Heating Element — 279838',meta:'99.2% · Whirlpool WED-Series 2010–2024',bp:22,co:51,sa:14}];
+    let pi=0;
+    function doScan(){const d=PARTS[pi++%PARTS.length];document.getElementById('hz').style.display='none';const r=document.getElementById('hsr');r.classList.add('show');document.getElementById('h-icon').textContent=d.icon;document.getElementById('h-name').textContent=d.name;document.getElementById('h-meta').textContent=d.meta;document.getElementById('h-bp').textContent='—';document.getElementById('h-co').textContent='—';document.getElementById('h-sa').textContent='—';setTimeout(()=>{document.getElementById('h-bar').style.width='100%';},80);animNum('h-bp',d.bp,900);animNum('h-co',d.co,1100);animNum('h-sa',d.sa,700);}
+    function animNum(id,to,dur){const el=document.getElementById(id);const t0=performance.now();(function step(ts){const p=Math.min((ts-t0)/dur,1);el.textContent=Math.round(to*p);if(p<1)requestAnimationFrame(step);})(performance.now());}
+  </script>
+</body>
+</html>

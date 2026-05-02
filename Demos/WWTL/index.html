@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home — Walking with the Lord</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cinzel:wght@400;500;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --gold-pale: #F5E8C4;
+      --parchment: #FAF5EA;
+      --parchment-dark: #F0E8D0;
+      --ink: #1A1209;
+      --ink-soft: #3D2B0F;
+      --wine: #6B1F2A;
+      --olive: #3E5022;
+      --sky: #2B4A6F;
+      --cream: #FFFBF2;
+      --shadow: rgba(26,18,9,0.15);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--parchment); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(250,245,234,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,168,76,0.25);
+      transition: all 0.3s;
+    }
+    nav.scrolled { padding: 0.65rem 2rem; box-shadow: 0 2px 24px var(--shadow); }
+    .nav-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .nav-logo-icon { width: 38px; height: 38px; }
+    .nav-logo-text { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--ink); letter-spacing: 0.05em; line-height: 1.2; }
+    .nav-logo-text span { display: block; font-size: 0.6rem; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; color: var(--ink-soft); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em;
+      background: var(--gold); color: var(--ink); border: none;
+      padding: 0.5rem 1.2rem; cursor: pointer; border-radius: 2px;
+      transition: background 0.2s, transform 0.15s;
+      text-transform: uppercase;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { width: 24px; height: 2px; background: var(--ink); transition: all 0.3s; border-radius: 2px; }
+    .mobile-menu {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99;
+      background: var(--cream); flex-direction: column; align-items: center; justify-content: center;
+      gap: 2.5rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--ink); text-decoration: none; letter-spacing: 0.1em; }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-close { position: absolute; top: 1.5rem; right: 2rem; font-size: 1.8rem; cursor: pointer; color: var(--ink); background: none; border: none; }
+
+    /* ── DROPDOWN ── */
+    .nav-item { position: relative; vertical-align: middle; }
+    .nav-item > a { display: flex; align-items: center; gap: 0.35rem; }
+    .dropdown-arrow {
+      display: inline-block; width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid currentColor;
+      transition: transform 0.25s;
+      margin-top: 1px;
+    }
+    .nav-item.open .dropdown-arrow { transform: rotate(180deg); }
+    .dropdown-menu {
+      position: absolute; top: calc(100% + 4px); left: 50%;
+      transform: translateX(-50%) translateY(-6px);
+      background: var(--cream);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 4px;
+      box-shadow: 0 12px 36px rgba(26,18,9,0.18);
+      min-width: 200px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      z-index: 200;
+      overflow: hidden;
+    }
+    /* invisible bridge: fills the gap so mouse can travel into the menu without it closing */
+    .dropdown-bridge {
+      position: absolute; top: 100%; left: -20px; right: -20px; height: 20px;
+      background: transparent;
+    }
+    /* little arrow tip */
+    .dropdown-menu::before {
+      content: '';
+      position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid rgba(201,168,76,0.3);
+    }
+    .dropdown-menu::after {
+      content: '';
+      position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid var(--cream);
+    }
+    .nav-item.open .dropdown-menu {
+      opacity: 1; pointer-events: all;
+      transform: translateX(-50%) translateY(0);
+    }
+    .dropdown-header {
+      font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.2em;
+      color: var(--gold); text-transform: uppercase;
+      padding: 0.75rem 1.1rem 0.4rem;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+    .dropdown-menu a {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.6rem 1.1rem;
+      font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.08em;
+      color: var(--ink-soft); text-decoration: none; text-transform: uppercase;
+      transition: background 0.15s, color 0.15s;
+      border-left: 2px solid transparent;
+    }
+    .dropdown-menu a:hover {
+      background: rgba(201,168,76,0.1);
+      color: var(--ink);
+      border-left-color: var(--gold);
+    }
+    .dropdown-menu a .di { font-size: 0.9rem; width: 18px; text-align: center; }
+    .dropdown-divider { height: 1px; background: rgba(201,168,76,0.15); margin: 0.3rem 0; }
+    /* Mobile dropdown accordion */
+    .mobile-devo-toggle {
+      font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--ink);
+      text-decoration: none; letter-spacing: 0.1em;
+      display: flex; align-items: center; gap: 0.5rem;
+      cursor: pointer; background: none; border: none;
+    }
+    .mobile-devo-toggle:hover { color: var(--gold); }
+    .mobile-sub {
+      display: none; flex-direction: column; align-items: center; gap: 1rem;
+      padding-top: 0.5rem;
+    }
+    .mobile-sub.open { display: flex; }
+    .mobile-sub a { font-size: 1rem; color: var(--ink-soft); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      background: var(--ink);
+    }
+    .hero-canvas {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 20%, #3D2B0F 0%, #1A1209 60%, #0D0903 100%);
+    }
+    /* Animated rays */
+    .hero-rays {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .ray {
+      position: absolute; bottom: 0; left: 50%;
+      width: 2px; height: 100%;
+      transform-origin: bottom center;
+      background: linear-gradient(to top, transparent 0%, rgba(201,168,76,0.15) 50%, transparent 100%);
+      animation: rayPulse 4s ease-in-out infinite;
+    }
+    .ray:nth-child(1) { transform: rotate(-50deg); animation-delay: 0s; }
+    .ray:nth-child(2) { transform: rotate(-35deg); animation-delay: 0.3s; width: 3px; background: linear-gradient(to top, transparent, rgba(201,168,76,0.22), transparent); }
+    .ray:nth-child(3) { transform: rotate(-20deg); animation-delay: 0.6s; }
+    .ray:nth-child(4) { transform: rotate(-5deg); animation-delay: 0.9s; width: 3px; }
+    .ray:nth-child(5) { transform: rotate(5deg); animation-delay: 1.2s; width: 3px; }
+    .ray:nth-child(6) { transform: rotate(20deg); animation-delay: 0.6s; }
+    .ray:nth-child(7) { transform: rotate(35deg); animation-delay: 0.3s; width: 3px; }
+    .ray:nth-child(8) { transform: rotate(50deg); animation-delay: 0s; }
+    @keyframes rayPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+    /* Cross silhouette */
+    .hero-cross {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -60%);
+      opacity: 0.07;
+    }
+    .hero-cross svg { width: 320px; height: 420px; }
+
+    /* Floating particles */
+    .particle {
+      position: absolute; border-radius: 50%;
+      background: var(--gold);
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.1; }
+      100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 6rem 1.5rem 4rem;
+      max-width: 780px; margin: 0 auto;
+    }
+    .hero-eyebrow {
+      font-family: 'Cinzel', serif; font-size: 0.7rem;
+      color: var(--gold); letter-spacing: 0.3em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s ease both 0.2s;
+    }
+    .hero-logo-mark {
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s ease both 0.3s;
+    }
+    .hero-logo-mark svg { width: 80px; height: 80px; filter: drop-shadow(0 0 20px rgba(201,168,76,0.5)); }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(3rem, 9vw, 6.5rem);
+      color: var(--parchment); line-height: 1.05;
+      margin-bottom: 0.3rem;
+      animation: fadeUp 0.8s ease both 0.4s;
+    }
+    .hero-title em { font-style: italic; color: var(--gold-light); }
+    .hero-subtitle {
+      font-family: 'Cinzel', serif; font-size: clamp(0.8rem, 2vw, 1rem);
+      color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s ease both 0.5s;
+    }
+    .hero-verse {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.3rem); color: rgba(250,245,234,0.7);
+      line-height: 1.7; margin-bottom: 0.5rem;
+      animation: fadeUp 0.8s ease both 0.6s;
+    }
+    .hero-verse-ref {
+      font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--gold);
+      letter-spacing: 0.15em; margin-bottom: 3rem;
+      animation: fadeUp 0.8s ease both 0.65s;
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.8s ease both 0.75s; }
+    .btn-primary {
+      font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.12em;
+      background: var(--gold); color: var(--ink);
+      border: none; padding: 0.9rem 2.2rem; cursor: pointer;
+      border-radius: 2px; text-transform: uppercase;
+      transition: all 0.25s; text-decoration: none; display: inline-block;
+      box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.5); }
+    .btn-secondary {
+      font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.12em;
+      background: transparent; color: var(--parchment);
+      border: 1px solid rgba(250,245,234,0.3); padding: 0.9rem 2.2rem;
+      cursor: pointer; border-radius: 2px; text-transform: uppercase;
+      transition: all 0.25s; text-decoration: none; display: inline-block;
+    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      animation: fadeUp 1s ease both 1.2s;
+      cursor: pointer;
+    }
+    .hero-scroll span { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.2em; color: rgba(201,168,76,0.6); text-transform: uppercase; }
+    .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%,100%{opacity:0.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      text-align: center; padding: 3rem 1rem 2rem;
+      display: flex; align-items: center; gap: 1rem;
+      max-width: 600px; margin: 0 auto;
+    }
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+    .divider-icon { color: var(--gold); font-size: 1.2rem; }
+
+    /* ── TODAY'S DEVOTIONAL ── */
+    #today {
+      background: var(--parchment);
+      padding: 5rem 1.5rem;
+      position: relative;
+    }
+    #today::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .section-header { text-align: center; margin-bottom: 3.5rem; position: relative; }
+    .section-tag { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.25em; color: var(--gold); text-transform: uppercase; display: block; margin-bottom: 0.6rem; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem,5vw,3rem); font-weight: 400; color: var(--ink); line-height: 1.2; }
+    .section-title em { font-style: italic; color: var(--wine); }
+
+    .today-date {
+      text-align: center;
+      font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.15em;
+      color: var(--gold); margin-bottom: 2.5rem; text-transform: uppercase;
+    }
+
+    /* Featured card */
+    .featured-card {
+      max-width: 860px; margin: 0 auto 3rem;
+      background: var(--cream);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px var(--shadow);
+      position: relative;
+    }
+    .featured-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--wine), var(--gold), var(--olive));
+    }
+    .featured-inner { padding: 3rem clamp(1.5rem,5vw,4rem); }
+    .featured-source {
+      display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.8rem;
+    }
+    .source-badge {
+      font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.15em;
+      background: var(--gold); color: var(--ink);
+      padding: 0.25rem 0.7rem; border-radius: 2px; text-transform: uppercase;
+    }
+    .source-name { font-family: 'Lato', sans-serif; font-size: 0.82rem; color: var(--ink-soft); }
+    .featured-title {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem,4vw,2.4rem);
+      font-weight: 500; color: var(--ink); line-height: 1.2; margin-bottom: 1.2rem;
+    }
+    .featured-verse-block {
+      border-left: 3px solid var(--gold); padding: 1rem 1.5rem;
+      margin: 1.5rem 0; background: rgba(201,168,76,0.07);
+    }
+    .featured-verse-text {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(1.1rem,2.5vw,1.35rem); color: var(--ink-soft); line-height: 1.7;
+    }
+    .featured-verse-ref { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--gold); letter-spacing: 0.12em; margin-top: 0.5rem; }
+    .featured-body {
+      font-size: 1rem; line-height: 1.85; color: var(--ink-soft);
+      margin-bottom: 1.5rem;
+    }
+    .featured-body p { margin-bottom: 1rem; }
+    .featured-prayer {
+      background: rgba(107,31,42,0.05); border-radius: 3px;
+      padding: 1.2rem 1.5rem; margin-bottom: 1.5rem;
+    }
+    .featured-prayer-label {
+      font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.2em;
+      color: var(--wine); text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    .featured-prayer p {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 1.05rem; color: var(--ink-soft); line-height: 1.7;
+    }
+    .featured-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem; padding-top: 1.2rem;
+      border-top: 1px solid rgba(201,168,76,0.2);
+    }
+    .reading-time { font-size: 0.78rem; color: #999; font-family: 'Lato', sans-serif; }
+    .action-btns { display: flex; gap: 0.6rem; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(201,168,76,0.3);
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; color: var(--gold); font-size: 0.9rem;
+    }
+    .icon-btn:hover { background: var(--gold); color: var(--ink); }
+    .loading-spinner {
+      text-align: center; padding: 3rem; color: var(--gold);
+      font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic;
+    }
+    .spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── DEVOTIONALS GRID ── */
+    #devotionals { padding: 5rem 1.5rem; background: var(--cream); }
+    .devotionals-tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 3rem;
+    }
+    .tab {
+      font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em;
+      padding: 0.45rem 1rem; border: 1px solid rgba(201,168,76,0.3);
+      background: transparent; cursor: pointer; border-radius: 2px;
+      text-transform: uppercase; color: var(--ink-soft); transition: all 0.2s;
+    }
+    .tab.active, .tab:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+    .cards-grid {
+      display: grid; gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%,300px),1fr));
+      max-width: 1100px; margin: 0 auto;
+    }
+    .devo-card {
+      background: var(--cream); border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 4px; overflow: hidden;
+      box-shadow: 0 2px 12px var(--shadow); transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .devo-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px var(--shadow); }
+    .devo-card-accent { height: 3px; }
+    .devo-card-body { padding: 1.5rem; }
+    .devo-card-tag { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.5rem; }
+    .devo-card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 500; color: var(--ink); line-height: 1.3; margin-bottom: 0.7rem; }
+    .devo-card-verse { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.6; margin-bottom: 0.8rem; }
+    .devo-card-preview { font-size: 0.84rem; color: #888; line-height: 1.6; }
+    .devo-card-footer { padding: 0.9rem 1.5rem; border-top: 1px solid rgba(201,168,76,0.15); display: flex; align-items: center; justify-content: space-between; }
+    .devo-origin { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.1em; color: #aaa; text-transform: uppercase; }
+    .devo-read { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; text-decoration: none; }
+    .card-loading { height: 200px; display: flex; align-items: center; justify-content: center; }
+
+    /* ── TRADITIONS STRIP ── */
+    #traditions { padding: 4rem 1.5rem; background: var(--parchment); }
+    .traditions-header { text-align: center; margin-bottom: 2.5rem; }
+    .traditions-scroll { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .tradition-pill {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.6rem 1.2rem; border-radius: 50px;
+      border: 1px solid rgba(201,168,76,0.25); background: var(--cream);
+      font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em;
+      color: var(--ink-soft); text-transform: uppercase; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tradition-pill:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+    .tradition-pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── FEATURES ── */
+    #features { padding: 5rem 1.5rem; background: var(--ink); }
+    .features-grid {
+      display: grid; gap: 2rem;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%,260px),1fr));
+      max-width: 1000px; margin: 2rem auto 0;
+    }
+    .feature-item { text-align: center; padding: 2rem 1.5rem; border: 1px solid rgba(201,168,76,0.12); border-radius: 4px; transition: border-color 0.3s; }
+    .feature-item:hover { border-color: rgba(201,168,76,0.4); }
+    .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feature-title { font-family: 'Cinzel', serif; font-size: 0.9rem; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 0.6rem; }
+    .feature-desc { font-size: 0.86rem; color: rgba(250,245,234,0.6); line-height: 1.7; }
+    #features .section-title { color: var(--parchment); }
+    #features .section-tag { color: var(--gold); }
+    #features .section-header { margin-bottom: 0; }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials { padding: 5rem 1.5rem; background: var(--parchment); }
+    .testimonials-track { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .testimonials-track::-webkit-scrollbar { display: none; }
+    .testimonial-card { flex: 0 0 min(90vw, 360px); scroll-snap-align: start; background: var(--cream); border: 1px solid rgba(201,168,76,0.2); border-radius: 4px; padding: 2rem; }
+    .t-quote { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; color: var(--ink-soft); line-height: 1.7; margin-bottom: 1.2rem; }
+    .t-stars { color: var(--gold); font-size: 0.85rem; margin-bottom: 0.8rem; }
+    .t-author { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; }
+    .t-location { font-size: 0.78rem; color: #aaa; margin-top: 0.2rem; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(26,18,9,0.8); backdrop-filter: blur(6px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 2rem 1rem; overflow-y: auto;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--cream); border-radius: 4px; max-width: 720px; width: 100%;
+      padding: 2.5rem clamp(1.5rem,5vw,3.5rem);
+      border: 1px solid rgba(201,168,76,0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transform: translateY(20px); transition: transform 0.3s;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+    .modal-close { float: right; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--ink-soft); }
+    .modal-close:hover { color: var(--wine); }
+    .modal-source { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--gold); text-transform: uppercase; margin-bottom: 1rem; }
+    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem,4vw,2.2rem); font-weight: 500; color: var(--ink); line-height: 1.2; margin-bottom: 1.2rem; }
+    .modal-verse-block { border-left: 3px solid var(--gold); padding: 1rem 1.5rem; margin: 1.5rem 0; background: rgba(201,168,76,0.07); }
+    .modal-verse-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: var(--ink-soft); line-height: 1.7; }
+    .modal-verse-ref { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold); letter-spacing: 0.1em; margin-top: 0.4rem; }
+    .modal-body { font-size: 0.97rem; line-height: 1.85; color: var(--ink-soft); }
+    .modal-body p { margin-bottom: 1rem; }
+    .modal-prayer { background: rgba(107,31,42,0.05); border-radius: 3px; padding: 1.2rem 1.5rem; margin-top: 1.5rem; }
+    .modal-prayer-label { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.2em; color: var(--wine); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .modal-prayer p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; color: var(--ink-soft); line-height: 1.7; }
+
+    /* ── NEWSLETTER ── */
+    #newsletter { padding: 5rem 1.5rem; background: linear-gradient(135deg, var(--ink) 0%, #2D1A08 100%); text-align: center; }
+    #newsletter .section-title { color: var(--parchment); margin-bottom: 0.8rem; }
+    #newsletter p { color: rgba(250,245,234,0.65); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.7; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .email-form { display: flex; gap: 0.5rem; max-width: 460px; margin: 0 auto; flex-wrap: wrap; }
+    .email-form input {
+      flex: 1; min-width: 200px; padding: 0.85rem 1.2rem;
+      background: rgba(250,245,234,0.1); border: 1px solid rgba(201,168,76,0.3);
+      color: var(--parchment); font-family: 'Lato', sans-serif; font-size: 0.9rem;
+      border-radius: 2px; outline: none; transition: border-color 0.2s;
+    }
+    .email-form input::placeholder { color: rgba(250,245,234,0.4); }
+    .email-form input:focus { border-color: var(--gold); }
+    .email-form button {
+      font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.1em;
+      background: var(--gold); color: var(--ink); border: none;
+      padding: 0.85rem 1.5rem; cursor: pointer; border-radius: 2px;
+      text-transform: uppercase; transition: background 0.2s; white-space: nowrap;
+    }
+    .email-form button:hover { background: var(--gold-light); }
+    .email-success { color: var(--gold-light); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; display: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0D0903; padding: 3rem 1.5rem 1.5rem;
+      border-top: 1px solid rgba(201,168,76,0.15);
+    }
+    .footer-top { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between; margin-bottom: 2.5rem; }
+    .footer-brand { max-width: 260px; }
+    .footer-brand-name { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--parchment); margin-bottom: 0.6rem; }
+    .footer-brand p { font-size: 0.82rem; color: rgba(250,245,234,0.45); line-height: 1.7; }
+    .footer-col h4 { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; color: var(--gold); text-transform: uppercase; margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.5rem; }
+    .footer-col ul li a { font-size: 0.82rem; color: rgba(250,245,234,0.5); text-decoration: none; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--gold); }
+    .footer-bottom { border-top: 1px solid rgba(201,168,76,0.1); padding-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; }
+    .footer-bottom p { font-size: 0.75rem; color: rgba(250,245,234,0.3); }
+    .footer-cross { color: var(--gold); font-size: 1rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
+      .email-form { flex-direction: column; }
+      .email-form input, .email-form button { width: 100%; }
+      .footer-top { flex-direction: column; }
+      .featured-footer { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .featured-inner { padding: 1.5rem; }
+    }
+
+    /* ── FADE-IN ON SCROLL ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── ACCENT BAR COLORS ── */
+    .accent-wine { background: var(--wine); }
+    .accent-gold { background: var(--gold); }
+    .accent-olive { background: var(--olive); }
+    .accent-sky { background: var(--sky); }
+    .accent-multi { background: linear-gradient(90deg, var(--wine), var(--gold), var(--olive), var(--sky)); }
+
+    /* ── THEME CONTENT SECTION ── */
+    #theme-content { padding: 5rem 1.5rem; background: var(--parchment); display: none; }
+    #theme-content.active { display: block; }
+    .theme-section-header { text-align: center; margin-bottom: 3rem; }
+    .theme-section-icon { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+    .theme-section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem,5vw,3rem); font-weight: 400; color: var(--ink); }
+    .theme-section-title em { font-style: italic; color: var(--wine); }
+    .theme-section-desc { font-size: 0.95rem; color: var(--ink-soft); max-width: 540px; margin: 0.6rem auto 0; line-height: 1.7; }
+    .theme-cards { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fill, minmax(min(100%,460px),1fr)); max-width: 1060px; margin: 0 auto; }
+    .theme-card { background: var(--cream); border: 1px solid rgba(201,168,76,0.2); border-radius: 4px; overflow: hidden; box-shadow: 0 2px 16px var(--shadow); }
+    .theme-card-bar { height: 4px; background: linear-gradient(90deg, var(--wine), var(--gold), var(--olive)); }
+    .theme-card-inner { padding: 2rem; }
+    .theme-card-verse-block { border-left: 3px solid var(--gold); padding: 0.9rem 1.3rem; margin-bottom: 1.4rem; background: rgba(201,168,76,0.07); }
+    .theme-card-verse-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: var(--ink); line-height: 1.7; }
+    .theme-card-verse-ref { font-family: 'Cinzel', serif; font-size: 0.68rem; color: var(--gold); letter-spacing: 0.1em; margin-top: 0.4rem; }
+    .theme-card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 500; color: var(--ink); margin-bottom: 0.7rem; }
+    .theme-card-body { font-size: 0.93rem; line-height: 1.85; color: var(--ink-soft); margin-bottom: 1.3rem; }
+    .theme-card-body p { margin-bottom: 0.8rem; }
+    .theme-card-prayer { background: rgba(107,31,42,0.05); border-radius: 3px; padding: 1rem 1.3rem; }
+    .theme-card-prayer-label { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--wine); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .theme-card-prayer p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.97rem; color: var(--ink-soft); line-height: 1.7; }
+    .theme-back-btn { display: block; text-align: center; margin-top: 2.5rem; }
+    .theme-back-btn button { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 0.55rem 1.4rem; cursor: pointer; border-radius: 2px; text-transform: uppercase; transition: all 0.2s; }
+    .theme-back-btn button:hover { background: var(--gold); color: var(--ink); }
+
+    /* ── TRADITION DEVOTIONAL SECTION ── */
+    #tradition-section { padding: 5rem 1.5rem; background: var(--cream); display: none; }
+    #tradition-section.active { display: block; }
+    .trad-section-header { text-align: center; margin-bottom: 3rem; }
+    .trad-section-badge {
+      display: inline-block; font-family: 'Cinzel', serif; font-size: 0.68rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink);
+      background: var(--gold); padding: 0.3rem 1rem; border-radius: 2px;
+      margin-bottom: 0.8rem;
+    }
+    .trad-section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem,5vw,3rem); font-weight: 400; color: var(--ink); line-height: 1.2;
+    }
+    .trad-section-title em { font-style: italic; color: var(--wine); }
+    .trad-section-desc { font-size: 0.95rem; color: var(--ink-soft); max-width: 580px; margin: 0.6rem auto 0; line-height: 1.7; }
+    .trad-devo-grid { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fill, minmax(min(100%,480px),1fr)); max-width: 1060px; margin: 0 auto; }
+    .trad-devo-card { background: var(--cream); border: 1px solid rgba(201,168,76,0.2); border-radius: 4px; overflow: hidden; box-shadow: 0 2px 16px var(--shadow); }
+    .trad-devo-bar { height: 4px; }
+    .trad-devo-inner { padding: 2rem; }
+    .trad-devo-source { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.15em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.8rem; }
+    .trad-devo-verse-block { border-left: 3px solid var(--gold); padding: 0.9rem 1.3rem; margin-bottom: 1.4rem; background: rgba(201,168,76,0.07); }
+    .trad-devo-verse-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: var(--ink); line-height: 1.7; }
+    .trad-devo-verse-ref { font-family: 'Cinzel', serif; font-size: 0.68rem; color: var(--gold); letter-spacing: 0.1em; margin-top: 0.4rem; }
+    .trad-devo-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 500; color: var(--ink); margin-bottom: 0.7rem; }
+    .trad-devo-body { font-size: 0.93rem; line-height: 1.85; color: var(--ink-soft); margin-bottom: 1.3rem; }
+    .trad-devo-body p { margin-bottom: 0.8rem; }
+    .trad-devo-prayer { background: rgba(107,31,42,0.05); border-radius: 3px; padding: 1rem 1.3rem; }
+    .trad-devo-prayer-label { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--wine); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .trad-devo-prayer p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.97rem; color: var(--ink-soft); line-height: 1.7; }
+    .trad-back-btn { display: block; text-align: center; margin-top: 2.5rem; }
+    .trad-back-btn button { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 0.55rem 1.4rem; cursor: pointer; border-radius: 2px; text-transform: uppercase; transition: all 0.2s; }
+    .trad-back-btn button:hover { background: var(--gold); color: var(--ink); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">
+    <svg class="nav-logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="19" cy="19" r="18" stroke="#C9A84C" stroke-width="1.2"/>
+      <rect x="17.2" y="7" width="3.6" height="24" rx="1.8" fill="#C9A84C"/>
+      <rect x="10" y="13.5" width="18" height="3.2" rx="1.6" fill="#C9A84C"/>
+      <circle cx="19" cy="19" r="3.5" fill="none" stroke="#C9A84C" stroke-width="0.8" opacity="0.4"/>
+    </svg>
+    <div class="nav-logo-text">Walking with the Lord<span>Daily Devotionals</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="today.html">Today</a></li>
+    <li><a href="devotionals.html">Devotionals</a></li>
+    <li class="nav-item" id="exploreItem">
+      <a href="explore.html">Explore <span class="dropdown-arrow"></span></a>
+      <span class="dropdown-bridge"></span>
+      <div class="dropdown-menu">
+        <div class="dropdown-header">Browse by Theme</div>
+        <a href="explore.html?theme=faith"><span class="di">🕊️</span>Faith</a>
+        <a href="explore.html?theme=prayer"><span class="di">🙏</span>Prayer</a>
+        <a href="explore.html?theme=love"><span class="di">❤️</span>Love</a>
+        <a href="explore.html?theme=trials"><span class="di">⚓</span>Trials</a>
+        <a href="explore.html?theme=wisdom"><span class="di">📖</span>Wisdom</a>
+        <a href="explore.html?theme=grace"><span class="di">✨</span>Grace</a>
+        <a href="explore.html?theme=hope"><span class="di">🌅</span>Hope</a>
+        <div class="dropdown-divider"></div>
+        <a href="devotionals.html"><span class="di">🌍</span>All Devotionals</a>
+      </div>
+    </li>
+    <li><a href="traditions.html">Traditions</a></li>
+    <li><a href="features.html">Features</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.location.href='subscribe.html'">Subscribe Free</button>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="toggleMenu()">✕</button>
+  <a href="today.html" onclick="toggleMenu()">Today's Word</a>
+  <a href="devotionals.html" onclick="toggleMenu()">Devotionals</a>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.8rem">
+    <button class="mobile-devo-toggle" onclick="toggleMobileSub()">Explore <span class="dropdown-arrow" id="mobileArrow"></span></button>
+    <div class="mobile-sub" id="mobileSub">
+      <a href="explore.html?theme=faith" onclick="toggleMenu()">🕊️ Faith</a>
+      <a href="explore.html?theme=prayer" onclick="toggleMenu()">🙏 Prayer</a>
+      <a href="explore.html?theme=love" onclick="toggleMenu()">❤️ Love</a>
+      <a href="explore.html?theme=trials" onclick="toggleMenu()">⚓ Trials</a>
+      <a href="explore.html?theme=wisdom" onclick="toggleMenu()">📖 Wisdom</a>
+      <a href="explore.html?theme=grace" onclick="toggleMenu()">✨ Grace</a>
+      <a href="explore.html?theme=hope" onclick="toggleMenu()">🌅 Hope</a>
+    </div>
+  </div>
+  <a href="traditions.html" onclick="toggleMenu()">Traditions</a>
+  <a href="features.html" onclick="toggleMenu()">Features</a>
+  <a href="subscribe.html" onclick="toggleMenu()">Subscribe</a>
+</div>
+
+
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero">
+  <div class="hero-canvas"></div>
+  <div class="hero-rays">
+    <div class="ray"></div><div class="ray"></div><div class="ray"></div>
+    <div class="ray"></div><div class="ray"></div><div class="ray"></div>
+    <div class="ray"></div><div class="ray"></div>
+  </div>
+  <div class="hero-cross">
+    <svg viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="85" y="0" width="30" height="260" rx="4" fill="white"/>
+      <rect x="0" y="70" width="200" height="30" rx="4" fill="white"/>
+    </svg>
+  </div>
+  <!-- Particles spawned by JS -->
+  <div id="particles"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">✦ A World of Faith in One Place ✦</div>
+    <div class="hero-logo-mark">
+      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="37" stroke="#C9A84C" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="28" stroke="#C9A84C" stroke-width="0.6" stroke-dasharray="4 4"/>
+        <rect x="36.5" y="14" width="7" height="52" rx="3.5" fill="#C9A84C"/>
+        <rect x="20" y="29" width="40" height="7" rx="3.5" fill="#C9A84C"/>
+        <circle cx="40" cy="40" r="5" fill="#C9A84C" opacity="0.5"/>
+        <g opacity="0.4">
+          <path d="M40 3 Q45 20 40 40 Q35 20 40 3Z" fill="#E8C97A"/>
+          <path d="M77 40 Q60 45 40 40 Q60 35 77 40Z" fill="#E8C97A"/>
+          <path d="M40 77 Q35 60 40 40 Q45 60 40 77Z" fill="#E8C97A"/>
+          <path d="M3 40 Q20 35 40 40 Q20 45 3 40Z" fill="#E8C97A"/>
+        </g>
+      </svg>
+    </div>
+    <h1 class="hero-title">Walking with<br/><em>the Lord</em></h1>
+    <div class="hero-subtitle">Daily Devotionals · Global Christian Heritage</div>
+    <p class="hero-verse">"Your word is a lamp to my feet and a light to my path."</p>
+    <div class="hero-verse-ref">— Psalm 119:105</div>
+    <div class="hero-actions">
+      <a href="today.html" class="btn-primary">Read Today's Devotional</a>
+      <a href="devotionals.html" class="btn-secondary">Explore All Sources</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll" onclick="window.location.href='today.html'">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+
+<!-- ══════════ TODAY'S FEATURED DEVOTIONAL ══════════ -->
+<section id="today">
+  <div class="section-header reveal">
+    <span class="section-tag">✦ The Daily Word ✦</span>
+    <h2 class="section-title">Today's <em>Devotional</em></h2>
+  </div>
+  <div class="today-date reveal" id="todayDate"></div>
+
+  <div class="featured-card reveal" id="featuredCard">
+    <div class="featured-inner">
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        Seeking today's word of inspiration…
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center" class="reveal">
+    <button class="btn-primary" onclick="refreshDevotional()" style="background:var(--wine);box-shadow:none">
+      🔄 &nbsp;Refresh Devotional
+    </button>
+  </div>
+</section>
+
+
+<!-- ══════════ DEVOTIONALS GRID ══════════ -->
+<section id="devotionals">
+  <div class="section-header reveal">
+    <span class="section-tag">✦ Global Voices ✦</span>
+    <h2 class="section-title">Devotionals from <em>Around the World</em></h2>
+  </div>
+  <div class="devotionals-tabs reveal" id="tradTabs">
+    <button class="tab active" data-tradition="all" onclick="filterCards(this)">All Traditions</button>
+    <button class="tab" data-tradition="protestant" onclick="filterCards(this)">Protestant</button>
+    <button class="tab" data-tradition="catholic" onclick="filterCards(this)">Catholic</button>
+    <button class="tab" data-tradition="orthodox" onclick="filterCards(this)">Orthodox</button>
+    <button class="tab" data-tradition="evangelical" onclick="filterCards(this)">Evangelical</button>
+    <button class="tab" data-tradition="charismatic" onclick="filterCards(this)">Charismatic</button>
+  </div>
+  <div class="cards-grid reveal" id="cardsGrid">
+    <!-- JS-populated -->
+  </div>
+</section>
+
+
+
+<!-- ══════════ THEME CONTENT ══════════ -->
+<section id="theme-content">
+  <div class="theme-section-header">
+    <span class="theme-section-icon" id="themeIcon"></span>
+    <h2 class="theme-section-title" id="themeTitle"></h2>
+    <p class="theme-section-desc" id="themeDesc"></p>
+  </div>
+  <div class="theme-cards" id="themeCards"></div>
+  <div class="theme-back-btn">
+    <button onclick="closeTheme()">← Back to All Devotionals</button>
+  </div>
+</section>
+
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-brand-name">✝ Walking with the Lord</div>
+      <p>Bringing the riches of global Christian devotional heritage together — every day, for every believer, freely and lovingly.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Devotionals</h4>
+      <ul>
+        <li><a href="#">Today's Word</a></li>
+        <li><a href="#">Devotional Archive</a></li>
+        <li><a href="#">By Tradition</a></li>
+        <li><a href="#">By Scripture</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>About</h4>
+      <ul>
+        <li><a href="#">Our Mission</a></li>
+        <li><a href="#">Sources & Credits</a></li>
+        <li><a href="#">Copyright Policy</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <ul>
+        <li><a href="#">Daily Email</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="#">Share a Devotional</a></li>
+        <li><a href="#">Prayer Requests</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Walking with the Lord · All devotional content is copyright-free public domain · Made with ♥ for the Body of Christ</p>
+    <span class="footer-cross">✝</span>
+  </div>
+</footer>
+
+
+
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+
+
+<script>
+
+// ════════════════════════════════════════════════════════════════════════
+// DATA — All sources are public-domain works (pre-1928 or freely released)
+// ════════════════════════════════════════════════════════════════════════
+
+const TRADITIONS = {
+  protestant:  { label: 'Protestant',  color: '#3E5022' },
+  catholic:    { label: 'Catholic',    color: '#6B1F2A' },
+  orthodox:    { label: 'Orthodox',    color: '#2B4A6F' },
+  evangelical: { label: 'Evangelical', color: '#7A4F1E' },
+  charismatic: { label: 'Charismatic', color: '#8A2E6B' },
+};
+
+const DEVOTIONAL_SOURCES = [
+  { id:1,  name:'Morning by Morning',                  author:'Charles H. Spurgeon',         tradition:'protestant',  origin:'England, 1865',     accent:'accent-olive' },
+  { id:2,  name:'My Utmost for His Highest',           author:'Oswald Chambers',             tradition:'protestant',  origin:'Scotland, 1917',    accent:'accent-gold'  },
+  { id:3,  name:'Streams in the Desert',               author:'L.B. Cowman',                 tradition:'protestant',  origin:'USA, 1925',         accent:'accent-wine'  },
+  { id:4,  name:'Daily Light on the Daily Path',       author:'Samuel Bagster',              tradition:'protestant',  origin:'England, 1794',     accent:'accent-olive' },
+  { id:5,  name:'The Imitation of Christ',             author:'Thomas \u00e0 Kempis',        tradition:'catholic',    origin:'Netherlands, 1418', accent:'accent-wine'  },
+  { id:6,  name:'Introduction to the Devout Life',     author:'St. Francis de Sales',        tradition:'catholic',    origin:'France, 1609',      accent:'accent-sky'   },
+  { id:7,  name:'Unseen Warfare',                      author:'Lorenzo Scupoli / Nikodemos', tradition:'orthodox',    origin:'Greece, 1796',      accent:'accent-sky'   },
+  { id:8,  name:'The Orthodox Way',                    author:'Kallistos Ware',              tradition:'orthodox',    origin:'England, 1979',     accent:'accent-sky'   },
+  { id:9,  name:'Experiencing God',                    author:'Henry Blackaby',              tradition:'evangelical', origin:'USA, 1990',         accent:'accent-gold'  },
+  { id:10, name:'The Practice of the Presence of God', author:'Brother Lawrence',            tradition:'catholic',    origin:'France, 1692',      accent:'accent-wine'  },
+];
+
+// ── LARGE CONTENT POOLS ──────────────────────────────────────────────────
+// 24 verses, 12 themes, 12 reflection sets, 8 prayers
+// More items = more daily variety for the rotating featured devotional
+
+const VERSE_POOL = [
+  { text:'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.', ref:'Jeremiah 29:11' },
+  { text:'I can do all this through him who gives me strength.', ref:'Philippians 4:13' },
+  { text:'The Lord is my shepherd, I lack nothing.', ref:'Psalm 23:1' },
+  { text:'Trust in the Lord with all your heart and lean not on your own understanding.', ref:'Proverbs 3:5' },
+  { text:'Be still, and know that I am God.', ref:'Psalm 46:10' },
+  { text:'Come to me, all you who are weary and burdened, and I will give you rest.', ref:'Matthew 11:28' },
+  { text:'The Lord is near to all who call on him, to all who call on him in truth.', ref:'Psalm 145:18' },
+  { text:'Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.', ref:'Philippians 4:6' },
+  { text:'He gives strength to the weary and increases the power of the weak.', ref:'Isaiah 40:29' },
+  { text:'Your word is a lamp to my feet and a light to my path.', ref:'Psalm 119:105' },
+  { text:'The name of the Lord is a fortified tower; the righteous run to it and are safe.', ref:'Proverbs 18:10' },
+  { text:'But those who hope in the Lord will renew their strength. They will soar on wings like eagles.', ref:'Isaiah 40:31' },
+  { text:'For by grace you have been saved through faith, and this is not your own doing; it is the gift of God.', ref:'Ephesians 2:8' },
+  { text:'The Lord is my light and my salvation — whom shall I fear? The Lord is the stronghold of my life — of whom shall I be afraid?', ref:'Psalm 27:1' },
+  { text:'Cast all your anxiety on him because he cares for you.', ref:'1 Peter 5:7' },
+  { text:'The Lord is compassionate and gracious, slow to anger, abounding in love.', ref:'Psalm 103:8' },
+  { text:'Delight yourself in the Lord and he will give you the desires of your heart.', ref:'Psalm 37:4' },
+  { text:'Now faith is confidence in what we hope for and assurance about what we do not see.', ref:'Hebrews 11:1' },
+  { text:'And we know that in all things God works for the good of those who love him.', ref:'Romans 8:28' },
+  { text:'Create in me a pure heart, O God, and renew a steadfast spirit within me.', ref:'Psalm 51:10' },
+  { text:'Rejoice in the Lord always. I will say it again: Rejoice!', ref:'Philippians 4:4' },
+  { text:'The steadfast love of the Lord never ceases; his mercies never come to an end. They are new every morning.', ref:'Lamentations 3:22-23' },
+  { text:'Ask and it will be given to you; seek and you will find; knock and the door will be opened to you.', ref:'Matthew 7:7' },
+  { text:'My grace is sufficient for you, for my power is made perfect in weakness.', ref:'2 Corinthians 12:9' },
+];
+
+const THEMES = [
+  "God's Unfailing Love",        "Trust in Dark Seasons",        "The Power of Prayer",
+  "Walking in Obedience",        "Grace for Today",              "Finding Peace in His Presence",
+  "Strength in Weakness",        "Abiding in the Vine",          "The Gift of Forgiveness",
+  "Hope That Does Not Disappoint","Surrender and Rest",          "Fruit of the Spirit",
+  "Renewed Each Morning",        "The Shepherd and His Flock",   "Faith Over Fear",
+  "Dwelling in His Word",        "Joy in Every Season",          "The Peace That Passes Understanding",
+  "Walking by Faith",            "He Who Calls You Is Faithful", "Draw Near to God",
+  "Bearing One Another's Burdens","The Armour of God",           "Running the Race with Endurance",
+];
+
+const REFLECTIONS = [
+  ["The Christian life is not a passive waiting for heaven — it is an active walking with the Living God in the midst of every circumstance life brings.", "When we open our hearts to the Word of God each morning, we do not simply receive information; we receive transformation. The Scriptures are alive, and they speak directly into the deepest places of our souls.", "Today, let the Lord meet you exactly where you are. He knows every sorrow you carry. His love is not conditional on your performance — it is the bedrock beneath every step you take."],
+  ["There is a profound difference between knowing about God and knowing God. The devotional life is the path that leads from the former to the latter, from the head down into the heart.", "Every morning is a fresh invitation to draw near. The heavenly Father does not grow weary of our coming to Him. Like the father in the parable, He is always watching down the road, ready to run toward us.", "Lay aside the weight of yesterday. His mercies are new this morning — not recycled, not diminished, but fresh and full and freely given for exactly this day and this need."],
+  ["The great saints of every age discovered the same secret: that the interior life, nurtured in quiet with God, becomes the source of tremendous fruitfulness in the world outside.", "Do not despise the small and ordinary. It is in the daily faithfulness — the morning prayer, the patient word, the quiet trust — that the character of Christ is formed within us.", "What does the Lord require of you today? Not great and spectacular acts, but mercy, justice, and humble walking in His company. This is both the simplest and the most glorious calling in the world."],
+  ["Spurgeon wrote that the secret of a life well-lived is the daily, patient, unhurried turning of the soul toward the face of God. Not the grand crisis moment, but the quiet morning surrender.", "Brother Lawrence found God in the kitchen, among the pots and pans. He did not wait for the cathedral or the chapel — he made every place of work a place of worship. And God met him there.", "You do not need extraordinary circumstances to encounter an extraordinary God. He is present in the ordinary. The question is whether we are present enough to notice."],
+  ["Thomas a Kempis warns us that high-sounding talk about virtue profits little if we lack the humility to practise it. The most dangerous spiritual condition is to know much and to be transformed little.", "The devotional life is not an addition to the Christian life — it is the root from which the Christian life grows. What is unseen in the morning determines what is seen throughout the day.", "Guard your time with God carefully. The enemy knows that a Christian who prays is a Christian who is dangerous to his kingdom, and he will use every distraction available to keep you from your knees."],
+  ["Andrew Murray wrote that the deeper we go into the heart of God in prayer, the more we understand that He longs for us far more than we long for Him. Our seeking is always a response to His seeking first.", "The Word of God is not merely a religious text. It is the living voice of the living God addressed to a living soul. When we read it, He speaks. When we believe it, He acts. When we obey it, He is glorified.", "Let your devotional time today be not a performance but a conversation. Not a checklist but a communion. Come as you are — and leave changed."],
+  ["Every trial that comes into the life of a believer has passed through the hands of a sovereign and loving God before it reached you. It did not slip past His attention. He permitted it for purposes you may not yet see.", "The furnace of affliction, when entered with faith, becomes a place of divine encounter. It was in the fire that Shadrach, Meshach and Abednego discovered a fourth figure walking with them. He is still in the fire.", "Your suffering is not a sign of God's absence. It may well be the very place where His presence is most profoundly known. Press into Him now, not away from Him."],
+  ["The fruit of the Spirit is not produced by striving but by abiding. A branch that remains in the vine does not struggle to bear fruit — it simply stays connected to the Source, and fruit appears naturally.", "Grace is not a licence for carelessness but a power for transformation. It does not say 'your sin does not matter.' It says 'your sin has been dealt with — now live differently.' The same grace that saves also sanctifies.", "Today, rest in what Christ has already accomplished. You are not working toward acceptance — you are working from acceptance. That is the difference between religion and the gospel."],
+  ["The promises of God are not suggestions or possibilities. They are certainties guaranteed by the character of the One who made them. Every word He has spoken will be fulfilled.", "Faith is not the absence of doubt but the choice to trust God in the presence of doubt. It is not the suppression of honest questions but the placing of those questions into the hands of the One who holds all answers.", "Stand on the promises today. Not on your feelings, not on your circumstances, not on the opinions of others — but on the unchanging, unbreakable, eternally reliable Word of the living God."],
+  ["Holiness is not a destination at which we arrive but a direction in which we travel. Each day we are either drawing closer to the likeness of Christ or drifting from it. There is no standing still.", "Prayer changes things — but more importantly, prayer changes us. The one who prays consistently is slowly, invisibly, irresistibly being conformed to the image of Christ.", "Give God the first and best of your attention today. Before the phone, before the news, before the demands of the world — give Him your first waking moments and watch how differently the day unfolds."],
+  ["The joy of the Lord is not a feeling dependent on circumstances — it is a settled confidence in who God is and what He has done. It co-exists with grief, with difficulty, with uncertainty.", "Corrie ten Boom, who suffered in a Nazi concentration camp, wrote that there is no pit so deep that God's love is not deeper still. This was not mere theology for her — it was lived experience.", "Whatever pit you are in today, hear this: His love is deeper. His arm is longer. His grace is sufficient. He who promised is faithful, and He will bring you through."],
+  ["The Scripture is the mirror in which the soul sees itself as God sees it — not as the world defines it, not as past failures have labelled it, but as beloved, chosen, redeemed and being made new.", "Begin your day in the Word not as a religious duty but as a love letter read. God wrote it for you. Every promise, every narrative, every psalm was penned with your need in view.", "Close this time of devotion with a simple prayer of surrender: Lord, I am Yours today. Use me as You will. Lead me where You choose. I trust the Shepherd with the whole of this day."],
+];
+
+const PRAYERS = [
+  "Lord, I come before You with an open and willing heart. Teach me Your ways, quiet my anxious thoughts, and let Your perfect love drive out every fear. I trust You completely with this day. In Jesus' name, Amen.",
+  "Heavenly Father, thank You for the gift of another morning. Open my eyes to see Your hand at work in all things, and give me grace to respond to every moment with faith and love. Amen.",
+  "Father God, I surrender this day to You. Where I am weak, be my strength. Where I am afraid, be my courage. Where I am lost, be my way. Lead me in the paths of righteousness for Your name's sake. Amen.",
+  "Lord Jesus, be the centre of my day. Let every thought be brought captive to You, let every word be seasoned with grace, and let every action flow from a heart that loves You above all else. Amen.",
+  "Holy Spirit, fill me afresh this morning. Let Your fruit be evident in my life — love, joy, peace, patience, kindness, goodness, faithfulness, gentleness and self-control. I yield to You. Amen.",
+  "God of all grace, I receive Your mercies this morning as a gift I do not deserve and could never earn. Thank You that Your compassions are new every single day. I begin again in Your grace. Amen.",
+  "Lord, make me an instrument of Your peace today. Where there is hatred, let me sow love. Where there is despair, hope. Where there is darkness, light. Use me for Your glory. Amen.",
+  "Father, I lay every burden at Your feet right now. The worries, the fears, the unknowns — I release them into Your hands. You are able to carry what I cannot. I rest in Your sovereignty. Amen.",
+];
+
+// ════════════════════════════════════════════════════════════════════════
+// TRADITION-SPECIFIC DEVOTIONAL DATA
+// Each tradition has 3 copyright-free devotionals with verses + reflections
+// ════════════════════════════════════════════════════════════════════════
+const TRADITION_DATA = {
+
+  catholic: {
+    name:'Roman Catholic', color:'#6B1F2A', dot:'#6B1F2A',
+    desc:'Devotionals from the Catholic tradition, rooted in the teachings of the saints and the rich heritage of contemplative prayer.',
+    devotionals: [
+      {
+        source:'The Imitation of Christ — Thomas \u00e0 Kempis (c. 1418, Public Domain)',
+        verse:{ text:'What does it profit a man to gain the whole world, yet forfeit his soul?', ref:'Mark 8:36' },
+        title:'On Knowing Oneself Truly',
+        body:['Thomas \u00e0 Kempis opens his masterwork with a warning that rings as true today as it did in the fifteenth century: of what profit is it to discourse learnedly on the Trinity if you lack humility? The acquisition of knowledge without self-knowledge is a form of spiritual pride that blinds rather than illumines.','True wisdom begins not in the library but in the chapel. Not in the mastery of theology but in the honest confrontation with one\'s own soul before God. The person who knows themselves — their weaknesses, their tendencies toward sin, their utter dependence on grace — is closer to God than the scholar who can recite every doctrine but has never wept over their own heart.','Today, set aside the busyness of acquiring and spend a few moments simply being known. Come before God not with your accomplishments but with your need. He meets us at the point of our poverty, not our riches.'],
+        prayer:'Lord Jesus, gentle and humble of heart, teach me to know myself as You know me. Strip away every pretence, every self-deception, and every false identity. Let me be truly poor in spirit, that I may truly inherit the Kingdom. Amen.'
+      },
+      {
+        source:'Introduction to the Devout Life — St. Francis de Sales (1609, Public Domain)',
+        verse:{ text:'Walk humbly with your God.', ref:'Micah 6:8' },
+        title:'Devotion in Ordinary Life',
+        body:['St. Francis de Sales wrote his Introduction to the Devout Life for ordinary people — merchants, farmers, mothers, soldiers — not just for monks and nuns. He insisted that holiness is not the exclusive preserve of the cloister. Every state of life, he taught, has its own form of devotion appropriate to it.','The soldier can be devout on the battlefield. The merchant can be devout in the marketplace. The mother can be devout in the nursery. The question is not where you are but whether God is there with you — and He always is. Devotion is simply the practice of noticing and responding to His presence in every circumstance.','Do not wait for a retreat or a pilgrimage to seek God. Seek Him in this moment, in this place, in this task. He is already here.'],
+        prayer:'Holy Father, teach me to make every ordinary moment an act of worship. Let my work be prayer, my love be sacrifice, and my daily life a continuous return to You. Through Christ our Lord. Amen.'
+      },
+      {
+        source:'The Practice of the Presence of God — Brother Lawrence (1692, Public Domain)',
+        verse:{ text:'Pray without ceasing.', ref:'1 Thessalonians 5:17' },
+        title:'Finding God in Every Moment',
+        body:['Brother Lawrence was a lay brother who spent most of his life in a monastery kitchen. He was not a theologian or a preacher — he was a cook. Yet his practice of turning every moment, every task, every ordinary act into a conversation with God has instructed and inspired believers for three centuries.','He wrote that he felt no difference between his times of formal prayer and his times of work, because he had made them both the same thing: a constant awareness of God\'s presence and a constant speaking to Him. The kitchen became as holy to him as the sanctuary.','The invitation is simple but profound: do not compartmentalise God into your prayer time. Speak to Him as you work, as you travel, as you rest. He is always listening. He is always near.'],
+        prayer:'Lord, I desire to practise Your presence throughout this entire day. Whether I am working, resting, speaking or silent — let me be aware of You. Make every moment a moment of communion with You. Amen.'
+      }
+    ]
+  },
+
+  orthodox: {
+    name:'Eastern Orthodox', color:'#2B4A6F', dot:'#2B4A6F',
+    desc:'Devotionals from the Eastern Orthodox tradition, drawing on the mystical theology and hesychast prayer of the Church Fathers.',
+    devotionals: [
+      {
+        source:'Unseen Warfare — Lorenzo Scupoli, ed. Nikodemos of the Holy Mountain (1796, Public Domain)',
+        verse:{ text:'Be sober-minded; be watchful. Your adversary the devil prowls around like a roaring lion, seeking someone to devour.', ref:'1 Peter 5:8' },
+        title:'The Warfare of the Soul',
+        body:['Scupoli\'s Unseen Warfare is one of the great spiritual classics of the Christian East. It begins with a stark acknowledgement: the soul is at war. Not against flesh and blood, but against principalities, against powers, against the spiritual forces of evil. To be unaware of this war is to be already losing it.','The great weapon in this unseen battle, Scupoli teaches, is distrust of self combined with total trust in God. The soldier who relies on his own courage, his own virtue, his own spiritual attainment will be overthrown. The soldier who knows his own weakness and clings to God will stand.','Begin your day with this prayer of surrender: I cannot fight this battle alone. I do not have the strength or the wisdom. But You, Lord, have overcome the world — and in You I stand.'],
+        prayer:'O Lord and Master of my life, give me not a spirit of idleness, despondency, ambition or vain talking. Grant instead a spirit of chastity, humility, patience and love. Let me see my own failings and not judge my brother. Amen.'
+      },
+      {
+        source:'The Philokalia — Various Church Fathers (4th-15th century, Public Domain)',
+        verse:{ text:'Be transformed by the renewing of your mind.', ref:'Romans 12:2' },
+        title:'The Jesus Prayer and Inner Stillness',
+        body:['The Philokalia — the "love of the beautiful" — is a collection of writings from the Eastern Church Fathers on the interior life. Central to its teaching is hesychia: stillness, silence, interior calm. Not the silence of emptiness, but the silence of a soul fully attentive to God.','The Jesus Prayer — "Lord Jesus Christ, Son of God, have mercy on me, a sinner" — is the heartbeat of Orthodox spiritual practice. It is not a formula but a breath. Not a technique but a relationship. Each repetition is a small act of turning the whole self toward Christ.','Today, practise stillness. Before you speak, before you act, before you scroll — be still. In the stillness, He will speak. In the silence, He is near.'],
+        prayer:'Lord Jesus Christ, Son of God, have mercy on me, a sinner. Let this prayer be the rhythm of my heart today and every day, until I see You face to face. Amen.'
+      },
+      {
+        source:'On the Holy Spirit — St. Basil the Great (375 AD, Public Domain)',
+        verse:{ text:'God is spirit, and those who worship him must worship in spirit and truth.', ref:'John 4:24' },
+        title:'Worshipping in Spirit and Truth',
+        body:['St. Basil the Great, one of the great Cappadocian Fathers of the fourth century, wrote extensively on the nature of true worship. He understood that worship is not a liturgical performance but a total orientation of the human person — body, soul, and spirit — toward the Living God.','Worship in spirit, Basil taught, means worship that engages the innermost centre of the person, not merely the outward form. Worship in truth means worship aligned with the reality of who God is, not the projection of what we wish Him to be.','Come to God today not simply with the words of prayer but with the whole of yourself. Bring your questions, your doubts, your failures, your loves. True worship has room for all of these.'],
+        prayer:'O Holy Trinity, undivided Unity — Father, Son and Holy Spirit — receive my worship today. Not the worship of lips alone, but of the whole heart. Let my life be a living doxology to Your glory. Amen.'
+      }
+    ]
+  },
+
+  anglican: {
+    name:'Anglican / Episcopal', color:'#3E5022', dot:'#3E5022',
+    desc:'Devotionals from the Anglican tradition, combining Catholic heritage with Reformed theology in the spirit of the via media.',
+    devotionals: [
+      {
+        source:'The Book of Common Prayer (1662, Public Domain)',
+        verse:{ text:'Let the words of my mouth and the meditation of my heart be acceptable in your sight, O Lord, my rock and my redeemer.', ref:'Psalm 19:14' },
+        title:'Morning Prayer: Beginning with God',
+        body:['The 1662 Book of Common Prayer, which has shaped Anglican worship for over three and a half centuries, opens Morning Prayer with a call to humility: "We have erred and strayed from thy ways like lost sheep." It does not begin with praise — it begins with honest confession. And this is wisdom.','Before we can praise, we must acknowledge. Before we can receive, we must come empty. The Anglican tradition, at its best, holds together the grandeur of God and the lowliness of the worshipper — not in a spirit of condemnation but in the spirit of grace that meets us in our need.','Begin this day with honest prayer. Not the performance of piety but the simple truth of where you are. God already knows. He is waiting not for your pretence but for your presence.'],
+        prayer:'Almighty and most merciful Father, we have erred and strayed from Thy ways like lost sheep. We have done those things which we ought not to have done, and have left undone those things which we ought to have done. But Thou, O Lord, have mercy upon us. Amen. (BCP 1662)'
+      },
+      {
+        source:'Sermons — John Donne (1621, Public Domain)',
+        verse:{ text:'No man is an island, entire of itself; every man is a piece of the continent, a part of the main.', ref:'John Donne, Meditation XVII' },
+        title:'We Are Not Alone',
+        body:['John Donne, poet and Dean of St. Paul\'s Cathedral, preached sermons of unusual depth and beauty in early seventeenth century London. He understood, as few have, the solidarity of the human race and its rootedness in God.','His famous meditation — that no man is an island — is a theological as much as a philosophical observation. We were made for community, for connection, for the mutual bearing of burdens. The Christian is not a solitary spiritual athlete but a member of a Body.','Who in your community needs your presence today? Who is suffering in isolation? The call of the gospel is not merely to personal salvation but to the building of a community that reflects the love of the Trinity.'],
+        prayer:'Lord, break down the walls that isolate me from others. Let me be genuinely present to the people around me today — attentive, compassionate, and willing to bear whatever burdens You call me to carry with them. Amen.'
+      },
+      {
+        source:'Holiness — J.C. Ryle (1877, Public Domain)',
+        verse:{ text:'Without holiness no one will see the Lord.', ref:'Hebrews 12:14' },
+        title:'The Pursuit of Holiness',
+        body:['J.C. Ryle, the first Bishop of Liverpool, wrote Holiness in 1877 as a call to Victorian Christianity to take the doctrine of sanctification seriously. He was alarmed by a Christianity that was satisfied with conversion without transformation, with faith without fruit.','Ryle argued that true holiness is not perfectionism — it does not claim freedom from sin in this life. But it is a genuine, earnest, continuous warfare against sin and a genuine, earnest, continuous pursuit of Christlikeness. The person who is truly regenerate will want to be holy.','Examine your life honestly today. Is there a pattern of sin you have been tolerating rather than fighting? Bring it to the cross afresh. God\'s grace is not only for forgiveness but for power to change.'],
+        prayer:'Father, make me holy as You are holy. Not in my own strength, but in the power of Your Spirit. Show me what needs to change in my life. Give me courage to face it and grace to overcome it. Amen.'
+      }
+    ]
+  },
+
+  lutheran: {
+    name:'Lutheran', color:'#7A4F1E', dot:'#7A4F1E',
+    desc:'Devotionals from the Lutheran tradition, grounded in the Reformation principle of grace alone, faith alone, Scripture alone.',
+    devotionals: [
+      {
+        source:'A Simple Way to Pray — Martin Luther (1535, Public Domain)',
+        verse:{ text:'For it is by grace you have been saved, through faith — and this is not from yourselves, it is the gift of God.', ref:'Ephesians 2:8' },
+        title:'Saved by Grace Alone',
+        body:['Martin Luther\'s rediscovery of the gospel — that justification is by grace alone through faith alone in Christ alone — was not merely a theological revolution. It was for him a deeply personal liberation. The monk who had tormented himself with years of self-punishment found rest in the simple truth that what he could never earn, God freely gave.','Luther wrote in his Simple Way to Pray that the Lord\'s Prayer is the greatest of all prayers. He taught his barber friend Peter to pray it slowly, thoughtfully, letting each petition expand in the heart before moving to the next. Prayer, for Luther, was not a technique but a conversation with the Father.','Today, receive the gospel afresh. Not as old news but as living truth. You are not justified by your devotional consistency, your good deeds, or your spiritual progress. You are justified by grace. Stand in that freedom.'],
+        prayer:'Dear Father in heaven, I come to You not on the basis of my merit but on the merit of Christ alone. I receive His righteousness as mine. Let this grace not make me complacent but grateful — and let gratitude produce the good works that grace alone can produce. Amen.'
+      },
+      {
+        source:'The Small Catechism — Martin Luther (1529, Public Domain)',
+        verse:{ text:'I am the Lord your God. You shall have no other gods before me.', ref:'Exodus 20:2-3' },
+        title:'What Does This Mean?',
+        body:['Luther\'s Small Catechism begins with the Ten Commandments, and after each one asks the same deceptively simple question: "What does this mean?" This pedagogical genius — asking not just what God commands but what He means by it — transforms law from an external demand into an invitation to understand the heart of God.','The First Commandment, Luther taught, is really about trust. To have no other gods means to fear, love, and trust God above all things. An idol is anything we trust for our security, our identity, or our happiness more than we trust God. Idols today are as numerous as they were in ancient Israel — they simply look different.','What are you trusting more than God today? Not the theoretical answer, but the honest one. The beginning of genuine faith is the willingness to look at that question without flinching.'],
+        prayer:'Lord, You alone are God. Forgive me for the idols I have constructed — the false securities I have trusted, the temporary comforts I have sought above Your presence. Return me to the First Commandment. You are enough. Amen.'
+      },
+      {
+        source:'The Theology of the Cross — Martin Luther (c. 1518, Public Domain)',
+        verse:{ text:'May I never boast except in the cross of our Lord Jesus Christ.', ref:'Galatians 6:14' },
+        title:'The Wisdom of the Cross',
+        body:['Luther\'s theology of the cross stands in direct opposition to what he called the theology of glory: the human desire to find God in power, success, and triumph rather than in weakness, failure, and the cross. The theology of glory says God is found in the spectacular. The theology of the cross says He is found in the suffering.','This is deeply counter-cultural in every age. We want a God of success. Luther insists on a God of the cross. And the cross is not the end of the story — but it is the indispensable middle of it. Before the resurrection, the cross.','Where in your life right now are you experiencing weakness, failure, or suffering? Luther would say: that is precisely where Christ is to be found. Not despite your weakness but in it. He meets us at the cross.'],
+        prayer:'Lord of the cross, forgive my craving for a theology of glory — for faith that demands signs, success, and comfort. Teach me to find You in the cross: in weakness, in suffering, in the places I would least choose. There I will find You. Amen.'
+      }
+    ]
+  },
+
+  methodist: {
+    name:'Methodist', color:'#4B2C6B', dot:'#4B2C6B',
+    desc:'Devotionals from the Methodist tradition, inspired by the evangelical revival and the pursuit of scriptural holiness.',
+    devotionals: [
+      {
+        source:'Sermons — John Wesley (1771, Public Domain)',
+        verse:{ text:'Are you not in error because you do not know the Scriptures or the power of God?', ref:'Mark 12:24' },
+        title:'Scripture, Reason, Experience and Tradition',
+        body:['John Wesley, founder of Methodism, was a man of unusual intellectual breadth and spiritual intensity. He rode over 250,000 miles on horseback across Britain, preaching the gospel wherever he could find an audience. His method was disciplined, systematic, and zealous.','Wesley\'s famous Quadrilateral — Scripture, Tradition, Reason and Experience — was not a permission slip for relativism but a framework for rigorous theological reflection. Scripture was always primary. The other three helped interpret and apply it. He feared both the cold intellectualism that knew doctrine without knowing God, and the warm emotionalism that confused feeling for faith.','Test your beliefs today against all four: What does Scripture say? What has the Church historically taught? What does reason confirm? What has your own experience of God demonstrated? These four together guard against both rigidity and drift.'],
+        prayer:'Lord, grant me a faith that is both warm in the heart and clear in the mind. Let me know Your Word, hear Your Spirit, and walk in the tradition of those who have loved You before me. Unite knowledge and experience in a life of genuine holiness. Amen.'
+      },
+      {
+        source:'A Plain Account of Christian Perfection — John Wesley (1766, Public Domain)',
+        verse:{ text:'Be perfect, therefore, as your heavenly Father is perfect.', ref:'Matthew 5:48' },
+        title:'Entire Sanctification: Loving God with All',
+        body:['Wesley\'s doctrine of entire sanctification — sometimes called perfect love — was controversial in his own day and remains debated. But at its heart it is simply this: the love of God can so fill the heart that selfishness no longer dominates. Not sinless perfection, Wesley insisted, but the dominance of love.','He described it as loving God with all your heart, all your mind, all your soul, all your strength — not as a future possibility but as a present grace available to the earnest believer. The Holy Spirit can cleanse the heart of its fundamental orientation toward self and reorient it entirely toward God and neighbour.','Is love the dominant motivation of your life? Not sentimental feeling but the persistent, active, self-giving love that Wesley saw in Christ? Ask God today to make it so.'],
+        prayer:'Heavenly Father, pour out Your love into my heart by the Holy Spirit. Drive out every rival affection, every selfish motivation, every hidden idol. Let love be the first and last word of my life. This is Your will. I receive it by faith. Amen.'
+      },
+      {
+        source:'The Works of John Wesley — Journal (1738, Public Domain)',
+        verse:{ text:'I felt my heart strangely warmed.', ref:'John Wesley, Journal, May 24 1738' },
+        title:'The Warmed Heart',
+        body:['On the evening of 24 May 1738, John Wesley reluctantly attended a meeting at Aldersgate Street in London. As someone read Luther\'s preface to the Letter to the Romans, Wesley wrote: "I felt my heart strangely warmed. I felt I did trust in Christ, Christ alone for salvation; and an assurance was given me that He had taken away my sins."','This experience did not create Wesley\'s faith — he had been a religious man for years. But it transformed it. What had been intellectual became experiential. What had been performed became received. This is the Wesleyan insight: the Christian faith must be felt in the heart, not merely held in the head.','Have you experienced the warmth that Wesley describes? If not, ask for it today. If so, return to it. The Spirit who warmed Wesley\'s heart is still warming hearts.'],
+        prayer:'Come, Holy Spirit, warm my heart today. Burn away the coldness, the formality, the religious performance. Let me know Christ not merely as doctrine but as the living Lord who loved me and gave Himself for me. Amen.'
+      }
+    ]
+  },
+
+  baptist: {
+    name:'Baptist', color:'#1E5C4A', dot:'#1E5C4A',
+    desc:'Devotionals from the Baptist tradition, centred on the authority of Scripture, believer\'s baptism, and the priesthood of all believers.',
+    devotionals: [
+      {
+        source:'Morning by Morning — Charles H. Spurgeon (1865, Public Domain)',
+        verse:{ text:'They are new every morning; great is your faithfulness.', ref:'Lamentations 3:23' },
+        title:'New Every Morning',
+        body:['Spurgeon began many of his morning devotionals with the simple observation that each day is a gift — not earned, not deserved, but given by the grace of a faithful God. The sun rising every morning is a daily sermon on the faithfulness of God. His mercies did not expire yesterday. They are new this morning.','For Spurgeon, the morning was the most precious part of the day — the hour when the soul was freshest and the world had not yet cluttered it with demands. He urged his readers to give God the first and best of every morning, before the day could take it.','You cannot change yesterday. You do not yet have tomorrow. But this morning is yours, and it is full of new mercies. Receive them. Use them. Thank God for them.'],
+        prayer:'Father, thank You for this new morning. Your mercies are fresh and Your faithfulness is great. I receive this day as Your gift and I give it back to You as my offering. Use every hour of it for Your glory. In Jesus\' name, Amen.'
+      },
+      {
+        source:'All of Grace — Charles H. Spurgeon (1886, Public Domain)',
+        verse:{ text:'Come to me, all you who are weary and burdened, and I will give you rest.', ref:'Matthew 11:28' },
+        title:'The Open Invitation of the Gospel',
+        body:['Spurgeon wrote All of Grace as a direct address to the unconverted — to the sinner who felt too far gone, too sinful, too broken to be saved. His message was relentlessly simple: the gospel invitation has no exceptions. "Come" is spoken to all without condition. The only requirement is that you come.','He was particularly tender toward those burdened by a sense of unworthiness. "You feel that you are not good enough?" Spurgeon would say. "You are right — you are not. Neither was I. Neither is anyone. That is precisely why we need a Saviour who is good enough for us all."','Are you burdened today? With sin, with failure, with a sense that you have wandered too far? The invitation still stands. Come. He will not turn you away.'],
+        prayer:'Lord Jesus, I come. Not because I am worthy, but because You have called. Not because I am strong, but because I am weary. I receive Your rest today. I receive Your grace. I receive You. Amen.'
+      },
+      {
+        source:'The Pilgrim\'s Progress — John Bunyan (1678, Public Domain)',
+        verse:{ text:'Run in such a way as to get the prize.', ref:'1 Corinthians 9:24' },
+        title:'The Christian\'s Journey',
+        body:['John Bunyan wrote The Pilgrim\'s Progress in Bedford Gaol, imprisoned for preaching without a licence. In this extraordinary allegory, Christian the pilgrim sets out from the City of Destruction toward the Celestial City, encountering on the way Slough of Despond, Vanity Fair, Doubting Castle, and eventually the River of Death.','Bunyan\'s genius was to name the inner obstacles of the spiritual life so vividly that readers recognised themselves instantly. Who has not spent time in the Slough of Despond? Who has not been imprisoned by Doubting Castle? The genius of the allegory is that the journey is every believer\'s journey.','Where are you in the pilgrimage today? Are you in a valley, a dungeon, or on a hilltop? Whatever the terrain, the Celestial City is your destination. Keep walking.'],
+        prayer:'Lord of the pilgrimage, keep my eyes fixed on the Celestial City. When I fall into the Slough of Despond, lift me out. When I am imprisoned by doubt, break the chains. Keep me walking, keep me trusting, all the way home. Amen.'
+      }
+    ]
+  },
+
+  pentecostal: {
+    name:'Pentecostal', color:'#C9A84C', dot:'#C9A84C',
+    desc:'Devotionals from the Pentecostal tradition, celebrating the gifts and power of the Holy Spirit in every believer\'s life.',
+    devotionals: [
+      {
+        source:'Azusa Street Revival accounts — William Seymour (1906, Public Domain)',
+        verse:{ text:'They were all filled with the Holy Spirit and began to speak in other tongues as the Spirit enabled them.', ref:'Acts 2:4' },
+        title:'The Fire Still Falls',
+        body:['In April 1906, in a small building on Azusa Street in Los Angeles, a revival broke out under the leadership of William J. Seymour that would transform global Christianity within a generation. People of every race, class, and background gathered — and the Holy Spirit fell on them all without discrimination.','What marked Azusa was not primarily the speaking in tongues, though that was present. It was the overwhelming sense of God\'s presence, the melting of racial and social barriers in the Spirit, and the radical transformation of lives. Seymour himself sat behind a wooden crate with his head bowed in prayer for hours at a time.','The same Spirit who fell at Pentecost and fell at Azusa is still being poured out. He is not reserved for a special class of Christian. He is available to all who ask, all who hunger, all who open themselves to His coming.'],
+        prayer:'Come, Holy Spirit. Fill me afresh today. I do not come in pride or performance but in hunger. I need Your power, Your presence, Your gifts. Fall on me as You fell at Pentecost. Make me a vessel for Your glory. Amen.'
+      },
+      {
+        source:'Absolute Surrender — Andrew Murray (1895, Public Domain)',
+        verse:{ text:'And do not get drunk with wine, for that is debauchery, but be filled with the Spirit.', ref:'Ephesians 5:18' },
+        title:'Be Filled with the Spirit',
+        body:['Andrew Murray understood that the command to be filled with the Spirit is not a once-for-all event but a continuous state of being. The Greek verb is in the present continuous tense: be being filled. It is not a tank that is topped up once but a river that flows constantly — provided the channel is clear.','Murray taught that the primary requirement for the Spirit\'s fullness is absolute surrender. Not partial surrender, not negotiated surrender, but the unreserved laying down of every area of life at the feet of Christ. The Spirit fills what is empty of self and full of faith.','What areas of your life have you held back from God? Name them honestly. Then release them. The Spirit is waiting to fill every room you unlock.'],
+        prayer:'Lord Jesus, I surrender every room of my life to You today — including the ones I have kept locked. Fill me with the Holy Spirit to overflowing. Let nothing of self remain that would block Your fullness. I am Yours entirely. Amen.'
+      },
+      {
+        source:'Latter Rain revival writings (c. 1900, Public Domain)',
+        verse:{ text:'Ask the Lord for rain in the springtime; it is the Lord who sends the thunderstorms. He gives showers of rain to all people, and plants of the field to everyone.', ref:'Zechariah 10:1' },
+        title:'Ask for the Latter Rain',
+        body:['The early Pentecostal movement drew heavily on the agricultural imagery of the Old Testament — the former rain and the latter rain. The former rain fell at Pentecost; the latter rain, they believed, was being poured out in the last days before the return of Christ. They were living in it, and they prayed and worshipped accordingly.','There is a boldness and an expectancy in Pentecostal spirituality that is worth reclaiming in any tradition. These were people who actually believed that God would show up, that the Spirit would move, that miracles were possible. They prayed not as a formality but as an urgent request from people who expected an answer.','Come before God today with that same expectancy. Ask for the rain. Expect it. He is faithful to pour out His Spirit on those who ask.'],
+        prayer:'Lord, pour out Your Spirit on me and on Your Church like the latter rain. Let there be a great harvest of souls before Christ returns. Revive Your people. I ask not for a trickle but for a flood. Come, Lord, and pour out Your Spirit. Amen.'
+      }
+    ]
+  },
+
+  reformed: {
+    name:'Reformed', color:'#B5451B', dot:'#B5451B',
+    desc:'Devotionals from the Reformed tradition, grounded in the sovereignty of God, covenant theology, and the doctrines of grace.',
+    devotionals: [
+      {
+        source:'The Institutes of the Christian Religion — John Calvin (1536, Public Domain)',
+        verse:{ text:'The heavens declare the glory of God; the skies proclaim the work of his hands.', ref:'Psalm 19:1' },
+        title:'The Knowledge of God the Creator',
+        body:['Calvin opened his Institutes with a profound observation: true wisdom consists almost entirely of two parts — the knowledge of God and the knowledge of ourselves. And these two are so intertwined that we cannot have one without the other. To know God truly is to know ourselves truly; to know ourselves truly is to be driven to God.','He spoke of the sensus divinitatis — the sense of the divine — that God has implanted in every human heart. No one is truly an atheist in the depths of their soul. The creation itself is a theatre of God\'s glory, and every human conscience bears witness to the moral law written there.','Look at the created world today with the eyes of a worshipper. Every tree, every sunrise, every human face is an occasion for the knowledge of God. Open your eyes. He is everywhere declaring His glory.'],
+        prayer:'Creator God, open my eyes to see Your glory in the world You have made. Let nature preach to me today. Let every beautiful thing I encounter turn my heart toward You, the source of all beauty, all goodness, and all truth. Amen.'
+      },
+      {
+        source:'The Westminster Confession of Faith (1647, Public Domain)',
+        verse:{ text:'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.', ref:'Romans 8:28' },
+        title:'The Sovereignty of God in All Things',
+        body:['The Westminster Confession states that God, from all eternity, did by the most wise and holy counsel of His own will, freely and unchangeably ordain whatsoever comes to pass. This doctrine of divine sovereignty is not, in the Reformed understanding, a cold philosophical abstraction — it is the most comforting truth in the universe for the believer.','If God is sovereign, then nothing that happens to you is outside His knowledge or beyond His redemptive purposes. The broken relationship, the lost job, the unexpected illness — none of these have caught God by surprise. None of them fall outside the scope of Romans 8:28.','The Confession does not say God authors evil. It says He governs all things for His glory and the good of His people. Trust that governance today, even in what you cannot understand.'],
+        prayer:'Sovereign Lord, I bow before Your governance of all things. I do not understand everything that has happened in my life. But I trust that You do, and I trust that You are working all of it toward good. Give me the peace that comes from resting in Your sovereignty. Amen.'
+      },
+      {
+        source:'The Valley of Vision — Puritan Prayers (c. 1600s, Public Domain)',
+        verse:{ text:'God opposes the proud but shows favor to the humble.', ref:'James 4:6' },
+        title:'Prayer from the Valley of Humility',
+        body:['The Puritan tradition of prayer, preserved in collections like The Valley of Vision, is marked above all by a profound humility before God. These prayers do not approach God with demands or a spirit of entitlement. They approach Him with awe, with honest acknowledgement of sin, and with a deep sense of unworthiness met by infinite grace.','One of the most beloved of these prayers begins: "Lord, in the daytime stars can be seen from deepest wells, and the deeper the wells the brighter thy stars shine." It is an image of the valley of humility as the place of clearest vision — where pride cannot obscure the glory of God.','Come to God today from the valley. Do not pretend to be on the mountaintop. The valley is where He meets you with His most tender grace.'],
+        prayer:'Lord, I come from the valley. I am poor in spirit, weak in faith, and often cold in love. Yet it is in this valley that I see Your stars most clearly. Meet me here. Fill this lowly place with Your glory and this small heart with Your great grace. Amen.'
+      }
+    ]
+  },
+
+  coptic: {
+    name:'Coptic Orthodox', color:'#2E6B8A', dot:'#2E6B8A',
+    desc:'Devotionals from the ancient Coptic Church of Egypt, one of the oldest Christian communities in the world.',
+    devotionals: [
+      {
+        source:'Desert Fathers — Sayings of the Apophthegmata (4th-5th century, Public Domain)',
+        verse:{ text:'Be still, and know that I am God.', ref:'Psalm 46:10' },
+        title:'The Wisdom of the Desert',
+        body:['In the third and fourth centuries, thousands of men and women fled the cities of the Roman Empire to seek God in the Egyptian desert. These were the Desert Fathers and Mothers — the abbots and abbesses whose sayings have instructed the Church in every century since.','Abba Poemen said: "Teach your mouth to say what is in your heart." Abba Anthony said: "I no longer fear God. I love Him." Abba Moses, when asked for a word, said: "Go, sit in your cell, and your cell will teach you everything." These are not the words of people who theorised about God. They are the words of people who found Him.','The wisdom of the desert is still available. Silence, solitude, simplicity, and the ceaseless seeking of God\'s face — these practices are as transformative today as they were in fourth-century Egypt.'],
+        prayer:'Lord God, teach me the wisdom of the desert. Let me be willing to be still, to be silent, to be stripped of distraction. In that holy stillness, let me find You — not as an idea but as a living Presence. Amen.'
+      },
+      {
+        source:'St. Athanasius: On the Incarnation (c. 318 AD, Public Domain)',
+        verse:{ text:'The Word became flesh and made his dwelling among us.', ref:'John 1:14' },
+        title:'The Word Became Flesh',
+        body:['St. Athanasius of Alexandria, the great defender of Trinitarian orthodoxy, wrote his masterwork On the Incarnation as a young man of barely twenty. In it he argued with remarkable clarity and depth for the necessity and meaning of the Incarnation: God became man so that man might become partaker of the divine nature.','Athanasius stood virtually alone against the Arian heresy — the view that Christ was a created being, not fully God. He was exiled five times for his insistence that the Nicene faith was true. "Athanasius contra mundum" — Athanasius against the world — became a byword for courageous theological faithfulness.','The doctrine Athanasius defended is the heart of Christmas and the heart of the faith: the eternal Son of God took on human flesh, fully and really. This is not mythology. It is the pivot of human history.'],
+        prayer:'Lord Jesus Christ, Word made flesh, I worship You today as fully God and fully man. Thank You for the Incarnation — for condescending to our nature so that we might be raised to Yours. Glory be to the Father and to the Son and to the Holy Spirit. Amen.'
+      },
+      {
+        source:'Coptic Liturgy of St. Basil (4th century, Public Domain)',
+        verse:{ text:'Holy, holy, holy is the Lord Almighty; the whole earth is full of his glory.', ref:'Isaiah 6:3' },
+        title:'The Liturgy of Heaven',
+        body:['The Coptic Church has preserved liturgical forms that date back to the earliest centuries of Christianity. In its ancient liturgy, the worshippers join their voices to the angels in the eternal song: Holy, holy, holy. The Coptic believer understands the Eucharist not as a memorial only but as a participation in the heavenly liturgy.','There is a quality of timelessness in ancient worship that modern Christianity often lacks. When the Coptic priest intones the ancient prayers, he is not doing something new — he is joining a chorus that has never stopped. The Church in every age and every place participates in the one eternal worship of the Triune God.','Whether your worship is ancient or modern, let it be genuine. Let the Sanctus — Holy, holy, holy — be the cry of your heart today. He is worthy.'],
+        prayer:'Holy, holy, holy Lord God of Hosts, heaven and earth are full of Your glory. I add my voice today to the eternal song of the angels and the saints. You are worthy of all worship, all honour, and all glory. Amen.'
+      }
+    ]
+  },
+
+  armenian: {
+    name:'Armenian Apostolic', color:'#6B8A2E', dot:'#6B8A2E',
+    desc:'Devotionals from the Armenian Apostolic Church, the world\'s oldest national Christian church, established in 301 AD.',
+    devotionals: [
+      {
+        source:'Narek (Book of Lamentations) — St. Gregory of Narek (c. 1002 AD, Public Domain)',
+        verse:{ text:'Out of the depths I cry to you, Lord; Lord, hear my voice.', ref:'Psalm 130:1' },
+        title:'Prayer from the Depths',
+        body:['St. Gregory of Narek, a tenth-century Armenian monk and poet, wrote the Matean Voghbergutyan — the Book of Lamentations — a work of such spiritual depth that Pope Francis declared him a Doctor of the Universal Church in 2015. It is a book of prayer of extraordinary honesty and beauty.','Gregory prays from the depths — from the awareness of sin, of mortality, of the unbridgeable distance between the human creature and the holy God. Yet he does not despair. His lamentations are always turning into praise, because he knows that the God he addresses is not a distant Judge but a Father who hears.','Do not be afraid of honest prayer. God is not offended by your lament. He is present in it. Cry out from the depths — He will hear you.'],
+        prayer:'Lord, hear my voice from the depths. I do not hide the darkness of my soul from You — You see it all already. Yet I cry to You, as Gregory cried, trusting that Your mercy is greater than my failure and Your love deeper than my sin. Amen.'
+      },
+      {
+        source:'Armenian Church History — Agathangelos (5th century, Public Domain)',
+        verse:{ text:'For I am convinced that neither death nor life, neither angels nor demons... will be able to separate us from the love of God.', ref:'Romans 8:38-39' },
+        title:'A Church That Endured',
+        body:['The Armenian people adopted Christianity as their national religion in 301 AD, under King Tiridates III, following the missionary work of Gregory the Illuminator. This was the first nation in history to officially embrace the Christian faith. For over seventeen centuries, the Armenian Church has borne witness to Christ through extraordinary suffering.','The Armenian Genocide of 1915-1918, in which 1.5 million Armenians were killed, was in many respects a martyrdom of a people for their faith. Yet the Church survived. The faith survived. The witness continued. This is the testimony of a people who could not be separated from the love of God.','Your faith may be tested. Your circumstances may be extreme. But the love of God that sustained the Armenian Church through centuries of persecution can sustain you today.'],
+        prayer:'Lord, You sustained Your servants through fire and sword and exile. Sustain me in whatever I face today. Let nothing — no suffering, no loss, no enemy — separate me from Your love. I hold to You. Amen.'
+      },
+      {
+        source:'The Teaching of St. Gregory — Agathangelos (5th century, Public Domain)',
+        verse:{ text:'You are the light of the world. A town built on a hill cannot be hidden.', ref:'Matthew 5:14' },
+        title:'Be the Light of Your Generation',
+        body:['When Gregory the Illuminator brought the gospel to Armenia, he did not come with a political programme or a military alliance. He came with the light of Christ, and that light transformed a nation. The Armenians named him the Illuminator — the one who brought light — not because he had power but because he had the gospel.','Every generation needs its illuminators. Not necessarily great theologians or powerful leaders, but ordinary believers who carry the light of Christ into the darkness of their time and place. The gospel does not travel on the wind — it travels in people.','You are the light of your world. Your family, your workplace, your neighbourhood — these are the places where the light you carry either shines or is hidden. Do not hide it.'],
+        prayer:'Lord, make me an illuminator in my generation. Let the light of Christ shine through my words, my actions, my character. Give me courage to be distinctly Christian in a world that often does not welcome the light. Amen.'
+      }
+    ]
+  },
+
+  presbyterian: {
+    name:'Presbyterian', color:'#8A2E6B', dot:'#8A2E6B',
+    desc:'Devotionals from the Presbyterian tradition, rooted in Reformed theology, covenant faith, and ordered worship.',
+    devotionals: [
+      {
+        source:'The Westminster Shorter Catechism (1647, Public Domain)',
+        verse:{ text:'Whatever you do, do it all for the glory of God.', ref:'1 Corinthians 10:31' },
+        title:'Man\'s Chief End',
+        body:['The Westminster Shorter Catechism opens with the most famous question and answer in all of Reformed theology: "What is the chief end of man? Man\'s chief end is to glorify God, and to enjoy Him forever." These fourteen words are a complete theology, a complete ethics, and a complete spirituality.','To glorify God means to display His character, to make His attributes visible in the world. We glorify God not by feeling religious but by living in a way that accurately reflects who He is — His love, His justice, His faithfulness, His beauty. The mundane and the sacred become one.','And then that extraordinary second clause: and to enjoy Him forever. The Puritans were not joyless. They believed that the deepest human joy is found in God — not despite God, not instead of God, but in God. Glorify and enjoy. These two belong together.'],
+        prayer:'Lord, let every action of this day be an act of glorifying You. Let my work, my conversations, my rest, my worship all reflect who You are. And in the glorifying, let me also find the joy that only You can give. Amen.'
+      },
+      {
+        source:'The Larger Catechism — Westminster Assembly (1648, Public Domain)',
+        verse:{ text:'All Scripture is God-breathed and is useful for teaching, rebuking, correcting and training in righteousness.', ref:'2 Timothy 3:16' },
+        title:'The Sufficiency of Scripture',
+        body:['The Presbyterian tradition has always placed Scripture at the centre — not merely as one authority among many, but as the supreme and sufficient rule for faith and life. This is not bibliolatry — the worship of a book. It is the recognition that God has spoken, and what He has spoken is enough.','The Westminster Confession declares Scripture to be "the only infallible rule of faith and practice." This means that whatever Scripture affirms, the believer affirms. Whatever it commands, the believer obeys. Whatever it promises, the believer trusts. It is a commitment to live under the Word, not above it.','How much of your life is actually ordered by Scripture? Not the parts you find comfortable, but all of it? The Presbyterian tradition asks this question not to condemn but to invite — to a life fully under the authority of the living Word.'],
+        prayer:'Lord, make me a person of the Book. Not in mere intellectual familiarity but in practical submission. Let Your Word shape my values, govern my decisions, and form my character. I submit to You through the authority of Your Scripture. Amen.'
+      },
+      {
+        source:'Sermons on the Psalms — John Knox (c. 1560, Public Domain)',
+        verse:{ text:'The Lord is my rock, my fortress and my deliverer; my God is my rock, in whom I take refuge.', ref:'Psalm 18:2' },
+        title:'God is Our Refuge',
+        body:['John Knox, the fiery Scottish Reformer, was a man who knew what it meant to need a refuge. Imprisoned as a galley slave, exiled from his country, constantly under threat, Knox returned again and again to the Psalms as his anchor. He prayed the Psalms. He preached the Psalms. He lived the Psalms.','The Psalms are remarkable in their honesty. They do not present a sanitised version of the spiritual life. They cry out in pain, rage, confusion, and despair — and then, almost always, they turn. They remember who God is. They return to trust. They arrive, sometimes slowly and painfully, at praise.','Whatever you are feeling today, there is a Psalm that gives it voice. Find it. Pray it. Let the ancient words carry your modern experience before the throne of God.'],
+        prayer:'Lord, You are my rock and my fortress. When the foundations of my world are shaking, You do not shake. When I am afraid, You are steadfast. I take refuge in You today — not in my own strength, my own plans, or my own understanding, but in You alone. Amen.'
+      }
+    ]
+  },
+
+  nondenominational: {
+    name:'Non-Denominational', color:'#2E8A4A', dot:'#2E8A4A',
+    desc:'Devotionals drawing on the broad stream of evangelical Christianity, emphasising personal faith, Scripture, and the new life in Christ.',
+    devotionals: [
+      {
+        source:'Experiencing God — Henry Blackaby (1990)',
+        verse:{ text:'I am the vine; you are the branches. If you remain in me and I in you, you will bear much fruit; apart from me you can do nothing.', ref:'John 15:5' },
+        title:'Where Is God at Work?',
+        body:['Henry Blackaby\'s Experiencing God transformed the devotional lives of millions with its central insight: the Christian life is not primarily about doing things for God — it is about joining what God is already doing. Find where God is at work, and join Him there.','This requires a fundamental reorientation. Instead of asking "What should I do for God?", Blackaby invites us to ask "What is God doing around me?" The answer usually requires slowing down, paying attention, and listening — three things our culture makes increasingly difficult.','Look around you today for evidence of God at work. In a conversation, an opportunity, a burden laid on your heart, an unexpected door. Wherever you see the fingerprints of God, that is where He is inviting your participation.'],
+        prayer:'Lord, open my eyes to see where You are working around me. I do not want to run ahead of You or lag behind. I want to walk with You, join You in Your work, and bear fruit that comes from abiding — not from striving. Amen.'
+      },
+      {
+        source:'My Utmost for His Highest — Oswald Chambers (1917, Public Domain)',
+        verse:{ text:'Not my will, but yours be done.', ref:'Luke 22:42' },
+        title:'The Surrendered Will',
+        body:['Oswald Chambers understood that the great battle of the Christian life is not between faith and doubt, or between good and evil, but between my will and God\'s will. The crucified life is not a dramatic moment of martyrdom — it is the daily, quiet, costly surrender of self-determination.','"My utmost for His highest" means the offering of not just my best effort but my deepest self — my will, my ambitions, my preferences, my plans — laid on the altar of God\'s purposes. Not reluctantly, but lovingly. Not because I must, but because I trust.','What are you holding on to today that belongs on the altar? What plan, what ambition, what relationship are you directing rather than surrendering? The life surrendered to God is the life truly lived.'],
+        prayer:'Father, not my will but Yours be done. I lay on Your altar today the things I have been holding most tightly. I trust that Your will is better than mine, Your plans wiser, Your purposes higher. I surrender. Amen.'
+      },
+      {
+        source:'The Practice of the Presence of God — Brother Lawrence (1692, Public Domain)',
+        verse:{ text:'Rejoice always, pray continually, give thanks in all circumstances.', ref:'1 Thessalonians 5:16-18' },
+        title:'The Joy of Constant Communion',
+        body:['The non-denominational tradition at its best draws from the widest stream of Christian devotional heritage — Catholic, Protestant, Orthodox — finding in all of them the same golden thread: the possibility of constant, living communion with God.','Brother Lawrence\'s insight is available to any believer regardless of tradition: every moment can be a moment of prayer, every task an act of worship, every conversation an opportunity to reflect the love of Christ. This is not mysticism reserved for monks. It is the ordinary Christian life fully lived.','Begin with five minutes today. Five minutes of deliberate, unhurried awareness of God\'s presence. Then ten tomorrow. Then fifteen. Build the practice gradually, and watch how it transforms not just your prayer life but your whole life.'],
+        prayer:'Lord, I want to live in constant communion with You. Not just in my quiet time but throughout the whole day — in the commute, in the meeting, in the kitchen, in the conversation. Teach me to practise Your presence. Amen.'
+      }
+    ]
+  }
+};
+
+// ════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════════════════════════════════
+function todayStr() {
+  return new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+
+// Seeded random: same seed always gives same result.
+// Used for daily devotionals — changes each day automatically.
+function seededRandom(seed) {
+  let x = Math.sin(seed + 1) * 10000;
+  return x - Math.floor(x);
+}
+function pick(arr, seed) {
+  return arr[Math.floor(seededRandom(seed) * arr.length)];
+}
+
+// dateSeed() returns a unique number for today (e.g. 20250307)
+// This ensures the daily devotional is the same for all visitors today
+// but automatically changes to a new one tomorrow.
+function dateSeed() {
+  const d = new Date();
+  return d.getFullYear() * 10000 + (d.getMonth()+1) * 100 + d.getDate();
+}
+
+// refreshSeed is separate from dateSeed — incremented each time
+// the Refresh button is pressed, giving a new devotional each click
+// without changing the base daily devotional.
+let refreshOffset = 0;
+
+// ════════════════════════════════════════════════════════════════════════
+// GENERATE DEVOTIONAL
+// sourceIndex 0 = featured card; 1-10 = grid cards
+// The daily seed guarantees a different devotional each calendar day.
+// Adding refreshOffset lets the Refresh button cycle through variations.
+// ════════════════════════════════════════════════════════════════════════
+function generateDevotional(sourceIndex) {
+  const seed = dateSeed() + sourceIndex * 137 + refreshOffset * 53;
+  const source = DEVOTIONAL_SOURCES[sourceIndex % DEVOTIONAL_SOURCES.length];
+  const verse  = pick(VERSE_POOL,   seed);
+  const theme  = pick(THEMES,       seed + 7);
+  const paras  = pick(REFLECTIONS,  seed + 13);
+  const prayer = pick(PRAYERS,      seed + 19);
+  return { source, verse, theme, paras, prayer };
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// FEATURED CARD — loads with spinner, populates after short delay
+// ════════════════════════════════════════════════════════════════════════
+function loadFeatured() {
+  const card = document.getElementById('featuredCard');
+
+  // Show spinning loader immediately
+  card.innerHTML = '<div class="featured-inner"><div class="loading-spinner"><div class="spinner"></div>Seeking today\'s word\u2026</div></div>';
+
+  // Short pause for visual feedback, then render the devotional
+  setTimeout(() => {
+    const d = generateDevotional(0);
+    card.innerHTML = `
+      <div class="featured-inner">
+        <div class="featured-source">
+          <span class="source-badge">${d.source.origin.split(',')[1]?.trim() || 'Classic'}</span>
+          <span class="source-name">${d.source.name} \u2014 ${d.source.author}</span>
+        </div>
+        <h3 class="featured-title">${d.theme}</h3>
+        <div class="featured-verse-block">
+          <p class="featured-verse-text">\u201c${d.verse.text}\u201d</p>
+          <p class="featured-verse-ref">\u2014 ${d.verse.ref}</p>
+        </div>
+        <div class="featured-body">
+          ${d.paras.map(p => '<p>' + p + '</p>').join('')}
+        </div>
+        <div class="featured-prayer">
+          <div class="featured-prayer-label">\u2726 Prayer for Today</div>
+          <p>${d.prayer}</p>
+        </div>
+        <div class="featured-footer">
+          <span class="reading-time">\u23f1 3 min read \u00b7 ${d.source.origin}</span>
+          <div class="action-btns">
+            <button class="icon-btn" title="Share" onclick="shareDevotional('${d.theme.replace(/'/g,'\u2019')}')">&#11014;</button>
+            <button class="icon-btn" title="Bookmark" onclick="this.style.background='var(--gold)';this.style.color='var(--ink)'">\uD83D\uDD16</button>
+            <button class="icon-btn" title="Copy verse" onclick="navigator.clipboard&&navigator.clipboard.writeText('${d.verse.text.replace(/'/g,'\u2019')} \u2014 ${d.verse.ref}')">\uD83D\uDCCB</button>
+          </div>
+        </div>
+      </div>`;
+  }, 900);
+}
+
+// Called by the Refresh Devotional button —
+// increments refreshOffset so a new combination is picked each click
+function refreshDevotional() {
+  refreshOffset++;
+  loadFeatured();
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// CARDS GRID
+// ════════════════════════════════════════════════════════════════════════
+let allCards = [];
+
+function buildCards() {
+  allCards = DEVOTIONAL_SOURCES.map((src, i) => {
+    const d = generateDevotional(i + 1);
+    return { ...d, index: i };
+  });
+  renderCards('all');
+}
+
+function renderCards(filter) {
+  const grid = document.getElementById('cardsGrid');
+  const filtered = filter === 'all' ? allCards : allCards.filter(c => c.source.tradition === filter);
+  grid.innerHTML = filtered.map(d => `
+    <div class="devo-card" data-tradition="${d.source.tradition}" onclick="openModal(${d.index + 1})">
+      <div class="devo-card-accent ${d.source.accent}"></div>
+      <div class="devo-card-body">
+        <div class="devo-card-tag">${(TRADITIONS[d.source.tradition]||{}).label || d.source.tradition}</div>
+        <h4 class="devo-card-title">${d.theme}</h4>
+        <p class="devo-card-verse">\u201c${d.verse.text.substring(0,90)}\u2026\u201d</p>
+        <p class="devo-card-preview">${d.paras[0].substring(0,100)}\u2026</p>
+      </div>
+      <div class="devo-card-footer">
+        <span class="devo-origin">${d.source.origin}</span>
+        <span class="devo-read">Read more \u2192</span>
+      </div>
+    </div>`).join('');
+}
+
+function filterCards(btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(btn.dataset.tradition);
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// TRADITION SECTION — shown when a tradition pill is clicked
+// ════════════════════════════════════════════════════════════════════════
+function showTradition(key) {
+  const data = TRADITION_DATA[key];
+  if (!data) return;
+
+  document.getElementById('tradBadge').textContent = data.name;
+  document.getElementById('tradBadge').style.background = data.dot;
+  document.getElementById('tradTitle').innerHTML = 'Devotionals of the <em>' + data.name + '</em> Tradition';
+  document.getElementById('tradDesc').textContent  = data.desc;
+
+  document.getElementById('tradGrid').innerHTML = data.devotionals.map(devo => `
+    <div class="trad-devo-card">
+      <div class="trad-devo-bar" style="background:linear-gradient(90deg,${data.dot},var(--gold))"></div>
+      <div class="trad-devo-inner">
+        <div class="trad-devo-source">${devo.source}</div>
+        <div class="trad-devo-verse-block">
+          <p class="trad-devo-verse-text">\u201c${devo.verse.text}\u201d</p>
+          <p class="trad-devo-verse-ref">\u2014 ${devo.verse.ref}</p>
+        </div>
+        <h3 class="trad-devo-title">${devo.title}</h3>
+        <div class="trad-devo-body">${devo.body.map(p => '<p>' + p + '</p>').join('')}</div>
+        <div class="trad-devo-prayer">
+          <div class="trad-devo-prayer-label">\u2726 Prayer</div>
+          <p>${devo.prayer}</p>
+        </div>
+      </div>
+    </div>`).join('');
+
+  const section = document.getElementById('tradition-section');
+  section.classList.add('active');
+  section.scrollIntoView({ behavior:'smooth' });
+}
+
+function closeTradition() {
+  document.getElementById('tradition-section').classList.remove('active');
+  document.getElementById('traditions').scrollIntoView({ behavior:'smooth' });
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════════════════
+function openModal(index) {
+  const d = generateDevotional(index);
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-source">${d.source.name} \u00b7 ${d.source.author} \u00b7 ${d.source.origin}</div>
+    <h2 class="modal-title">${d.theme}</h2>
+    <div class="modal-verse-block">
+      <p class="modal-verse-text">\u201c${d.verse.text}\u201d</p>
+      <p class="modal-verse-ref">\u2014 ${d.verse.ref}</p>
+    </div>
+    <div class="modal-body">${d.paras.map(p => '<p>' + p + '</p>').join('')}</div>
+    <div class="modal-prayer">
+      <div class="modal-prayer-label">\u2726 Prayer</div>
+      <p>${d.prayer}</p>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay') || e.target.classList.contains('modal-close')) {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// SHARE / EMAIL / NAV / HAMBURGER / DROPDOWN / SCROLL REVEAL / PARTICLES
+// ════════════════════════════════════════════════════════════════════════
+function shareDevotional(title) {
+  if (navigator.share) {
+    navigator.share({ title:'Walking with the Lord', text:title, url:window.location.href });
+  } else {
+    navigator.clipboard && navigator.clipboard.writeText(window.location.href);
+    alert('Link copied to clipboard!');
+  }
+}
+
+function subscribeEmail() {
+  const input = document.getElementById('emailInput');
+  if (!input.value || !input.value.includes('@')) { input.style.borderColor='var(--wine)'; return; }
+  input.style.borderColor = '';
+  input.closest('.email-form').style.display = 'none';
+  document.getElementById('emailSuccess').style.display = 'block';
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', scrollY > 60);
+});
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('mobileSub').classList.remove('open');
+  document.getElementById('mobileArrow').style.transform = '';
+}
+function toggleMobileSub() {
+  const sub = document.getElementById('mobileSub');
+  const arrow = document.getElementById('mobileArrow');
+  sub.classList.toggle('open');
+  arrow.style.transform = sub.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+(function () {
+  const item = document.getElementById('exploreItem');
+  if (!item) return;
+  const menu = item.querySelector('.dropdown-menu');
+  let closeTimer = null;
+  function openDropdown()  { clearTimeout(closeTimer); item.classList.add('open'); }
+  function scheduleClose() { closeTimer = setTimeout(() => item.classList.remove('open'), 200); }
+  item.querySelector('a').addEventListener('mouseenter', openDropdown);
+  item.querySelector('a').addEventListener('mouseleave', scheduleClose);
+  const bridge = item.querySelector('.dropdown-bridge');
+  if (bridge) { bridge.addEventListener('mouseenter', openDropdown); bridge.addEventListener('mouseleave', scheduleClose); }
+  menu.addEventListener('mouseenter', openDropdown);
+  menu.addEventListener('mouseleave', scheduleClose);
+  document.addEventListener('click', (e) => { if (!item.contains(e.target)) item.classList.remove('open'); });
+  item.querySelector('a').addEventListener('click', (e) => { if (window.innerWidth <= 768) { e.preventDefault(); item.classList.toggle('open'); } });
+})();
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 3 + 1;
+    p.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(Math.random()*100)+'%;bottom:'+(Math.random()*20)+'%;animation-duration:'+(Math.random()*8+6)+'s;animation-delay:'+(Math.random()*5)+'s;';
+    container.appendChild(p);
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// THEME CONTENT (Explore dropdown)
+// ════════════════════════════════════════════════════════════════════════
+const THEME_DATA = {
+  faith: {
+    icon: '🕊️', title: 'Faith', titleEm: 'Faith',
+    desc: 'Walking by trust in God\'s promises even when we cannot see the way ahead.',
+    cards: [
+      {
+        verse: { text: 'Now faith is confidence in what we hope for and assurance about what we do not see.', ref: 'Hebrews 11:1' },
+        title: 'Faith: The Hand That Receives All',
+        body: ['Faith is not the cause of our salvation — it is the hand by which we receive it. It is empty in itself, nothing but an open palm stretched out toward God. Yet that empty, outstretched hand is exactly what the Lord of heaven is pleased to fill.', 'Faith does not depend on feelings or circumstances or the sight of our eyes. It rests entirely on the character of God — His promises, His Word, His unchanging nature. When everything around you shifts and shakes, faith anchors itself to the Rock that cannot move.', 'Today, exercise faith not by working up emotion, but simply by taking God at His word. Read one promise. Believe it. Act on it. That is all faith is — and it is everything.'],
+        prayer: 'Lord, I confess that my faith is often small. Yet You said that even faith the size of a mustard seed can move mountains. Increase my faith today. Let me take You at Your word in one area where I have been doubting. Amen.'
+      },
+      {
+        verse: { text: 'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.', ref: 'Proverbs 3:5–6' },
+        title: 'Faith or Sight — You Must Choose One',
+        body: ['The great challenge of the Christian life is that we must constantly choose between faith and sight. Sight says: I see the obstacle, the closed door, the impossibility. Faith says: I see the God who opens doors, removes obstacles, and specialises in impossibilities.', 'Thomas à Kempis reminds us that it profits a man little to discourse learnedly about deep things if he lacks humility. The person of faith does not need to understand everything — they need only to trust the One who does.', 'Surrender what you think you know. Trust what God has revealed. This is the path of faith.'],
+        prayer: 'Father, forgive me for leaning on my own understanding. Where I cannot see Your hand, help me to trust Your heart. I choose faith over sight today. Lead me, even in the darkness. Amen.'
+      },
+      {
+        verse: { text: 'Without faith it is impossible to please God, because anyone who comes to him must believe that he exists and that he rewards those who earnestly seek him.', ref: 'Hebrews 11:6' },
+        title: 'Faith That Pleases God',
+        body: ['The writer of Hebrews tells us plainly: without faith it is impossible to please God. This is not a hard doctrine but a loving one. A child cannot enjoy the gifts of a father they do not trust. Faith opens the channel through which all of God\'s blessings flow.', 'Andrew Murray wrote that the reason we receive so little from God is not that He is unwilling to give, but that we are unwilling to believe. Faith is not passive — it is the active posture of a soul turned toward its Maker, expecting, receiving, thanking.', 'Bring your need before God today with bold expectation. Not because you deserve it, but because He is faithful and His promises are sure.'],
+        prayer: 'God of all grace, I come to You with bold expectation — not in my own merit, but in the merit of Christ. I believe You are a rewarder of those who diligently seek You. I seek You now. Amen.'
+      }
+    ]
+  },
+  prayer: {
+    icon: '🙏', title: 'Prayer', titleEm: 'Prayer',
+    desc: 'The privilege of speaking to God — and the miracle of hearing Him speak back.',
+    cards: [
+      {
+        verse: { text: 'The Lord is near to all who call on him, to all who call on him in truth.', ref: 'Psalm 145:18' },
+        title: 'Prayer: The Breath of the Soul',
+        body: ['Brother Lawrence taught us that prayer need not be long, elaborate, or eloquent. It can be the simple lifting of the heart toward God in the middle of a busy day. He washed dishes in the monastery kitchen and turned each moment into a conversation with the Living God.', 'Prayer is the breath of the soul. Just as the body cannot live without breath, the soul cannot flourish without prayer. It is not merely asking for things — it is maintaining the vital connection with the Source of all life, all wisdom, and all peace.', 'Do not wait until you have the right words. Simply turn toward Him. Begin now.'],
+        prayer: 'Lord, teach me to pray — not just when I need something, but as a constant conversation throughout my day. Let my life become a prayer. Amen.'
+      },
+      {
+        verse: { text: 'Ask and it will be given to you; seek and you will find; knock and the door will be opened to you.', ref: 'Matthew 7:7' },
+        title: 'Ask, Seek, Knock',
+        body: ['Jesus gives us three ascending postures of prayer: asking, seeking, and knocking. Asking is the simplest — bringing our requests to God. Seeking is more intense — searching for God Himself, not just His gifts. Knocking is persistent — not giving up when the answer does not come immediately.', 'Spurgeon observed that the great fault of the children of God is that they do not continue in prayer. They ask once and if the answer does not come they become discouraged. But the Lord says: keep asking, keep seeking, keep knocking.', 'What are you asking God for today? Have you given up? Knock again. He hears. He answers. He is never late.'],
+        prayer: 'Heavenly Father, I knock on the door of Your mercy again today. I have not stopped believing. I bring my request once more, trusting that You hear every word. Your will be done — but Lord, I am still asking. Amen.'
+      },
+      {
+        verse: { text: 'Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.', ref: 'Philippians 4:6' },
+        title: 'Prayer Over Anxiety',
+        body: ['The antidote to anxiety, according to Paul, is not willpower or positive thinking. It is prayer. In every situation — not the easy ones, not just the spiritual ones, but every situation — we are invited to bring our requests to God with thanksgiving.', 'L.B. Cowman writes that God wants to be involved in every detail of our lives. There is no concern too small, no worry too trivial, no fear too irrational to bring before the Father who loves you.', 'What anxiety are you carrying today that you have not yet prayed about? Lay it before God now. The peace that passes understanding is waiting on the other side of that prayer.'],
+        prayer: 'Father, I give You my anxiety. I name it before You now. Thank You that You are big enough to hold what I cannot carry. Fill me with Your peace that passes all understanding. Amen.'
+      }
+    ]
+  },
+  love: {
+    icon: '❤️', title: 'Love', titleEm: 'Love',
+    desc: 'God\'s perfect, unconditional, everlasting love — and our call to love one another.',
+    cards: [
+      {
+        verse: { text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.', ref: 'John 3:16' },
+        title: 'The Love That Gave Everything',
+        body: ['John 3:16 is perhaps the most memorised verse in all of Scripture — and yet it can never be fully exhausted. God so loved. The depth of that word "so" is immeasurable. He did not merely care from a distance. He gave. He sent. He sacrificed.', 'Spurgeon wrote that if we could truly understand the love of God, we would never complain again. Every sorrow would be transformed by the knowledge that the God who governs all things is the same God who gave His Son. This love is not cold doctrine but a warm, living reality.', 'You are loved with an everlasting love. Let that truth settle deep into your heart today. It changes everything.'],
+        prayer: 'Father, I am amazed that You love me — not because of what I have done, but because of who You are. Let the love of God be shed abroad in my heart today by the Holy Spirit. Amen.'
+      },
+      {
+        verse: { text: 'The Lord appeared to us in the past, saying: I have loved you with an everlasting love; I have drawn you with unfailing kindness.', ref: 'Jeremiah 31:3' },
+        title: 'The Love That Never Changes',
+        body: ['The prophet Jeremiah records these stunning words: I have loved thee with an everlasting love. Everlasting — before you were born, before you sinned, before you believed. This love precedes you and outlasts you. It does not waver with your moods or diminish with your failures.', 'Thomas à Kempis writes that love lightens all labours and makes everything sweet. When a person truly grasps that they are loved by God, the heaviest burden becomes lighter. The darkest valley becomes less frightening.', 'Receive His love today. Not as a theological idea, but as a personal gift from your Father in heaven.'],
+        prayer: 'Everlasting God, thank You that Your love is not like human love — conditional and uncertain. Your love is eternal and sure. Help me to rest in it today, and let it flow through me to others. Amen.'
+      },
+      {
+        verse: { text: 'Love is patient, love is kind. It does not envy, it does not boast, it is not proud.', ref: '1 Corinthians 13:4' },
+        title: 'The Command to Love One Another',
+        body: ['Paul\'s great hymn on love is not primarily about romantic feeling — it is about the character of the Christian life. This love is patient in difficulty, kind even when it costs something, and unwilling to keep a record of wrongs.', 'This kind of love is not natural to us. It is supernatural — the fruit of the Holy Spirit working in a yielded life. We cannot manufacture it; we can only receive it from God and then pass it on.', 'Who in your life needs this love today? Not easy, comfortable affection — but the patient, self-forgetful love described here. Ask God to fill you with it.'],
+        prayer: 'Lord Jesus, You loved me when I was unlovable. Teach me to love others the same way. Fill me with a love that suffers long, is kind, does not envy or boast. Let this love mark my life. Amen.'
+      }
+    ]
+  },
+  trials: {
+    icon: '⚓', title: 'Trials', titleEm: 'Trials',
+    desc: 'Finding strength, comfort and purpose in life\'s most difficult seasons.',
+    cards: [
+      {
+        verse: { text: 'Come to me, all you who are weary and burdened, and I will give you rest.', ref: 'Matthew 11:28' },
+        title: 'Rest for the Heavy-Laden',
+        body: ['Jesus does not say "Come to me, all ye who are doing well and feeling strong." He says: Come to me, all you who are weary and burdened. His invitation is specifically for the exhausted, the burdened, the weary. You qualify not in spite of your need, but because of it.', 'Spurgeon wrote beautifully: Jesus does not say "Go to the church" or "Go to the priest." He says "Come to Me." Rest is found in a Person, not a programme. Whenever you come to Christ, you will find Him ready to receive you.', 'Are you heavy-laden today? This invitation is for you. Come as you are. Lay your burden at His feet. He is strong enough to carry what you cannot.'],
+        prayer: 'Lord Jesus, I come to You today tired and heavy. I lay down the burdens I have been carrying alone. You promised rest — I receive it now. Take my yoke and give me Yours, for Yours is easy and Your burden is light. Amen.'
+      },
+      {
+        verse: { text: 'He gives strength to the weary and increases the power of the weak.', ref: 'Isaiah 40:29' },
+        title: 'Strength for the Faint',
+        body: ['Isaiah 40 was written to people in exile — people who were weary, who felt abandoned, who wondered if God had forgotten them. Into that exhaustion, God speaks: He gives strength to the weary. Not to the strong. Not to those who have it all together. To the faint.', 'L.B. Cowman, who wrote Streams in the Desert during years of caring for her chronically ill husband, knew this verse from the inside. She wrote that when we have exhausted our own strength, we are finally in the perfect position to receive His.', 'Your weakness is not a disqualification. It is an invitation. Let Him be strong in you today.'],
+        prayer: 'Lord, I am faint. I have no strength of my own. But You give power to the faint, and I claim that promise now. Be my strength where I have none. Rise up in me where I have fallen. Amen.'
+      },
+      {
+        verse: { text: 'We also glory in our sufferings, because we know that suffering produces perseverance; perseverance, character; and character, hope.', ref: 'Romans 5:3–4' },
+        title: 'Tribulation Produces Something Beautiful',
+        body: ['Romans 5 contains one of the most radical statements in Scripture: we glory in our sufferings. Not despite them — in them. Paul is not a masochist; he is a man who has traced what trials produce in a God-surrendered life: perseverance, character, and hope.', 'The path from tribulation to hope is not immediate or painless. But it is sure. Trials, when embraced by faith rather than resisted in bitterness, produce something in our character that cannot be formed any other way. They are the furnace in which God refines us.', 'Do not run from your trial. Ask God to show you what He is producing in you through it. There is purpose in your pain.'],
+        prayer: 'Father, I do not enjoy this trial. But I trust Your purposes within it. Use this difficulty to produce perseverance, character, and a hope that does not disappoint. I surrender this pain to Your hands. Amen.'
+      }
+    ]
+  },
+  wisdom: {
+    icon: '📖', title: 'Wisdom', titleEm: 'Wisdom',
+    desc: 'Seeking the mind of God through Scripture, prayer, and humble obedience.',
+    cards: [
+      {
+        verse: { text: 'If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault, and it will be given to you.', ref: 'James 1:5' },
+        title: 'Ask and Wisdom Shall Be Given',
+        body: ['James makes obtaining wisdom astonishingly simple: if any of you lacks wisdom, ask God. There is no wisdom examination to pass, no level of maturity you must reach first. The only requirement is that you acknowledge your lack and ask the One who has an infinite supply.', 'Spurgeon wrote that the greatest wisdom a man can have is to know that he does not have wisdom. The moment we think we understand all things is the moment we stop learning from God. True wisdom begins in humility.', 'Bring your decisions, your confusion, your crossroads to God today. He is not reluctant to give wisdom. He gives it generously, without finding fault.'],
+        prayer: 'Lord God, I acknowledge that I lack wisdom. I ask You now for the wisdom I need for the decisions before me. You promised to give it generously and I receive it by faith. Guide my thoughts and direct my path. Amen.'
+      },
+      {
+        verse: { text: 'The fear of the Lord is the beginning of wisdom; all who follow his precepts have good understanding.', ref: 'Psalm 111:10' },
+        title: 'The Fear of the Lord',
+        body: ['The fear of the Lord is not a cowering terror but a loving reverence — the awe of a child who deeply respects their Father. It reshapes all our thinking. When we fear God, we cease to fear everything else. When we acknowledge His authority, we receive His guidance.', 'Thomas à Kempis writes: of what profit is it to discourse learnedly about the Trinity if you lack humility? High-sounding words about wisdom amount to nothing without this humble starting point — that God is God, and we are not.', 'Begin here. In reverence, in awe, in humble surrender. This is the foundation of every wise life.'],
+        prayer: 'Holy God, I bow before Your greatness. Restore in me a holy reverence for who You are. Let the fear of the Lord be the beginning of every decision I make and every direction I take. Amen.'
+      },
+      {
+        verse: { text: 'Your word is a lamp for my feet, a light on my path.', ref: 'Psalm 119:105' },
+        title: 'The Word as a Lamp',
+        body: ['The Psalmist does not say the Word of God is a floodlight illuminating the whole road from start to finish. He says it is a lamp — sufficient light for the next step. God gives us enough light to obey, and as we obey, He gives more.', 'This is how wisdom operates in the practical Christian life. We do not need to see the whole path — we need to follow the light we have been given. As Brother Lawrence discovered, bringing every small step before God transforms ordinary living into holy wisdom.', 'Open the Scriptures today. Not to look for something impressive, but to find your next step. The lamp is lit.'],
+        prayer: 'Lord, let Your Word light my path today. I do not need to see everything — only the next step in obedience. Show me from Scripture what You require of me now, and give me the grace to do it. Amen.'
+      }
+    ]
+  },
+  grace: {
+    icon: '✨', title: 'Grace', titleEm: 'Grace',
+    desc: 'The unearned, undeserved, inexhaustible favour of God freely given to all who come.',
+    cards: [
+      {
+        verse: { text: 'For it is by grace you have been saved, through faith — and this is not from yourselves, it is the gift of God — not by works, so that no one can boast.', ref: 'Ephesians 2:8–9' },
+        title: 'Saved by Grace Alone',
+        body: ['Ephesians 2:8 is the great charter of the Christian life: by grace are ye saved through faith, and that not of yourselves — it is the gift of God. Not of works. Everything we have from God is gift. Nothing is earned. Nothing is deserved. All of it is grace.', 'Spurgeon spent his entire ministry returning to this theme: God does not save people because they are good, but because He is good. He does not love us because we are lovely, but because He is love.', 'You cannot earn more of God\'s love. You already have all of it. Rest in that today.'],
+        prayer: 'Father, I confess that I have been trying to earn what You have already freely given. Forgive me for treating grace like wages. I receive Your love as a gift today — unearned, undeserved, and inexhaustibly given. Amen.'
+      },
+      {
+        verse: { text: 'Because of the Lord\'s great love we are not consumed, for his compassions never fail. They are new every morning; great is your faithfulness.', ref: 'Lamentations 3:22–23' },
+        title: 'New Every Morning',
+        body: ['Lamentations is a book of grief — yet in its very centre burns one of the most glorious declarations in Scripture: His compassions never fail. They are new every morning. Every morning is literally a new beginning.', 'L.B. Cowman meditates on this in Streams in the Desert: yesterday\'s failures do not carry over into today\'s mercy account. The slate is not merely wiped clean — it is replaced with a brand new one. God\'s compassions are not rationed. They are renewed.', 'This morning is a fresh supply of grace. Whatever yesterday held, today holds new mercy. Receive it.'],
+        prayer: 'God of all mercies, thank You that Your compassions are new this morning. I let go of yesterday\'s failures and receive today\'s fresh grace. Great is Your faithfulness toward me. Amen.'
+      },
+      {
+        verse: { text: 'My grace is sufficient for you, for my power is made perfect in weakness.', ref: '2 Corinthians 12:9' },
+        title: 'Grace Made Perfect in Weakness',
+        body: ['When Paul begged God to remove his thorn in the flesh, God did not remove it. He gave something better: My grace is sufficient for thee; for my strength is made perfect in weakness. Paul\'s response was astonishing — he boasted in his weakness, so that the power of Christ could rest upon him.', 'Andrew Murray wrote that the secret of the abundant life is not the removal of all difficulty but the discovery that Christ\'s grace is present in the difficulty. The place you most want to escape may be the very place where you will discover the sufficiency of God most profoundly.', 'Where are you feeling most weak today? That is precisely where His grace is meeting you.'],
+        prayer: 'Lord, Your grace is sufficient — even in this. I stop striving to escape my weakness and ask You to make it the stage on which Your strength shines. Be glorified in my limitations. Amen.'
+      }
+    ]
+  },
+  hope: {
+    icon: '🌅', title: 'Hope', titleEm: 'Hope',
+    desc: 'The confident, living expectation of God\'s goodness — in this life and the next.',
+    cards: [
+      {
+        verse: { text: 'But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.', ref: 'Isaiah 40:31' },
+        title: 'Hope That Renews Strength',
+        body: ['Isaiah 40:31 is a promise for every generation that has ever faced exhaustion or the long waiting of unanswered prayer. Those who wait upon the Lord — not those who rush, not those who strive — shall renew their strength. They shall mount up with wings as eagles.', 'Waiting in Scripture is not passive resignation. It is active, expectant trust — like a servant who remains alert and available, watching for the master\'s return. L.B. Cowman writes that waiting on God does not waste time; it is the very preparation for the flight that follows.', 'You may be in a season of waiting. Be encouraged: the renewal is coming. The wings are being prepared. Hold on.'],
+        prayer: 'LORD, I wait upon You today. In the waiting, renew my strength. Let me not grow weary or lose heart. I believe the promise — those who wait on You will soar. I choose to wait and trust. Amen.'
+      },
+      {
+        verse: { text: 'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.', ref: 'Jeremiah 29:11' },
+        title: 'A Hope and a Future',
+        body: ['Jeremiah 29:11 was written to people living in Babylonian exile — people whose city had been destroyed and whose futures seemed extinguished. Into that darkness God spoke: I know the plans I have for you. Plans for peace. Plans to give you hope and a future.', 'Spurgeon observed that God\'s purposes for His people are always ultimately good, even when the circumstances appear catastrophic. The exile was not the end of the story — it was a chapter in a larger narrative of redemption. The same is true of your life.', 'Whatever chapter you are in right now, God knows the rest of the story. He has not finished with you. The plans He has include hope.'],
+        prayer: 'God of hope, I choose to believe that You have good plans for my life, even when I cannot see them. I declare that my future is in Your hands, and Your hands are good. Fill me with hope that does not disappoint. Amen.'
+      },
+      {
+        verse: { text: 'May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit.', ref: 'Romans 15:13' },
+        title: 'Overflow with Hope',
+        body: ['Romans 15:13 is one of the most beautiful benedictions in Scripture: May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit. Note that hope here is something we overflow with — through the power of the Spirit.', 'Hope is the particular province of the Holy Spirit. He takes the promises of God and makes them feel real, present, and personal to the human heart. When hope seems distant, it is a cue not to try harder but to surrender more fully to the Spirit\'s work.', 'Ask the Spirit to fill you with hope today — not the world\'s fragile optimism but the robust, Spirit-given certainty that God is good and His promises are true.'],
+        prayer: 'God of hope, fill me now with joy and peace as I believe Your promises. Let me overflow with hope through the power of Your Holy Spirit. I open my heart to You. Let hope rise in me like the morning sun. Amen.'
+      }
+    ]
+  }
+};
+
+// ── RENDER THEME CONTENT ───────────────────────────────────────────────────
+function filterByTheme(theme) {
+  const data = THEME_DATA[theme];
+  if (!data) return;
+
+  // Update heading
+  document.getElementById('themeIcon').textContent = data.icon;
+  document.getElementById('themeTitle').innerHTML = 'Devotionals on <em>' + data.titleEm + '</em>';
+  document.getElementById('themeDesc').textContent = data.desc;
+
+  // Build cards
+  const cardsHTML = data.cards.map(card => `
+    <div class="theme-card">
+      <div class="theme-card-bar"></div>
+      <div class="theme-card-inner">
+        <div class="theme-card-verse-block">
+          <p class="theme-card-verse-text">"${card.verse.text}"</p>
+          <p class="theme-card-verse-ref">— ${card.verse.ref}</p>
+        </div>
+        <h3 class="theme-card-title">${card.title}</h3>
+        <div class="theme-card-body">${card.body.map(p => '<p>' + p + '</p>').join('')}</div>
+        <div class="theme-card-prayer">
+          <div class="theme-card-prayer-label">✦ Prayer</div>
+          <p>${card.prayer}</p>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('themeCards').innerHTML = cardsHTML;
+
+  // Show section and scroll to it
+  const section = document.getElementById('theme-content');
+  section.classList.add('active');
+  section.scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeTheme() {
+  document.getElementById('theme-content').classList.remove('active');
+  document.getElementById('devotionals').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+<script>
+
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', scrollY > 60);
+});
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('mobileSub').classList.remove('open');
+  document.getElementById('mobileArrow').style.transform = '';
+}
+function toggleMobileSub() {
+  const sub = document.getElementById('mobileSub');
+  const arrow = document.getElementById('mobileArrow');
+  sub.classList.toggle('open');
+  arrow.style.transform = sub.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+(function(){
+  const item = document.getElementById('exploreItem');
+  if (!item) return;
+  const menu = item.querySelector('.dropdown-menu');
+  let t = null;
+  function open()  { clearTimeout(t); item.classList.add('open'); }
+  function close() { t = setTimeout(() => item.classList.remove('open'), 200); }
+  item.querySelector('a').addEventListener('mouseenter', open);
+  item.querySelector('a').addEventListener('mouseleave', close);
+  const bridge = item.querySelector('.dropdown-bridge');
+  if (bridge) { bridge.addEventListener('mouseenter', open); bridge.addEventListener('mouseleave', close); }
+  menu.addEventListener('mouseenter', open);
+  menu.addEventListener('mouseleave', close);
+  document.addEventListener('click', e => { if (!item.contains(e.target)) item.classList.remove('open'); });
+  item.querySelector('a').addEventListener('click', e => { if (window.innerWidth <= 768) { e.preventDefault(); item.classList.toggle('open'); } });
+})();
+const _ro = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => _ro.observe(el));
+
+const _d = document.getElementById('todayDate'); if (_d) _d.textContent = todayStr();
+spawnParticles();
+loadFeatured();
+buildCards();
+
+setTimeout(() => {
+  document.querySelectorAll('.devo-card').forEach((el,i) => {
+    el.style.opacity='0'; el.style.transform='translateY(20px)';
+    el.style.transition='opacity 0.5s ease '+(i*0.07)+'s,transform 0.5s ease '+(i*0.07)+'s';
+    setTimeout(() => { el.style.opacity='1'; el.style.transform='none'; }, 100+i*70);
+  });
+},300);
+</script>
+</body></html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About — Parts Salvage Marketplace</title>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .page-hero { padding: calc(var(--nav-h) + 64px) 0 56px; text-align:center; background: radial-gradient(ellipse 700px 450px at 50% 60%, rgba(234,179,8,0.06) 0%, transparent 70%); }
+
+    .prob-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:36px; }
+    .prob-card { background:var(--bg2); border:1px solid var(--border); border-top:3px solid #EF4444; border-radius:var(--r-lg); padding:26px; text-align:center; }
+    .prob-n { font-size:3rem; font-weight:900; color:#F87171; line-height:1; margin-bottom:10px; }
+    .prob-card strong { display:block; font-size:0.9rem; color:var(--white); margin-bottom:4px; }
+    .prob-card span   { font-size:0.82rem; color:var(--muted); }
+
+    .pull-quote { background:var(--bg2); border-left:4px solid var(--gold); border-radius:var(--r); padding:30px 36px; margin:48px 0; }
+    .pull-quote p { font-family:var(--font-s); font-style:italic; font-size:clamp(1rem,2vw,1.3rem); color:var(--cream2); line-height:1.7; }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+    .vision-list { display:flex; flex-direction:column; gap:14px; }
+    .v-item { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r-lg); padding:18px 20px; display:flex; gap:14px; align-items:flex-start; }
+    .v-item-icon { font-size:1.6rem; flex-shrink:0; margin-top:2px; }
+    .v-item h4 { font-size:0.92rem; font-weight:800; color:var(--white); margin-bottom:4px; }
+    .v-item p  { font-size:0.82rem; }
+
+    .timeline { position:relative; padding-left:32px; }
+    .timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background:linear-gradient(180deg,var(--gold),var(--orange)); opacity:0.25; }
+    .tl { position:relative; margin-bottom:28px; }
+    .tl::before { content:''; position:absolute; left:-28px; top:4px; width:10px; height:10px; border-radius:50%; background:var(--gold); }
+    .tl.future::before { background:transparent; border:2px solid var(--orange); }
+    .tl-date { font-family:var(--font-m); font-size:0.62rem; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:5px; }
+    .tl.future .tl-date { color:var(--orange); }
+    .tl h4 { font-size:1rem; font-weight:800; color:var(--white); margin-bottom:5px; }
+    .tl p  { font-size:0.85rem; }
+
+    .biz-stack { display:flex; flex-direction:column; gap:12px; }
+    .biz { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r-lg); padding:18px 20px; }
+    .biz-tier { font-family:var(--font-m); font-size:0.62rem; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+    .biz-free .biz-tier { color:#4ADE80; }
+    .biz-pro  .biz-tier { color:var(--gold); }
+    .biz-ent  .biz-tier { color:#93C5FD; }
+    .biz h4 { font-size:0.95rem; font-weight:800; color:var(--white); margin-bottom:4px; }
+    .biz p  { font-size:0.82rem; }
+
+    .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .team-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r-lg); padding:26px; text-align:center; }
+    .t-av { width:58px; height:58px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1rem; margin:0 auto 14px; }
+    .team-card h4   { font-size:1rem; font-weight:800; color:var(--white); margin-bottom:2px; }
+    .team-card .role { font-family:var(--font-m); font-size:0.62rem; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; display:block; }
+    .team-card p    { font-size:0.8rem; }
+
+    @media (max-width:900px) { .two-col { grid-template-columns:1fr; gap:36px; } .prob-cards { grid-template-columns:1fr; } .team-grid { grid-template-columns:1fr 1fr; } }
+    @media (max-width:560px) { .team-grid { grid-template-columns:1fr; } .pull-quote { padding:22px 24px; } }
+  </style>
+</head>
+<body>
+  <script src="../assets/nav.js"></script>
+  <div class="pt-nav">
+
+    <!-- HERO -->
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="tag">ℹ️ Our Story</span>
+        <h1 class="hero-title" style="margin-bottom:16px;">We build<br><span class="italic-accent">for repairers.</span></h1>
+        <p style="font-size:1.05rem; max-width:580px; margin:0 auto;">Parts Salvage Marketplace was born from a simple observation: the global repair economy is broken — not because people don't want to fix things, but because sourcing the right part is impossibly hard.</p>
+      </div>
+    </section>
+
+    <!-- THE PROBLEM -->
+    <section class="section" id="mission" style="padding-top:0;">
+      <div class="wrap">
+        <div style="text-align:center; margin-bottom:8px;">
+          <span class="tag">⚠️ The Problem</span>
+          <h2 class="section-title" data-reveal style="max-width:700px; margin:0 auto;">50 billion kilograms of e-waste. Most of it didn't have to die.</h2>
+        </div>
+        <div class="prob-cards">
+          <div class="prob-card" data-reveal data-d="1">
+            <div class="prob-n">53.6M</div>
+            <strong>Metric tons of e-waste</strong>
+            <span>Generated globally per year — rising 2 million tons annually with no sign of slowing.</span>
+          </div>
+          <div class="prob-card" data-reveal data-d="2">
+            <div class="prob-n">73%</div>
+            <strong>Avoidable discard</strong>
+            <span>Appliances thrown away because a single part failed — the rest of the machine perfectly fine.</span>
+          </div>
+          <div class="prob-card" data-reveal data-d="3">
+            <div class="prob-n">$62B</div>
+            <strong>Unnecessary spend</strong>
+            <span>On new appliances annually that could have been repaired for under $20 with the right part.</span>
+          </div>
+        </div>
+        <div class="pull-quote" data-reveal>
+          <p>"iFixit tells you <em>how</em> to fix something. But when the part doesn't exist in any store, isn't made anymore, or costs more than the machine itself — the repair dies. Parts Salvage Marketplace solves the <strong>sourcing</strong> problem. Globally. Precisely. Now."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISION & MISSION -->
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div class="two-col">
+          <div>
+            <span class="tag">🎯 Vision &amp; Mission</span>
+            <h2 class="section-title" style="margin-bottom:20px;" data-reveal>A world where nothing is thrown away because a part couldn't be found.</h2>
+            <p style="margin-bottom:14px;" data-reveal data-d="1">Our <strong style="color:var(--white);">vision</strong> is a circular economy where every broken machine becomes a source of parts for another — and where any broken component can be identified, sourced, or fabricated within minutes, from anywhere on earth.</p>
+            <p style="margin-bottom:14px;" data-reveal data-d="2">Our <strong style="color:var(--white);">mission</strong> is to build the world's most comprehensive repair intelligence platform — combining AI vision, 3D manufacturing, global salvage networks, and community knowledge into a single frictionless tool.</p>
+            <p data-reveal data-d="3">We build for the grandmother in Lagos, the engineer in Seoul, the student in São Paulo — anyone with a broken machine and the will to fix it.</p>
+          </div>
+          <div class="vision-list" data-reveal data-d="1">
+            <div class="v-item">
+              <span class="v-item-icon">🔍</span>
+              <div><h4>Precision Identification</h4><p>AI vision that names any part from a photo, eliminating the biggest barrier to independent repair.</p></div>
+            </div>
+            <div class="v-item">
+              <span class="v-item-icon">🌍</span>
+              <div><h4>Global Access</h4><p>Whether you're in Stockholm or Lagos, equal access to the parts and knowledge needed to repair your world.</p></div>
+            </div>
+            <div class="v-item">
+              <span class="v-item-icon">♻️</span>
+              <div><h4>Zero Waste Economy</h4><p>Every salvage listing is a landfill prevented. Every blueprint is an OEM monopoly broken.</p></div>
+            </div>
+            <div class="v-item">
+              <span class="v-item-icon">🤝</span>
+              <div><h4>Community Intelligence</h4><p>The best repair knowledge comes from the person who fixed the same machine last Tuesday.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCALE PLAN -->
+    <section class="section" style="padding-top:0;" id="scale">
+      <div class="wrap">
+        <div style="margin-bottom:40px;">
+          <span class="tag">🚀 Scale Plan</span>
+          <h2 class="section-title" data-reveal>How We Grow</h2>
+        </div>
+        <div class="two-col">
+          <div class="timeline" data-reveal>
+            <div class="tl">
+              <div class="tl-date">2023 — Founded</div>
+              <h4>Proof of Concept</h4>
+              <p>Core AI vision model trained on 2M appliance part images. Blueprint Vault launched with 10,000 community files.</p>
+            </div>
+            <div class="tl">
+              <div class="tl-date">2024 — Phase 1</div>
+              <h4>Platform Launch</h4>
+              <p>Full product launch with all four core features. 180K blueprints. 94 countries. 2.4M parts identified.</p>
+            </div>
+            <div class="tl future">
+              <div class="tl-date">2025 — Phase 2</div>
+              <h4>Manufacturing Network</h4>
+              <p>Global network of 3D print hubs. Order a print, receive it in 48 hours anywhere in the world. No printer required.</p>
+            </div>
+            <div class="tl future">
+              <div class="tl-date">2026 — Phase 3</div>
+              <h4>OEM Partnerships</h4>
+              <p>License compatibility data to manufacturers. Repair intelligence embedded at the point of sale.</p>
+            </div>
+            <div class="tl future">
+              <div class="tl-date">2027 — Phase 4</div>
+              <h4>Policy &amp; Advocacy</h4>
+              <p>Work with governments on Right-to-Repair legislation. Become the data backbone of global repair policy.</p>
+            </div>
+          </div>
+          <div data-reveal data-d="1">
+            <h3 style="font-size:1.5rem; font-weight:800; color:var(--white); margin-bottom:18px;">Business Model</h3>
+            <div class="biz-stack">
+              <div class="biz biz-free">
+                <div class="biz-tier">Free Tier</div>
+                <h4>Community Access</h4>
+                <p>Unlimited Vision Scans, free blueprints, Salvage Hub listings with WhatsApp contact. Zero cost. Always.</p>
+              </div>
+              <div class="biz biz-pro">
+                <div class="biz-tier">Pro — $4.99/mo</div>
+                <h4>Power Repairers</h4>
+                <p>Premium blueprint library, unlimited listings, verified seller badge, priority ranking, and reduced 3% commission.</p>
+              </div>
+              <div class="biz biz-ent">
+                <div class="biz-tier">Enterprise</div>
+                <h4>Businesses &amp; OEMs</h4>
+                <p>White-label platform, bulk API licensing, custom compat databases, and zero transaction commission.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div style="text-align:center; margin-bottom:36px;">
+          <span class="tag">👥 Team</span>
+          <h2 class="section-title" data-reveal>Built by fixers.</h2>
+        </div>
+        <div class="team-grid">
+          <div class="team-card" data-reveal data-d="1">
+            <div class="t-av" style="background:linear-gradient(135deg,#B45309,#EAB308); color:#000;">IO</div>
+            <h4>Ijeoma N. Okeke</h4>
+            <span class="role">Founder &amp; CEO</span>
+            <p>Former appliance engineer. Saw $2,000 washing machines landfilled over $8 seals. Built Parts Salvage Marketplace to end that.</p>
+          </div>
+          <div class="team-card" data-reveal data-d="2">
+            <div class="t-av" style="background:linear-gradient(135deg,#1E3A5F,#3B82F6); color:#fff;">TR</div>
+            <h4>Dr. Tao Renyuan</h4>
+            <span class="role">Head of AI Vision</span>
+            <p>PhD Computer Vision, Tsinghua. Trained our model on 14 million labeled part images across 6,400 appliance models.</p>
+          </div>
+          <div class="team-card" data-reveal data-d="3">
+            <div class="t-av" style="background:linear-gradient(135deg,#14532D,#22C55E); color:#fff;">AM</div>
+            <h4>Amara Mensah</h4>
+            <span class="role">Head of Community</span>
+            <p>Built our P2P network from Lagos. Manages 42K blueprint contributors and our global repair community across 94 countries.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT CTA -->
+    <section class="section-sm" style="padding-bottom:80px;">
+      <div class="wrap">
+        <div style="background:var(--bg2); border:1px solid var(--border-a); border-radius:var(--r-lg); padding:56px 40px; text-align:center;" data-reveal>
+          <span class="tag" style="margin-bottom:16px;">📧 Get in Touch</span>
+          <h2 class="section-title" style="margin-bottom:12px;">Want to repair the world with us?</h2>
+          <p style="max-width:440px; margin:0 auto 26px;">Partners, press, investors, and repair shops — we want to hear from you.</p>
+          <a href="mailto:ijeomannamdi.okeke@gmail.com" class="btn btn-gold" style="font-size:0.9rem;">✉️ ijeomannamdi.okeke@gmail.com</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="pf-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <span style="font-family:var(--font); font-weight:900; font-size:1.2rem; color:var(--white);">PSM <span style="color:var(--gold);">MARKETPLACE</span></span>
+            <p>Global P2P marketplace for salvaged appliance parts. Fix more. Buy less. Waste nothing.</p>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Platform</span>
+            <a href="visionscan.html">Vision Scan</a>
+            <a href="blueprintvault.html">Blueprint Vault</a>
+            <a href="salvagehub.html">Salvage Hub</a>
+            <a href="compatengine.html">Compat Engine</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Company</span>
+            <a href="pricing.html">Pricing</a>
+            <a href="about.html">About Us</a>
+            <a href="about.html#mission">Mission</a>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com">Contact</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Community</span>
+            <a href="salvagehub.html">List a Machine</a>
+            <a href="blueprintvault.html">Submit Blueprint</a>
+            <a href="#" onclick="PF.openSub(); return false;">Newsletter</a>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com">Partner With Us</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2025 Parts Salvage Marketplace · <a href="../index.html" style="color:var(--gold);">← Back to Home</a></p>
+          <span>REPAIR · REUSE · REIMAGINE</span>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- end pt-nav -->
+</body>
+</html>

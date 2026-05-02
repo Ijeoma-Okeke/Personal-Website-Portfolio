@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Salvage Hub — Parts Salvage Marketplace</title>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .page-hero { padding: calc(var(--nav-h) + 64px) 0 48px; background: radial-gradient(ellipse 600px 400px at 20% 60%, rgba(234,179,8,0.06) 0%, transparent 70%); }
+
+    /* ── HOW IT WORKS FLOW ── */
+    .flow-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative; }
+    .flow-grid::before { content:''; position:absolute; top:28px; left:12.5%; right:12.5%; height:2px; background:linear-gradient(90deg, var(--gold), var(--orange), var(--gold)); opacity:0.2; pointer-events:none; }
+    .flow-step { padding: 0 16px; position: relative; z-index: 1; }
+    .flow-icon { width:56px;height:56px;border-radius:50%;border:2px solid var(--gold);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:14px; }
+    .flow-step h4 { font-size:0.95rem;font-weight:800;color:var(--white);margin-bottom:6px; }
+    .flow-step p  { font-size:0.8rem; }
+
+    /* ── SEARCH PANEL ── */
+    .search-panel { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:24px; }
+    .search-row  { display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin-bottom:16px; }
+    .filter-row  { display:grid;grid-template-columns:repeat(4,1fr);gap:12px; }
+    .loc-row     { display:flex;align-items:center;gap:8px; }
+    .loc-icon    { font-size:1.1rem; }
+
+    /* ── HUB LAYOUT ── */
+    .hub-layout { display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start; }
+    .sidebar { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;position:sticky;top:calc(var(--nav-h)+14px); }
+    .sb-lbl { font-family:var(--font-m);font-size:0.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;display:block;margin-bottom:8px;margin-top:16px; }
+    .sb-lbl:first-child { margin-top:0; }
+    .sb-select { width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;color:var(--cream2);font-size:0.82rem;outline:none;cursor:pointer;margin-bottom:2px; }
+    .sb-check { display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--muted);margin-bottom:6px;cursor:pointer; }
+    .sb-check input { accent-color:var(--gold); }
+    .radius-row { display:flex;align-items:center;gap:10px;margin-bottom:4px; }
+    .radius-val { font-family:var(--font-m);font-size:0.78rem;color:var(--gold-lt);min-width:56px;text-align:right; }
+    input[type=range] { flex:1;accent-color:var(--gold); }
+
+    /* ── LISTINGS ── */
+    .listing { background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px;transition:border-color 0.2s,transform 0.15s; }
+    .listing:hover { border-color:var(--border-a);transform:translateX(3px); }
+    .l-top { display:flex;gap:16px; }
+    .l-thumb { width:68px;height:68px;background:rgba(234,179,8,0.08);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0; }
+    .l-body { flex:1;min-width:0; }
+    .l-title { font-size:0.95rem;font-weight:800;color:var(--white);margin-bottom:2px; }
+    .l-meta  { font-family:var(--font-m);font-size:0.68rem;color:var(--muted);margin-bottom:7px; }
+    .l-tags  { display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px; }
+    .l-desc  { font-size:0.82rem; }
+    .l-right { flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;min-width:100px; }
+    .l-price { font-size:1.9rem;font-weight:900;color:var(--gold-lt);line-height:1; }
+    .l-price.free { color:#4ADE80; }
+    .l-loc   { font-family:var(--font-m);font-size:0.65rem;color:var(--muted);margin-top:2px; }
+    .l-by    { font-size:0.75rem;color:var(--muted);margin-top:3px; }
+    .l-rating { color:var(--gold);font-size:0.7rem;margin-top:2px; }
+
+    /* Shipping estimator strip */
+    .l-shipping { display:flex;align-items:center;gap:10px;background:rgba(234,179,8,0.05);border:1px solid rgba(234,179,8,0.15);border-radius:6px;padding:10px 14px;margin-top:12px;flex-wrap:wrap; }
+    .ship-label { font-family:var(--font-m);font-size:0.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px; }
+    .ship-option { display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;padding:5px 10px;font-size:0.75rem;cursor:pointer;transition:border-color 0.15s; }
+    .ship-option:hover { border-color:var(--gold); }
+    .ship-option .carrier { font-weight:700;color:var(--white); }
+    .ship-option .price   { color:var(--gold-lt); }
+    .ship-option .days    { color:var(--muted);font-size:0.68rem; }
+
+    /* Contact buttons */
+    .l-contact-row { display:flex;gap:7px;margin-top:10px;flex-wrap:wrap; }
+    .btn-wa  { display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;font-size:0.75rem;font-weight:700;padding:8px 14px;border-radius:4px;border:none;cursor:pointer;transition:background 0.15s;text-decoration:none; }
+    .btn-wa:hover { background:#1EBE57; }
+    .btn-em  { display:inline-flex;align-items:center;gap:6px;background:rgba(234,179,8,0.1);border:1px solid var(--border-a);color:var(--gold-lt);font-size:0.75rem;font-weight:700;padding:8px 14px;border-radius:4px;cursor:pointer;transition:background 0.15s;text-decoration:none; }
+    .btn-em:hover { background:rgba(234,179,8,0.2); }
+    .btn-pickup { display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);color:#A5B4FC;font-size:0.75rem;font-weight:700;padding:8px 14px;border-radius:4px;cursor:pointer;transition:background 0.15s; }
+    .btn-pickup:hover { background:rgba(99,102,241,0.2); }
+
+    /* ── POST MODAL ── */
+    .post-modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1001;align-items:center;justify-content:center;padding:20px; }
+    .post-modal.open { display:flex; }
+    .post-box { background:var(--bg2);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:var(--r-lg);max-width:500px;width:100%;padding:36px;position:relative;animation:modal-in 0.25s ease;max-height:92vh;overflow-y:auto; }
+    .post-close { position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer; }
+    .post-close:hover { color:var(--white); }
+    .post-row { display:flex;gap:10px; }
+    .post-row .field { flex:1; }
+    .step-badge { display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#000;font-size:0.72rem;font-weight:900;flex-shrink:0;margin-right:4px; }
+
+    /* ── CTA BOX ── */
+    .cta-box { background:var(--bg2);border:1px solid var(--border-a);border-radius:var(--r-lg);padding:40px;text-align:center;margin-top:28px; }
+
+    @media (max-width:900px) { .hub-layout { grid-template-columns:1fr; } .sidebar { position:static; } .flow-grid { grid-template-columns:repeat(2,1fr); gap:24px; } .flow-grid::before { display:none; } .filter-row { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:600px) { .search-row { grid-template-columns:1fr; } .l-top { flex-direction:column; } .l-right { flex-direction:row;justify-content:space-between;align-items:center; } .flow-grid { grid-template-columns:1fr; } .filter-row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <script src="../assets/nav.js"></script>
+  <div class="pt-nav">
+
+    <!-- HERO -->
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="tag">🔧 Feature</span>
+        <h1 class="hero-title" style="margin-bottom:16px;">Salvage<br><span class="italic-accent">Hub</span></h1>
+        <p style="font-size:1.05rem;max-width:560px;margin-bottom:24px;">Your broken machine is someone else's repair. List it, find parts and connect globally with built-in shipping estimates and direct contact so deals close fast.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-gold" onclick="openPost()">+ List a Machine Free</button>
+          <a href="#listings" class="btn btn-outline">Browse Parts →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS FOR BUYERS AND SELLERS -->
+    <section class="section" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <div class="wrap">
+        <div style="text-align:center;margin-bottom:44px;">
+          <span class="tag">🌍 Global Flow</span>
+          <h2 class="section-title" data-reveal>How buyers and sellers connect worldwide</h2>
+          <p style="max-width:520px;margin:12px auto 0;">Whether you're in the same city or opposite ends of the world, Parts Salvage Marketplace makes the connection simple and safe.</p>
+        </div>
+
+        <!-- SELLER FLOW -->
+        <div style="margin-bottom:48px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+            <span class="badge badge-gold" style="font-size:0.75rem;padding:6px 14px;">FOR SELLERS</span>
+            <span style="font-size:0.82rem;color:var(--muted);">Turn your broken machine into cash or goodwill</span>
+          </div>
+          <div class="flow-grid">
+            <div class="flow-step" data-reveal data-d="1">
+              <div class="flow-icon">📸</div>
+              <h4>1. List Your Machine</h4>
+              <p>Photograph your broken appliance. List which parts are still good. Set a price or offer it free.</p>
+            </div>
+            <div class="flow-step" data-reveal data-d="2">
+              <div class="flow-icon">📍</div>
+              <h4>2. Set Your Location</h4>
+              <p>Add your city and country. Buyers nearby see you first. Global buyers can filter for shipping options.</p>
+            </div>
+            <div class="flow-step" data-reveal data-d="3">
+              <div class="flow-icon">💬</div>
+              <h4>3. Get Contacted</h4>
+              <p>Buyers reach you via WhatsApp, email, or request local pickup — you choose which methods to enable.</p>
+            </div>
+            <div class="flow-step" data-reveal data-d="4">
+              <div class="flow-icon">📦</div>
+              <h4>4. Ship or Hand Over</h4>
+              <p>Use our integrated shipping rates (DHL, FedEx, local couriers) or arrange local collection. Payment is confirmed first.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUYER FLOW -->
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+            <span class="badge badge-green" style="font-size:0.75rem;padding:6px 14px;">FOR BUYERS</span>
+            <span style="font-size:0.82rem;color:var(--muted);">Find the exact part your machine needs</span>
+          </div>
+          <div class="flow-grid">
+            <div class="flow-step" data-reveal data-d="1">
+              <div class="flow-icon">🔍</div>
+              <h4>1. Search by Part</h4>
+              <p>Type the part name or use Vision Scan to identify it. Filter by your location, radius, or go global.</p>
+            </div>
+            <div class="flow-step" data-reveal data-d="2">
+              <div class="flow-icon">🗺️</div>
+              <h4>2. Find Nearby First</h4>
+              <p>Results sort by distance first. Local sellers mean faster delivery, lower shipping cost, and pickup options.</p>
+            </div>
+            <div class="flow-step" data-reveal data-d="3">
+              <div class="flow-icon">💰</div>
+              <h4>3. See Shipping Costs</h4>
+              <p>Every listing shows estimated shipping to your location from multiple carriers — before you even contact the seller.</p>
+            </div>
+            <div class="flow-step" data-reveal data-d="4">
+              <div class="flow-icon">✅</div>
+              <h4>4. Connect and Buy</h4>
+              <p>Message via WhatsApp or email. Agree on the deal. Parts Salvage Marketplace takes a 5% fee on completed transactions to keep the platform running.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTINGS -->
+    <section class="section" id="listings" style="padding-top:48px;">
+      <div class="wrap">
+        <!-- Search Panel -->
+        <div class="search-panel">
+          <div style="margin-bottom:14px;">
+            <span class="tag" style="margin-bottom:0;">🗺️ Find Parts Near You or Anywhere</span>
+          </div>
+          <div class="search-row">
+            <div>
+              <label class="field-label">Part or Machine</label>
+              <input class="field" id="s-part" placeholder="e.g. Samsung pump seal, LG dishwasher latch…" oninput="applyFilters()"/>
+            </div>
+            <div>
+              <label class="field-label">Your Location</label>
+              <div class="loc-row">
+                <span class="loc-icon">📍</span>
+                <input class="field" id="s-loc" placeholder="City, Country (e.g. Lagos, Nigeria)" oninput="applyFilters()"/>
+              </div>
+            </div>
+            <div style="align-self:end;">
+              <button class="btn btn-gold" onclick="applyFilters()">Search</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <div>
+              <label class="field-label">Radius</label>
+              <div class="radius-row">
+                <input type="range" id="radius" min="10" max="10000" value="10000" step="10" oninput="document.getElementById('rv').textContent=this.value>=10000?'Global':this.value+'km';applyFilters()"/>
+                <span class="radius-val" id="rv">Global</span>
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Appliance Type</label>
+              <select class="sb-select" id="s-type" onchange="applyFilters()">
+                <option value="">All Types</option>
+                <option>Washing Machine</option>
+                <option>Dishwasher</option>
+                <option>Dryer</option>
+                <option>Refrigerator</option>
+                <option>HVAC</option>
+                <option>Small Appliance</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Price</label>
+              <select class="sb-select" id="s-price" onchange="applyFilters()">
+                <option value="">Any Price</option>
+                <option value="free">Free Only</option>
+                <option value="paid">For Sale</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Sort By</label>
+              <select class="sb-select" id="s-sort" onchange="applyFilters()">
+                <option value="nearest">Nearest First</option>
+                <option value="newest">Newest First</option>
+                <option value="price">Price: Low–High</option>
+                <option value="rating">Highest Rated</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+          <h2 style="font-size:1.15rem;font-weight:800;color:var(--white);">
+            Active Listings <span style="color:var(--gold);font-family:var(--font-m);font-size:0.85rem;" id="lcount">(5)</span>
+          </h2>
+          <p style="font-size:0.72rem;color:var(--muted);" id="loc-note">Showing all listings worldwide — enter your location to sort by distance</p>
+        </div>
+        <div id="listings-wrap"></div>
+
+        <div class="cta-box" data-reveal>
+          <span class="tag" style="margin-bottom:12px;">♻️ Have a broken machine?</span>
+          <h3 style="font-size:1.6rem;font-weight:800;color:var(--white);margin-bottom:8px;">Don't send it to landfill.</h3>
+          <p style="max-width:400px;margin:0 auto 20px;">List it free in 2 minutes. Someone nearby — or across the world — needs exactly what it holds.</p>
+          <button class="btn btn-gold" onclick="openPost()">List Your Machine Free →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- POST MODAL -->
+    <div class="post-modal" id="post-modal" onclick="if(event.target===this)closePost()">
+      <div class="post-box">
+        <button class="post-close" onclick="closePost()">✕</button>
+        <span class="tag" style="margin-bottom:12px;">🔧 New Listing</span>
+        <h2 style="font-size:1.8rem;font-weight:800;color:var(--white);margin-bottom:6px;">List Your Machine</h2>
+        <p style="font-size:0.82rem;margin-bottom:22px;">Free to list. Parts Salvage Marketplace takes 5% only when a paid transaction completes.</p>
+
+        <label class="field-label"><span class="step-badge">1</span> Machine Details</label>
+        <input type="text" class="field" style="margin-bottom:10px;" placeholder="Brand & model (e.g. Samsung WF45R6100AW)"/>
+        <input type="text" class="field" style="margin-bottom:10px;" placeholder="Appliance type (Washing Machine, Dryer…)"/>
+        <textarea class="field" style="resize:vertical;min-height:80px;margin-bottom:16px;" placeholder="What's broken? Which parts are still good? Any part numbers visible?"></textarea>
+
+        <label class="field-label"><span class="step-badge">2</span> Location & Price</label>
+        <input type="text" class="field" style="margin-bottom:10px;" placeholder="Your city & country (e.g. Nairobi, Kenya)"/>
+        <div class="post-row" style="margin-bottom:16px;">
+          <input type="number" class="field" placeholder="Price in USD ($0 = Free)"/>
+          <select class="field">
+            <option>Local pickup available</option>
+            <option>Shipping only</option>
+            <option>Both pickup & shipping</option>
+          </select>
+        </div>
+
+        <label class="field-label"><span class="step-badge">3</span> Contact Methods</label>
+        <input type="email" class="field" style="margin-bottom:10px;" placeholder="Email address (required)"/>
+        <input type="tel"   class="field" style="margin-bottom:10px;" placeholder="WhatsApp number (optional, e.g. +234 812 345 6789)"/>
+        <div style="margin-bottom:16px;">
+          <label class="sb-check"><input type="checkbox" checked/> Show email on listing</label>
+          <label class="sb-check"><input type="checkbox" checked/> Show WhatsApp button on listing</label>
+          <label class="sb-check"><input type="checkbox"/>          Accept local pickup requests</label>
+        </div>
+
+        <button class="btn btn-gold" style="width:100%;padding:13px;" onclick="submitPost()">Post Listing Free →</button>
+        <p style="font-size:0.72rem;color:var(--muted);text-align:center;margin-top:10px;">By posting you agree to Parts Salvage Marketplace's seller terms. 5% commission applies to paid sales only.</p>
+      </div>
+    </div>
+
+    <footer class="pf-footer">
+      <div class="wrap">
+        <div class="footer-bottom" style="border-top:none;padding-top:0;">
+          <p>© 2025 Parts Salvage Marketplace · <a href="../index.html" style="color:var(--gold);">← Home</a></p>
+          <span>SALVAGE HUB LIVE</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const LISTINGS = [
+      {
+        id:1, e:'🫧', t:'Samsung WF45R6100AW — Dead Motor',
+        type:'Washing Machine', meta:'Listed 2h ago', rating:'⭐4.9',
+        tags:['Pump ✓','Door Seal ✓','Control Board ✓'],
+        loc:'Lagos, Nigeria', country:'Nigeria', distKm:0,
+        price:'Free', priceVal:0, by:'Marcus O.',
+        desc:'Motor completely dead, all other parts pristine. Pump, drum seal, and control board tested and working.',
+        whatsapp:'+2348001234567',
+        email:'marcus@example.com',
+        pickup:true,
+        shipping:[
+          {carrier:'DHL Express',price:'$18',days:'3–5 days'},
+          {carrier:'FedEx Intl',price:'$22',days:'4–6 days'},
+          {carrier:'Local courier',price:'$4',days:'Same day'},
+        ]
+      },
+      {
+        id:2, e:'🍽️', t:'Bosch SHPM88Z75N — Fried PCB',
+        type:'Dishwasher', meta:'Listed 5h ago', rating:'⭐5.0',
+        tags:['Pump ✓','Spray Arms ✓','Door Latch ✓'],
+        loc:'Berlin, Germany', country:'Germany', distKm:5120,
+        price:'$45', priceVal:45, by:'Klaus W.',
+        desc:'Control PCB fried in a power surge. Everything else is perfect — spray arms, pump, seals, all tested.',
+        whatsapp:'+4915001234567',
+        email:'klaus@example.com',
+        pickup:true,
+        shipping:[
+          {carrier:'DHL Express',price:'$24',days:'2–4 days'},
+          {carrier:'Deutsche Post',price:'$14',days:'5–8 days'},
+        ]
+      },
+      {
+        id:3, e:'❄️', t:'LG LRFXS2503S — Compressor Failure',
+        type:'Refrigerator', meta:'Listed 1d ago', rating:'⭐4.7',
+        tags:['Ice Maker ✓','Fan Assembly ✓','Gaskets ✓'],
+        loc:'Chicago, USA', country:'USA', distKm:8900,
+        price:'$120', priceVal:120, by:'Janelle R.',
+        desc:'Compressor gone. Ice maker, water dispenser, all fans and shelves intact and tested.',
+        whatsapp:'+13121234567',
+        email:'janelle@example.com',
+        pickup:false,
+        shipping:[
+          {carrier:'FedEx Ground',price:'$19',days:'3–5 days'},
+          {carrier:'UPS Standard',price:'$17',days:'4–6 days'},
+          {carrier:'USPS Priority',price:'$12',days:'3–5 days'},
+        ]
+      },
+      {
+        id:4, e:'💨', t:'Whirlpool WED5000DW — Cracked Drum',
+        type:'Dryer', meta:'Listed 3d ago', rating:'⭐4.8',
+        tags:['Heating Element ✓','Motor ✓','Thermostat ✓'],
+        loc:'Manchester, UK', country:'UK', distKm:6200,
+        price:'$30', priceVal:30, by:'Pete H.',
+        desc:'Drum physically cracked from overload. Heating element, motor, thermostat all working perfectly.',
+        whatsapp:'+441611234567',
+        email:'pete@example.com',
+        pickup:true,
+        shipping:[
+          {carrier:'Royal Mail',price:'$11',days:'4–7 days'},
+          {carrier:'DHL Express',price:'$20',days:'2–3 days'},
+        ]
+      },
+      {
+        id:5, e:'🌬️', t:'Carrier 24ACC636 — Bent Fins',
+        type:'HVAC', meta:'Listed 4d ago', rating:'⭐4.6',
+        tags:['Fan Motor ✓','Compressor ✓','Control Board ✓'],
+        loc:'Dubai, UAE', country:'UAE', distKm:7300,
+        price:'$200', priceVal:200, by:'Ravi M.',
+        desc:'Condenser fins bent beyond repair from hail damage. Compressor, fan motor, controls all operational.',
+        whatsapp:'+97150123456',
+        email:'ravi@example.com',
+        pickup:false,
+        shipping:[
+          {carrier:'Aramex',price:'$28',days:'3–5 days'},
+          {carrier:'DHL Express',price:'$35',days:'2–4 days'},
+        ]
+      },
+    ];
+
+    function buildShipping(items) {
+      return `<div class="l-shipping">
+        <span class="ship-label">📦 Est. Shipping</span>
+        ${items.map(s=>`<div class="ship-option" title="Click to select this shipping option" onclick="alert('Shipping selected: ${s.carrier} — ${s.price}\\nA link to book this carrier will be provided after contacting the seller.')">
+          <span class="carrier">${s.carrier}</span>
+          <span class="price">${s.price}</span>
+          <span class="days">${s.days}</span>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    function buildContact(l) {
+      let btns = '';
+      if (l.whatsapp) {
+        const msg = encodeURIComponent(`Hi ${l.by}, I found your Parts Salvage Marketplace listing for: ${l.t}\n\nI need the parts. Is this still available?`);
+        btns += `<a class="btn-wa" href="https://wa.me/${l.whatsapp.replace(/\D/g,'')}?text=${msg}" target="_blank">💬 WhatsApp</a>`;
+      }
+      if (l.email) {
+        const subj = encodeURIComponent(`Parts Salvage Marketplace Salvage Inquiry: ${l.t}`);
+        const body = encodeURIComponent(`Hi ${l.by},\n\nI found your Parts Salvage Marketplace listing for: ${l.t}\n\nI need the parts — is this still available? Please let me know the condition and shipping options.\n\nThanks!`);
+        btns += `<a class="btn-em" href="mailto:${l.email}?subject=${subj}&body=${body}">✉️ Email</a>`;
+      }
+      if (l.pickup) {
+        btns += `<button class="btn-pickup" onclick="alert('Local pickup request sent to ${l.by}!\\nThey will confirm a time via your contact method.')">🤝 Request Pickup</button>`;
+      }
+      return `<div class="l-contact-row">${btns}</div>`;
+    }
+
+    function renderListings(list) {
+      document.getElementById('lcount').textContent = `(${list.length})`;
+      if (!list.length) {
+        document.getElementById('listings-wrap').innerHTML = `<div style="text-align:center;padding:48px;color:var(--muted);">
+          <div style="font-size:2.5rem;margin-bottom:12px;">🔍</div>
+          <p>No listings match your search. Try expanding the radius or changing filters.</p>
+        </div>`;
+        return;
+      }
+      document.getElementById('listings-wrap').innerHTML = list.map(l => `
+        <div class="listing">
+          <div class="l-top">
+            <div class="l-thumb">${l.e}</div>
+            <div class="l-body">
+              <div class="l-title">${l.t}</div>
+              <div class="l-meta">${l.type} · ${l.meta} · ${l.rating}</div>
+              <div class="l-tags">
+                ${l.tags.map(t=>`<span class="badge badge-gold">${t}</span>`).join('')}
+                <span class="badge badge-blue">📍 ${l.loc}</span>
+                ${l.distKm > 0 ? `<span class="badge" style="background:rgba(99,102,241,0.1);color:#A5B4FC;border:1px solid rgba(99,102,241,0.3);">~${l.distKm.toLocaleString()}km away</span>` : '<span class="badge badge-green">📌 Local</span>'}
+              </div>
+              <div class="l-desc">${l.desc}</div>
+              ${buildContact(l)}
+            </div>
+            <div class="l-right">
+              <div>
+                <div class="l-price ${l.price==='Free'?'free':''}">${l.price}</div>
+                <div class="l-loc">${l.loc}</div>
+                <div class="l-by">by ${l.by}</div>
+                <div class="l-rating">${l.rating}</div>
+              </div>
+            </div>
+          </div>
+          ${buildShipping(l.shipping)}
+        </div>`).join('');
+    }
+
+    function applyFilters() {
+      const part  = document.getElementById('s-part').value.toLowerCase();
+      const loc   = document.getElementById('s-loc').value.toLowerCase();
+      const type  = document.getElementById('s-type').value;
+      const price = document.getElementById('s-price').value;
+      const sort  = document.getElementById('s-sort').value;
+
+      let list = LISTINGS.filter(l => {
+        const mPart  = !part  || l.t.toLowerCase().includes(part) || l.type.toLowerCase().includes(part) || l.tags.join(' ').toLowerCase().includes(part);
+        const mType  = !type  || l.type === type;
+        const mPrice = !price || (price==='free' && l.priceVal===0) || (price==='paid' && l.priceVal>0);
+        return mPart && mType && mPrice;
+      });
+
+      if (sort === 'nearest') list.sort((a,b) => a.distKm - b.distKm);
+      if (sort === 'newest')  list.reverse();
+      if (sort === 'price')   list.sort((a,b) => a.priceVal - b.priceVal);
+      if (sort === 'rating')  list.sort((a,b) => parseFloat(b.rating.replace('⭐','')) - parseFloat(a.rating.replace('⭐','')));
+
+      if (loc) {
+        document.getElementById('loc-note').textContent = `Showing results sorted by distance from "${loc}"`;
+      } else {
+        document.getElementById('loc-note').textContent = 'Showing all listings worldwide — enter your location to sort by distance';
+      }
+
+      renderListings(list);
+    }
+
+    function openPost()  { document.getElementById('post-modal').classList.add('open'); }
+    function closePost() { document.getElementById('post-modal').classList.remove('open'); }
+    function submitPost() {
+      closePost();
+      alert('✅ Listing submitted!\n\nYour machine will be reviewed and published within 30 minutes.\nYou\'ll be notified by email when someone contacts you.');
+    }
+
+    renderListings(LISTINGS);
+  </script>
+</body>
+</html>

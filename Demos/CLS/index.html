@@ -1,0 +1,2787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complex Language Simplifier – Understand Any Document Instantly</title>
+<meta name="description" content="Instantly translate complex legal, medical, insurance, and government language into plain English you can actually understand.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --primary: #1C5C3A;
+  --primary-dark: #134228;
+  --primary-light: #2E7D52;
+  --secondary: #7A2040;
+  --accent: #1B3A6B;
+  --accent-2: #8B6914;
+  --bg: #F5F3EF;
+  --bg-card: #FFFFFF;
+  --bg-dark: #111810;
+  --text: #1A1F18;
+  --text-muted: #4D5249;
+  --text-light: #8E9489;
+  --border: #DDD9D0;
+  --shadow: 0 4px 24px rgba(28,92,58,0.08);
+  --shadow-lg: 0 16px 64px rgba(28,92,58,0.13);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 28px;
+  --font-main: 'Sora', sans-serif;
+  --font-display: 'DM Serif Display', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-main);
+  color: var(--text);
+  background: var(--bg);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font-main); cursor: pointer; border: none; outline: none; }
+ul { list-style: none; }
+::selection { background: var(--primary); color: #fff; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 8px; }
+
+/* ===== UTILITY ===== */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.container-wide { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+.highlight { color: var(--primary); }
+.highlight-orange { color: var(--secondary); }
+.highlight-green { color: var(--accent); }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 100px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.badge-blue { background: #E4EDE8; color: var(--primary); }
+.badge-green { background: #E8EDF5; color: var(--accent); }
+.badge-orange { background: #F2E8EC; color: var(--secondary); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 28px; border-radius: var(--radius-sm);
+  font-size: 0.95rem; font-weight: 600; transition: all var(--transition);
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 4px 16px rgba(28,92,58,0.25);
+}
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(28,92,58,0.35); }
+.btn-secondary {
+  background: transparent; color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.btn-secondary:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
+.btn-orange {
+  background: var(--secondary); color: #fff;
+  box-shadow: 0 4px 16px rgba(122,32,64,0.25);
+}
+.btn-orange:hover { background: #621833; transform: translateY(-2px); }
+.btn-lg { padding: 16px 36px; font-size: 1.05rem; border-radius: var(--radius); }
+.btn-sm { padding: 9px 18px; font-size: 0.85rem; }
+.btn-icon { width: 44px; height: 44px; padding: 0; border-radius: 50%; }
+.btn-white { background: #fff; color: var(--primary); font-weight: 700; box-shadow: var(--shadow); }
+.btn-white:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
+
+/* ===== NAVBAR ===== */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(244,246,251,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(221,227,239,0.5);
+  transition: all var(--transition);
+}
+.navbar.scrolled { background: rgba(255,255,255,0.95); box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 70px; max-width: 1200px; margin: 0 auto; padding: 0 24px;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 40px; height: 40px;
+  background: var(--primary); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #fff; font-size: 1.1rem;
+  position: relative; overflow: hidden;
+}
+.logo-icon::after {
+  content: '';
+  position: absolute; top: -50%; right: -50%;
+  width: 70%; height: 70%;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+}
+.logo-text { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+.logo-text span { color: var(--primary); }
+
+.nav-menu { display: flex; align-items: center; gap: 4px; }
+.nav-item { position: relative; }
+.nav-link {
+  display: flex; align-items: center; gap: 5px;
+  padding: 8px 14px; border-radius: var(--radius-sm);
+  font-size: 0.9rem; font-weight: 500; color: var(--text-muted);
+  transition: all var(--transition); background: transparent; border: none;
+  cursor: pointer; font-family: var(--font-main);
+}
+.nav-link:hover, .nav-link.active { color: var(--primary); background: #E4EDE8; }
+.nav-link .arrow {
+  width: 14px; height: 14px;
+  transition: transform var(--transition);
+  opacity: 0.6;
+}
+.nav-item:hover .arrow { transform: rotate(180deg); }
+
+/* Dropdown */
+.dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  background: #fff; border-radius: var(--radius);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  border: 1px solid var(--border);
+  min-width: 240px; padding: 8px;
+  opacity: 0; visibility: hidden; transform: translateY(-8px);
+  transition: all var(--transition); z-index: 100;
+}
+.nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+.dropdown-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  color: var(--text); font-size: 0.88rem; font-weight: 500;
+  transition: all var(--transition);
+}
+.dropdown-item:hover { background: var(--bg); color: var(--primary); }
+.dropdown-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem; flex-shrink: 0;
+}
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; cursor: pointer; background: none; border: none; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 4px; transition: all var(--transition); }
+
+/* ===== PAGE ROUTING ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== HERO SECTION ===== */
+.hero {
+  min-height: 100vh;
+  padding: 100px 0 80px;
+  background: linear-gradient(135deg, #EAF0EC 0%, #F5F3EF 50%, #F0EAEd 100%);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -200px; right: -100px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(28,92,58,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -150px; left: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(122,32,64,0.05) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+  position: relative; z-index: 1;
+}
+.hero-badge { margin-bottom: 20px; }
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.hero-title em { font-style: italic; color: var(--primary); }
+.hero-subtitle {
+  font-size: 1.05rem; color: var(--text-muted); line-height: 1.75;
+  margin-bottom: 36px; max-width: 520px;
+}
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+.hero-stats { display: flex; gap: 32px; }
+.stat-item { text-align: left; }
+.stat-number {
+  font-size: 1.7rem; font-weight: 800; color: var(--text);
+  font-family: var(--font-display); line-height: 1;
+}
+.stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
+
+/* Hero Demo Card */
+.hero-demo {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: visible;
+  border: 1px solid var(--border);
+  position: relative;
+  margin: 24px 0;
+}
+.hero-demo-inner {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.demo-header {
+  background: var(--primary); padding: 14px 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+.demo-title { color: rgba(255,255,255,0.8); font-size: 0.78rem; font-weight: 500; margin-left: 6px; }
+.demo-body { padding: 24px; }
+.demo-input-label {
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-light); margin-bottom: 8px;
+}
+.demo-input-box {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  font-size: 0.88rem; color: var(--text); line-height: 1.55;
+  margin-bottom: 16px; font-family: var(--font-mono);
+}
+.demo-arrow {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--primary); font-size: 0.78rem; font-weight: 600;
+  margin-bottom: 16px;
+}
+.demo-arrow-line {
+  flex: 1; height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 2px;
+}
+.demo-output {
+  background: linear-gradient(135deg, #E4EDE8, #E8EDF5);
+  border-radius: var(--radius-sm); padding: 16px;
+  border: 1.5px solid rgba(28,92,58,0.15);
+}
+.demo-output-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--primary); margin-bottom: 6px;
+}
+.demo-output-text { font-size: 0.9rem; color: var(--text); line-height: 1.6; }
+.demo-output-text strong { color: var(--primary); }
+.demo-tags {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px;
+}
+.demo-tag {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 100px; padding: 4px 10px;
+  font-size: 0.72rem; color: var(--text-muted); font-weight: 500;
+}
+
+/* Floating cards */
+.floating-card {
+  position: absolute; background: #fff;
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  font-size: 0.8rem; display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border); font-weight: 500; color: var(--text);
+  animation: float 4s ease-in-out infinite;
+  white-space: nowrap; z-index: 10;
+}
+.floating-card-1 { top: -18px; right: 16px; animation-delay: 0s; }
+.floating-card-2 { bottom: -18px; left: 16px; animation-delay: 2s; }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ===== SECTION COMMON ===== */
+.section { padding: 96px 0; }
+.section-alt { background: #fff; }
+.section-dark { background: var(--bg-dark); color: #fff; }
+.section-header { text-align: center; margin-bottom: 60px; }
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  line-height: 1.2; color: var(--text); margin-bottom: 14px;
+}
+.section-dark .section-title { color: #fff; }
+.section-subtitle {
+  font-size: 1rem; color: var(--text-muted);
+  max-width: 560px; margin: 0 auto; line-height: 1.7;
+}
+.section-dark .section-subtitle { color: rgba(255,255,255,0.6); }
+
+/* ===== TOOL PAGE ===== */
+.tool-hero {
+  padding: 100px 0 60px;
+  background: linear-gradient(135deg, #EAF0EC 0%, #F5F3EF 100%);
+}
+.tool-hero-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+.tool-hero .section-title { color: var(--text); }
+.tool-hero .section-subtitle { color: var(--text-muted); }
+
+.tool-container {
+  max-width: 900px; margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+
+/* Category tabs */
+.category-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 28px; justify-content: center;
+}
+.cat-tab {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 100px;
+  font-size: 0.85rem; font-weight: 600;
+  background: #fff; border: 1.5px solid var(--border);
+  color: var(--text-muted); cursor: pointer;
+  transition: all var(--transition);
+}
+.cat-tab.active, .cat-tab:hover {
+  border-color: var(--primary); background: #E4EDE8; color: var(--primary);
+}
+.cat-tab .cat-icon { font-size: 1rem; }
+
+/* Simplifier card */
+.simplifier-card {
+  background: #fff; border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+  overflow: hidden;
+}
+.simplifier-top {
+  padding: 28px 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.simplifier-top-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.simplifier-title { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+.char-count { font-size: 0.8rem; color: var(--text-light); font-family: var(--font-mono); }
+
+.text-input-area {
+  width: 100%; min-height: 180px;
+  border: none; outline: none; resize: vertical;
+  font-family: var(--font-main); font-size: 0.95rem;
+  color: var(--text); line-height: 1.7;
+  padding-bottom: 20px; background: transparent;
+}
+.text-input-area::placeholder { color: var(--text-light); }
+
+.simplifier-actions {
+  padding: 16px 32px;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.action-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.option-pill {
+  padding: 6px 12px; border-radius: 100px;
+  font-size: 0.78rem; font-weight: 600;
+  border: 1.5px solid var(--border); background: #fff;
+  color: var(--text-muted); cursor: pointer;
+  transition: all var(--transition);
+}
+.option-pill.active, .option-pill:hover {
+  border-color: var(--primary); color: var(--primary); background: #E4EDE8;
+}
+.simplifier-btn {
+  background: var(--primary); color: #fff;
+  padding: 12px 28px; border-radius: var(--radius-sm);
+  font-size: 0.95rem; font-weight: 700;
+  box-shadow: 0 4px 16px rgba(28,92,58,0.25);
+  transition: all var(--transition); border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-main);
+}
+.simplifier-btn:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-2px); }
+.simplifier-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Results */
+.result-panel {
+  padding: 32px; border-top: 1px solid var(--border);
+  display: none;
+}
+.result-panel.visible { display: block; }
+.result-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.result-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--primary);
+}
+.result-label-icon { font-size: 1rem; }
+.result-copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  font-size: 0.8rem; font-weight: 600;
+  background: var(--bg); border: 1.5px solid var(--border);
+  color: var(--text-muted); cursor: pointer; transition: all var(--transition);
+  font-family: var(--font-main);
+}
+.result-copy-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.result-box {
+  background: linear-gradient(135deg, #EBF1ED, #EDF0F5);
+  border: 1.5px solid rgba(28,92,58,0.18);
+  border-radius: var(--radius); padding: 24px;
+  font-size: 0.97rem; line-height: 1.8; color: var(--text);
+  margin-bottom: 20px;
+}
+.result-box .key-term {
+  background: rgba(28,92,58,0.1); color: var(--primary);
+  padding: 2px 7px; border-radius: 4px; font-weight: 600;
+}
+
+.result-breakdown { margin-top: 20px; }
+.breakdown-title {
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text-light); margin-bottom: 12px;
+}
+.breakdown-items { display: flex; flex-direction: column; gap: 10px; }
+.breakdown-item {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 12px; align-items: start;
+  padding: 12px 16px; background: #fff;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+}
+.breakdown-term {
+  font-size: 0.85rem; font-weight: 700; color: var(--primary);
+  font-family: var(--font-mono); white-space: nowrap;
+}
+.breakdown-def { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+
+.result-meta {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;
+}
+.meta-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; background: #fff; border: 1px solid var(--border);
+  border-radius: 100px; font-size: 0.78rem; color: var(--text-muted); font-weight: 500;
+}
+
+/* Loading state */
+.loading-state {
+  padding: 40px 32px; text-align: center; display: none;
+  border-top: 1px solid var(--border);
+}
+.loading-state.visible { display: block; }
+.loading-spinner {
+  width: 40px; height: 40px; margin: 0 auto 16px;
+  border: 3px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 0.9rem; color: var(--text-muted); }
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s infinite;
+}
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Error */
+.error-banner {
+  margin: 0 32px 16px; padding: 14px 18px;
+  background: #FFF0F0; border: 1.5px solid #FFB8B8;
+  border-radius: var(--radius-sm); color: #CC2222;
+  font-size: 0.88rem; display: none; align-items: center; gap: 8px;
+}
+.error-banner.visible { display: flex; }
+
+/* ===== FEATURES GRID ===== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+.feature-card {
+  background: #fff; border-radius: var(--radius-lg);
+  padding: 32px; border: 1px solid var(--border);
+  box-shadow: var(--shadow); transition: all var(--transition);
+  cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--transition);
+}
+.feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.feature-card:hover::before { transform: scaleX(1); }
+.feature-icon {
+  width: 56px; height: 56px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; margin-bottom: 18px;
+}
+.feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+.feature-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+.feature-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 16px; font-size: 0.85rem; font-weight: 600;
+  color: var(--primary); transition: gap var(--transition);
+}
+.feature-card:hover .feature-link { gap: 8px; }
+
+/* ===== HOW IT WORKS ===== */
+.steps-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px; position: relative;
+}
+.steps-grid::before {
+  content: '';
+  position: absolute; top: 36px; left: 10%; right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+  opacity: 0.3;
+}
+.step-card {
+  text-align: center; position: relative;
+  padding: 32px 24px; background: #fff;
+  border-radius: var(--radius-lg); border: 1px solid var(--border);
+  box-shadow: var(--shadow); transition: all var(--transition);
+}
+.step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.step-number {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; font-weight: 800;
+  margin: 0 auto 18px;
+  box-shadow: 0 4px 16px rgba(28,92,58,0.28);
+  font-family: var(--font-display);
+}
+.step-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.step-card p { font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; }
+
+/* ===== USE CASES ===== */
+.usecases-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.usecase-card {
+  background: #fff; border-radius: var(--radius);
+  padding: 28px; border: 1px solid var(--border);
+  transition: all var(--transition);
+}
+.usecase-card:hover { border-color: var(--primary); box-shadow: 0 8px 32px rgba(28,92,58,0.1); }
+.usecase-icon { font-size: 2rem; margin-bottom: 14px; }
+.usecase-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.usecase-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+.usecase-examples {
+  margin-top: 14px; display: flex; flex-direction: column; gap: 4px;
+}
+.usecase-example {
+  font-size: 0.78rem; color: var(--text-light);
+  display: flex; align-items: center; gap: 6px;
+}
+.usecase-example::before { content: '›'; color: var(--primary); font-weight: 700; }
+
+/* ===== TESTIMONIALS ===== */
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+.testimonial-card {
+  background: #fff; border-radius: var(--radius-lg);
+  padding: 28px; border: 1px solid var(--border);
+  box-shadow: var(--shadow); transition: all var(--transition);
+}
+.testimonial-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.quote-mark { font-size: 3rem; color: var(--primary); opacity: 0.2; line-height: 1; margin-bottom: 8px; font-family: serif; }
+.testimonial-text { font-size: 0.92rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.author-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.95rem; color: #fff; flex-shrink: 0;
+}
+.author-name { font-size: 0.9rem; font-weight: 700; }
+.author-role { font-size: 0.78rem; color: var(--text-light); }
+.stars { color: var(--accent-2); font-size: 0.85rem; margin-bottom: 12px; letter-spacing: 2px; }
+
+/* ===== PRICING ===== */
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px; max-width: 1000px; margin: 0 auto;
+}
+.pricing-card {
+  background: #fff; border-radius: var(--radius-lg);
+  padding: 36px 28px; border: 2px solid var(--border);
+  box-shadow: var(--shadow); transition: all var(--transition);
+  position: relative;
+}
+.pricing-card.featured {
+  border-color: var(--primary);
+  box-shadow: 0 8px 40px rgba(28,92,58,0.18);
+  transform: scale(1.02);
+}
+.pricing-badge {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--primary); color: #fff;
+  padding: 4px 16px; border-radius: 100px;
+  font-size: 0.75rem; font-weight: 700; white-space: nowrap;
+}
+.pricing-name { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-light); margin-bottom: 10px; }
+.pricing-price {
+  font-family: var(--font-display);
+  font-size: 3rem; font-weight: 700; color: var(--text); line-height: 1;
+}
+.pricing-price sup { font-size: 1.2rem; vertical-align: top; margin-top: 0.5em; font-family: var(--font-main); font-weight: 700; }
+.pricing-period { font-size: 0.85rem; color: var(--text-light); margin-bottom: 24px; }
+.pricing-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.pricing-feature {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.88rem; color: var(--text-muted);
+}
+.pricing-feature .check { color: var(--accent); font-size: 0.9rem; }
+.pricing-feature .cross { color: var(--text-light); }
+
+/* ===== FAQ ===== */
+.faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; transition: all var(--transition);
+}
+.faq-item.open { border-color: rgba(28,92,58,0.3); box-shadow: 0 4px 20px rgba(28,92,58,0.08); }
+.faq-question {
+  width: 100%; padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-main); font-size: 0.97rem; font-weight: 600;
+  color: var(--text); text-align: left; gap: 16px;
+}
+.faq-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all var(--transition); font-size: 1rem; font-weight: 700;
+  color: var(--primary);
+}
+.faq-item.open .faq-icon { background: var(--primary); color: #fff; transform: rotate(45deg); }
+.faq-answer {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+}
+.faq-item.open .faq-answer { max-height: 400px; }
+.faq-answer-inner {
+  padding: 0 24px 20px;
+  font-size: 0.9rem; color: var(--text-muted); line-height: 1.7;
+}
+
+/* ===== NEWSLETTER ===== */
+.newsletter-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #1C5C3A, #134228);
+  position: relative; overflow: hidden;
+}
+.newsletter-section::before {
+  content: '';
+  position: absolute; top: -50%; right: -5%;
+  width: 60%; height: 200%;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%; transform: rotate(-15deg);
+}
+.newsletter-inner {
+  max-width: 620px; margin: 0 auto; text-align: center;
+  position: relative; z-index: 1;
+}
+.newsletter-inner h2 { font-family: var(--font-display); font-size: 2.2rem; color: #fff; margin-bottom: 12px; }
+.newsletter-inner p { color: rgba(255,255,255,0.75); margin-bottom: 32px; }
+.newsletter-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
+.newsletter-input {
+  flex: 1; padding: 14px 18px; border-radius: var(--radius-sm);
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1); color: #fff;
+  font-family: var(--font-main); font-size: 0.95rem;
+  backdrop-filter: blur(10px); outline: none;
+  transition: border-color var(--transition);
+}
+.newsletter-input::placeholder { color: rgba(255,255,255,0.5); }
+.newsletter-input:focus { border-color: rgba(255,255,255,0.5); }
+.newsletter-note { font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-top: 12px; }
+
+/* ===== CONTACT ===== */
+.contact-grid {
+  display: grid; grid-template-columns: 1fr 1.5fr;
+  gap: 60px; align-items: start;
+}
+.contact-info h2 { font-family: var(--font-display); font-size: 2rem; margin-bottom: 14px; }
+.contact-info p { color: var(--text-muted); line-height: 1.7; margin-bottom: 32px; }
+.contact-methods { display: flex; flex-direction: column; gap: 16px; }
+.contact-method {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; background: #fff; border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.contact-method-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-sm);
+  background: #E4EDE8; display: flex; align-items: center;
+  justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+}
+.contact-method-text strong { display: block; font-size: 0.88rem; font-weight: 700; }
+.contact-method-text span { font-size: 0.82rem; color: var(--text-muted); }
+
+.contact-form {
+  background: #fff; border-radius: var(--radius-lg);
+  padding: 36px; border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block; font-size: 0.82rem; font-weight: 600;
+  color: var(--text-muted); margin-bottom: 7px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-family: var(--font-main); font-size: 0.92rem; color: var(--text);
+  transition: all var(--transition); outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary); background: #fff;
+  box-shadow: 0 0 0 3px rgba(28,92,58,0.1);
+}
+.form-textarea { resize: vertical; min-height: 120px; }
+
+/* ===== ABOUT / SECURITY PAGE ===== */
+.about-hero {
+  padding: 100px 0 80px;
+  background: linear-gradient(135deg, #111810 0%, #1C3024 100%);
+  position: relative; overflow: hidden;
+}
+.about-hero::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(28,92,58,0.25), transparent 60%);
+}
+.about-hero .section-title { color: #fff; }
+.about-hero .section-subtitle { color: rgba(255,255,255,0.65); }
+
+.security-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.security-card {
+  background: #fff; border-radius: var(--radius);
+  padding: 28px; border: 1px solid var(--border);
+  display: flex; gap: 16px; align-items: flex-start;
+  transition: all var(--transition);
+}
+.security-card:hover { border-color: var(--primary); box-shadow: var(--shadow); }
+.security-icon {
+  width: 48px; height: 48px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #E4EDE8, #E8EDF2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; flex-shrink: 0;
+}
+.security-text h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+.security-text p { font-size: 0.83rem; color: var(--text-muted); line-height: 1.55; }
+
+/* ===== CTA BANNER ===== */
+.cta-banner {
+  background: linear-gradient(135deg, #1A1F18, #1C3024);
+  border-radius: var(--radius-lg); padding: 60px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 32px; flex-wrap: wrap;
+  position: relative; overflow: hidden;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute; top: -40%; right: -5%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(28,92,58,0.25), transparent 70%);
+  border-radius: 50%;
+}
+.cta-text h2 { font-family: var(--font-display); font-size: 2rem; color: #fff; margin-bottom: 8px; }
+.cta-text p { color: rgba(255,255,255,0.65); max-width: 480px; }
+.cta-actions { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--bg-dark);
+  color: rgba(255,255,255,0.7);
+  padding: 72px 0 0;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px; margin-bottom: 48px;
+}
+.footer-brand .logo-text { color: #fff; margin-bottom: 14px; display: block; }
+.footer-brand p { font-size: 0.85rem; line-height: 1.7; color: rgba(255,255,255,0.55); max-width: 280px; }
+.footer-socials { display: flex; gap: 10px; margin-top: 20px; }
+.social-btn {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; color: rgba(255,255,255,0.6);
+  transition: all var(--transition); cursor: pointer;
+}
+.social-btn:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+.footer-col h4 { color: #fff; font-size: 0.9rem; font-weight: 700; margin-bottom: 18px; }
+.footer-links { display: flex; flex-direction: column; gap: 10px; }
+.footer-links a {
+  font-size: 0.83rem; color: rgba(255,255,255,0.5);
+  transition: color var(--transition);
+}
+.footer-links a:hover { color: rgba(255,255,255,0.9); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 22px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom p { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+.footer-bottom-links { display: flex; gap: 20px; }
+.footer-bottom-links a { font-size: 0.78rem; color: rgba(255,255,255,0.4); transition: color var(--transition); }
+.footer-bottom-links a:hover { color: rgba(255,255,255,0.8); }
+
+/* ===== ABOUT TEAM ===== */
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.team-card {
+  background: #fff; border-radius: var(--radius-lg);
+  padding: 28px; text-align: center; border: 1px solid var(--border);
+  transition: all var(--transition);
+}
+.team-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.team-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; font-weight: 700; color: #fff;
+}
+.team-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.team-role { font-size: 0.8rem; color: var(--text-muted); }
+
+/* ===== SAVED SECTION ===== */
+.saved-list { display: flex; flex-direction: column; gap: 16px; }
+.saved-item {
+  background: #fff; border-radius: var(--radius);
+  border: 1px solid var(--border); overflow: hidden;
+  transition: all var(--transition);
+}
+.saved-item:hover { border-color: var(--primary); }
+.saved-header {
+  padding: 16px 20px; display: flex; align-items: center;
+  justify-content: space-between; cursor: pointer;
+}
+.saved-title { font-size: 0.92rem; font-weight: 600; }
+.saved-meta { display: flex; align-items: center; gap: 10px; }
+.saved-cat { font-size: 0.72rem; font-weight: 600; padding: 3px 9px; border-radius: 100px; background: #E4EDE8; color: var(--primary); }
+.saved-date { font-size: 0.75rem; color: var(--text-light); }
+.saved-preview { padding: 0 20px 16px; font-size: 0.85rem; color: var(--text-muted); }
+
+/* ===== NOTIFICATION TOAST ===== */
+.toast {
+  position: fixed; bottom: 30px; right: 30px; z-index: 9999;
+  background: var(--text); color: #fff;
+  padding: 14px 20px; border-radius: var(--radius-sm);
+  font-size: 0.88rem; font-weight: 500;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(100px); opacity: 0;
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  max-width: 340px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-icon { font-size: 1rem; flex-shrink: 0; }
+
+/* ===== MOBILE NAV ===== */
+.mobile-menu {
+  display: none; position: fixed; top: 70px; left: 0; right: 0;
+  background: #fff; border-bottom: 1px solid var(--border);
+  z-index: 999; padding: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+.mobile-menu.open { display: block; }
+.mobile-nav-link {
+  display: block; padding: 12px 16px; border-radius: var(--radius-sm);
+  font-size: 0.95rem; font-weight: 500; color: var(--text);
+  transition: all var(--transition); cursor: pointer;
+}
+.mobile-nav-link:hover { background: var(--bg); color: var(--primary); }
+.mobile-nav-section { margin-top: 8px; }
+.mobile-nav-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-light);
+  padding: 8px 16px 4px;
+}
+
+/* ===== MISC ===== */
+.divider { height: 1px; background: var(--border); margin: 40px 0; }
+.text-center { text-align: center; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-40 { margin-bottom: 40px; }
+.mt-40 { margin-top: 40px; }
+
+/* Progress bar */
+.progress-bar-wrap { background: var(--border); border-radius: 100px; height: 8px; overflow: hidden; margin-bottom: 6px; }
+.progress-bar { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+
+/* Chip group */
+.chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 6px 14px; border-radius: 100px; font-size: 0.8rem;
+  font-weight: 500; background: #fff; border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  opacity: 0.5;
+}
+.scroll-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--primary);
+  animation: bounce 1.5s infinite;
+}
+.scroll-dot:nth-child(2) { animation-delay: 0.2s; }
+.scroll-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,100%{opacity:0.3; transform:scale(0.8)} 50%{opacity:1; transform:scale(1)} }
+
+/* ===== ANIMATION HELPERS ===== */
+.fade-in { animation: fadeIn 0.7s ease both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in-1 { animation-delay: 0.1s; }
+.fade-in-2 { animation-delay: 0.2s; }
+.fade-in-3 { animation-delay: 0.3s; }
+.fade-in-4 { animation-delay: 0.4s; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .hero-title { font-size: 2.4rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .nav-menu { display: none; }
+  .hamburger { display: flex; }
+  .steps-grid::before { display: none; }
+}
+@media (max-width: 640px) {
+  .section { padding: 64px 0; }
+  .hero { padding: 80px 0 60px; }
+  .hero-stats { gap: 20px; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .newsletter-form { flex-direction: column; }
+  .form-row { grid-template-columns: 1fr; }
+  .cta-banner { padding: 36px 24px; }
+  .pricing-card.featured { transform: scale(1); }
+  .simplifier-actions { flex-direction: column; }
+  .hero-actions { flex-direction: column; }
+}
+
+/* ===== PAGE TRANSITIONS ===== */
+.page { animation: pageIn 0.4s ease both; }
+@keyframes pageIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#" onclick="showPage('home')">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M3 6h16M3 11h10M3 16h13" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="17" cy="15.5" r="3.5" fill="white" opacity="0.9"/>
+          <path d="M15.5 15.5l1 1 2-2" stroke="#1C5C3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="logo-text">Complex Language <span>Simplifier</span></span>
+    </a>
+
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <button class="nav-link" onclick="showPage('home')">Home</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link">
+          Tools
+          <svg class="arrow" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="dropdown">
+          <a class="dropdown-item" onclick="showPage('tool-legal')">
+            <div class="dropdown-icon" style="background:#E4EDE8">⚖️</div>
+            <div><strong>Legal Documents</strong><br><small style="color:var(--text-muted)">Contracts, agreements</small></div>
+          </a>
+          <a class="dropdown-item" onclick="showPage('tool-medical')">
+            <div class="dropdown-icon" style="background:#E8EDF5">🏥</div>
+            <div><strong>Medical Reports</strong><br><small style="color:var(--text-muted)">Lab results, diagnoses</small></div>
+          </a>
+          <a class="dropdown-item" onclick="showPage('tool-insurance')">
+            <div class="dropdown-icon" style="background:#F2E8EC">🛡️</div>
+            <div><strong>Insurance Policies</strong><br><small style="color:var(--text-muted)">Coverage, exclusions</small></div>
+          </a>
+          <a class="dropdown-item" onclick="showPage('tool-government')">
+            <div class="dropdown-icon" style="background:#EAE8F0">🏛️</div>
+            <div><strong>Government Forms</strong><br><small style="color:var(--text-muted)">Official documents</small></div>
+          </a>
+          <a class="dropdown-item" onclick="showPage('tool')">
+            <div class="dropdown-icon" style="background:#EEE8E0">✨</div>
+            <div><strong>General Simplifier</strong><br><small style="color:var(--text-muted)">Any complex text</small></div>
+          </a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" onclick="showPage('about')">About</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" onclick="showPage('pricing')">Pricing</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" onclick="showPage('contact')">Contact</button>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn btn-secondary btn-sm" onclick="showPage('saved')">Saved</button>
+      <button class="btn btn-primary btn-sm" onclick="showPage('tool')">Try Free</button>
+    </div>
+
+    <button class="hamburger" onclick="toggleMobile()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-nav-section">
+    <div class="mobile-nav-link" onclick="showPage('home');toggleMobile()">🏠 Home</div>
+    <div class="mobile-nav-label">Tools</div>
+    <div class="mobile-nav-link" onclick="showPage('tool');toggleMobile()">✨ General Simplifier</div>
+    <div class="mobile-nav-link" onclick="showPage('tool-legal');toggleMobile()">⚖️ Legal Documents</div>
+    <div class="mobile-nav-link" onclick="showPage('tool-medical');toggleMobile()">🏥 Medical Reports</div>
+    <div class="mobile-nav-link" onclick="showPage('tool-insurance');toggleMobile()">🛡️ Insurance Policies</div>
+    <div class="mobile-nav-link" onclick="showPage('tool-government');toggleMobile()">🏛️ Government Forms</div>
+    <div class="mobile-nav-link" onclick="showPage('about');toggleMobile()">ℹ️ About</div>
+    <div class="mobile-nav-link" onclick="showPage('pricing');toggleMobile()">💰 Pricing</div>
+    <div class="mobile-nav-link" onclick="showPage('contact');toggleMobile()">📬 Contact</div>
+  </div>
+</div>
+
+<!-- ===== PAGE: HOME ===== -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content fade-in">
+          <div class="hero-badge">
+            <span class="badge badge-blue">🚀 AI-Powered Simplification</span>
+          </div>
+          <h1 class="hero-title">
+            Complex Words,<br><em>Simple Answers</em>
+          </h1>
+          <p class="hero-subtitle">
+            Paste any legal contract, medical report, insurance policy, or government form and get a clear, plain-English explanation within seconds. No confusion. No lawyers. No guesswork.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" onclick="showPage('tool')">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M9 3l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Start Simplifying Free
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How It Works</button>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-number">98%</div>
+              <div class="stat-label">Accuracy Rate</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">5s</div>
+              <div class="stat-label">Avg. Response</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">50K+</div>
+              <div class="stat-label">Users Helped</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-demo fade-in fade-in-2" style="position:relative">
+          <!-- Floating cards sit outside the overflow clipping -->
+          <div class="floating-card floating-card-1">
+            <span>🔒</span> Bank-level encryption
+          </div>
+          <div class="floating-card floating-card-2">
+            <span>⚡</span> Results in ~5 seconds
+          </div>
+
+          <!-- Inner wrapper keeps rounded corners on card content -->
+          <div class="hero-demo-inner">
+          <div class="demo-header">
+            <div class="demo-dot" style="background:#C26B6B"></div>
+            <div class="demo-dot" style="background:#C9A84C"></div>
+            <div class="demo-dot" style="background:#5A9E6A"></div>
+            <span class="demo-title">Complex Language Simplifier · Insurance Policy</span>
+          </div>
+          <div class="demo-body">
+            <div class="demo-input-label">📄 Original Text</div>
+            <div class="demo-input-box">"Coverage under this policy is subject to a deductible payable by the insured prior to any indemnification, and subrogation rights arising therefrom shall vest exclusively in the insurer."</div>
+            <div class="demo-arrow">
+              <div class="demo-arrow-line"></div>
+              <span>✨ Simplifying</span>
+              <div class="demo-arrow-line"></div>
+            </div>
+            <div class="demo-output">
+              <div class="demo-output-label">✅ Plain English Explanation</div>
+              <div class="demo-output-text">This means: <strong>You pay a fixed amount first before your insurance covers anything.</strong> If someone else caused the damage, your insurer can chase that person for money — not you.</div>
+            </div>
+            <div class="demo-tags">
+              <span class="demo-tag">🛡️ Insurance</span>
+              <span class="demo-tag">🔑 Deductible</span>
+              <span class="demo-tag">🔑 Subrogation</span>
+            </div>
+          </div>
+          </div><!-- end hero-demo-inner -->
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-dot"></div><div class="scroll-dot"></div><div class="scroll-dot"></div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div style="background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:20px 0;">
+    <div class="container">
+      <div style="display:flex; align-items:center; justify-content:center; gap:40px; flex-wrap:wrap;">
+        <span style="font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-light);">Trusted for</span>
+        <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">⚖️ Legal Contracts</span>
+        <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">🏥 Medical Reports</span>
+        <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">🛡️ Insurance Policies</span>
+        <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">🏛️ Government Forms</span>
+        <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">🏠 Real Estate Deeds</span>
+        <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500;">💼 Business Agreements</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge badge-blue mb-16">Features</span>
+        <h2 class="section-title">Everything You Need to Decode<br>Complex Language</h2>
+        <p class="section-subtitle">From legalese to medicalese — Complex Language Simplifier handles every type of complex document with precision.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card" onclick="showPage('tool-legal')">
+          <div class="feature-icon" style="background:#E4EDE8">⚖️</div>
+          <h3>Legal Document Decoder</h3>
+          <p>Understand contracts, NDAs, lease agreements, terms of service, and any legal jargon with simple, accurate explanations.</p>
+          <span class="feature-link">Decode Legal Text →</span>
+        </div>
+        <div class="feature-card" onclick="showPage('tool-medical')">
+          <div class="feature-icon" style="background:#E8EDF5">🏥</div>
+          <h3>Medical Report Translator</h3>
+          <p>Turn complex lab results, diagnostic reports, medical prescriptions, and clinical notes into language your family can understand.</p>
+          <span class="feature-link">Simplify Medical Text →</span>
+        </div>
+        <div class="feature-card" onclick="showPage('tool-insurance')">
+          <div class="feature-icon" style="background:#F2E8EC">🛡️</div>
+          <h3>Insurance Policy Clarity</h3>
+          <p>Know exactly what your policy covers, what's excluded, and what the fine print really means before you sign anything.</p>
+          <span class="feature-link">Clarify Insurance →</span>
+        </div>
+        <div class="feature-card" onclick="showPage('tool-government')">
+          <div class="feature-icon" style="background:#EAE8F0">🏛️</div>
+          <h3>Government Form Guide</h3>
+          <p>Navigate tax forms, immigration documents, social services applications, and bureaucratic language with ease.</p>
+          <span class="feature-link">Decode Gov Forms →</span>
+        </div>
+        <div class="feature-card" onclick="showPage('tool')">
+          <div class="feature-icon" style="background:#EEE8E0">✨</div>
+          <h3>Universal Simplifier</h3>
+          <p>Any complex text from any domain — financial reports, academic papers, technical manuals, contracts — made instantly clear.</p>
+          <span class="feature-link">Try Any Text →</span>
+        </div>
+        <div class="feature-card" onclick="showPage('saved')">
+          <div class="feature-icon" style="background:#E4EDE8">📂</div>
+          <h3>Save & Reference</h3>
+          <p>Save your simplified explanations for future reference. Build a personal library of decoded documents you can revisit anytime.</p>
+          <span class="feature-link">View Saved →</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge badge-green mb-16">How It Works</span>
+        <h2 class="section-title">Three Steps to Clarity</h2>
+        <p class="section-subtitle">No account needed for basic use. Paste and get your explanation in seconds.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card fade-in fade-in-1">
+          <div class="step-number">1</div>
+          <h3>Paste Your Text</h3>
+          <p>Copy confusing text from any document — a contract, insurance policy, or medical report — and paste it into the input box.</p>
+        </div>
+        <div class="step-card fade-in fade-in-2">
+          <div class="step-number">2</div>
+          <h3>Choose Context</h3>
+          <p>Select the document type (legal, medical, insurance, etc.) for more targeted and accurate explanations tailored to that domain.</p>
+        </div>
+        <div class="step-card fade-in fade-in-3">
+          <div class="step-number">3</div>
+          <h3>Get Plain English</h3>
+          <p>Receive a clear, jargon-free explanation with highlighted key terms, what it means for you, and anything you should watch out for.</p>
+        </div>
+        <div class="step-card fade-in fade-in-4">
+          <div class="step-number">4</div>
+          <h3>Save & Share</h3>
+          <p>Optionally save the explanation to your personal library, copy it, or share it with family members who need to understand it too.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge badge-orange mb-16">Use Cases</span>
+        <h2 class="section-title">Designed for Real People<br>in Real Situations</h2>
+        <p class="section-subtitle">The Complex Language Simplifier is built for anyone who has ever stared at a document and felt completely lost. Here is where it helps most.</p>
+      </div>
+      <div class="usecases-grid">
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🏠</div>
+          <h3>Renters &amp; Homeowners</h3>
+          <p>Understand exactly what your lease, deed, or mortgage obligates you to — before you put pen to paper.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Lease break penalties &amp; notice periods</span>
+            <span class="usecase-example">Mortgage early repayment clauses</span>
+            <span class="usecase-example">HOA rules, fees &amp; bylaws</span>
+            <span class="usecase-example">Landlord entry &amp; eviction rights</span>
+            <span class="usecase-example">Property title &amp; encumbrance terms</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🏥</div>
+          <h3>Patients &amp; Caregivers</h3>
+          <p>Decode medical results, diagnoses, and clinical notes so you can make informed decisions about your health.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Blood test &amp; lab result interpretation</span>
+            <span class="usecase-example">Surgical consent forms</span>
+            <span class="usecase-example">Medication dosage &amp; side-effect warnings</span>
+            <span class="usecase-example">Radiology &amp; imaging reports</span>
+            <span class="usecase-example">Discharge summaries &amp; follow-up plans</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">💼</div>
+          <h3>Employees &amp; Job Seekers</h3>
+          <p>Know what you are agreeing to before you sign any employment offer, contract, or workplace policy.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Non-compete &amp; restraint of trade clauses</span>
+            <span class="usecase-example">Probation terms &amp; dismissal conditions</span>
+            <span class="usecase-example">Bonus, commission &amp; incentive structures</span>
+            <span class="usecase-example">Intellectual property ownership clauses</span>
+            <span class="usecase-example">Redundancy &amp; severance entitlements</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🛡️</div>
+          <h3>Insurance Policyholders</h3>
+          <p>Understand what you are actually covered for — and what the insurer will quietly refuse to pay out on.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Policy exclusions &amp; general exceptions</span>
+            <span class="usecase-example">Premium adjustment &amp; cancellation terms</span>
+            <span class="usecase-example">Claims procedure &amp; time limits</span>
+            <span class="usecase-example">Subrogation &amp; contribution clauses</span>
+            <span class="usecase-example">Life policy beneficiary conditions</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🏛️</div>
+          <h3>Citizens &amp; Taxpayers</h3>
+          <p>Navigate government paperwork, regulatory notices, and official correspondence without a translator.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Tax assessment &amp; penalty notices</span>
+            <span class="usecase-example">Immigration &amp; visa application forms</span>
+            <span class="usecase-example">Social benefit &amp; welfare eligibility rules</span>
+            <span class="usecase-example">Court summons &amp; tribunal notices</span>
+            <span class="usecase-example">Regulatory compliance letters</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">📊</div>
+          <h3>Small Business Owners</h3>
+          <p>Cut through complex supplier, franchise, and service agreements without paying a lawyer for every clause.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Supplier &amp; vendor agreements</span>
+            <span class="usecase-example">Franchise disclosure documents</span>
+            <span class="usecase-example">Software licence &amp; SaaS terms</span>
+            <span class="usecase-example">Business loan &amp; overdraft covenants</span>
+            <span class="usecase-example">Indemnity &amp; liability cap clauses</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🎓</div>
+          <h3>Students &amp; Academics</h3>
+          <p>Understand institutional rules, scholarship conditions, and research agreements that affect your future.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Scholarship conditions &amp; repayment triggers</span>
+            <span class="usecase-example">Student loan repayment terms</span>
+            <span class="usecase-example">Research grant agreements</span>
+            <span class="usecase-example">Academic misconduct &amp; appeal policies</span>
+            <span class="usecase-example">University housing &amp; conduct rules</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">💰</div>
+          <h3>Investors &amp; Borrowers</h3>
+          <p>Understand exactly what you are committing to with financial products, before the money moves.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Loan agreements &amp; interest calculations</span>
+            <span class="usecase-example">Investment prospectus risk disclosures</span>
+            <span class="usecase-example">Shareholder agreement terms</span>
+            <span class="usecase-example">Credit card terms &amp; penalty rates</span>
+            <span class="usecase-example">Pension &amp; retirement fund rules</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">👨‍👩‍👧</div>
+          <h3>Families &amp; Parents</h3>
+          <p>Protect your family by understanding legal and institutional documents that affect your children and household.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Child custody &amp; maintenance orders</span>
+            <span class="usecase-example">School enrolment &amp; consent forms</span>
+            <span class="usecase-example">Wills, trusts &amp; estate documents</span>
+            <span class="usecase-example">Adoption &amp; guardianship paperwork</span>
+            <span class="usecase-example">Power of attorney documents</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🌍</div>
+          <h3>Immigrants &amp; Expats</h3>
+          <p>Decode visa documents, residency applications, and foreign legal paperwork when starting over in a new country.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Residency &amp; work permit conditions</span>
+            <span class="usecase-example">Foreign tax obligation notices</span>
+            <span class="usecase-example">Tenancy agreements in new countries</span>
+            <span class="usecase-example">Foreign bank account terms</span>
+            <span class="usecase-example">Citizenship application documents</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">⚖️</div>
+          <h3>Legal Self-Representation</h3>
+          <p>Understand court documents and legal notices when you cannot afford a solicitor or want to handle things yourself.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Small claims court procedures</span>
+            <span class="usecase-example">Debt collection &amp; judgement notices</span>
+            <span class="usecase-example">Injunctions &amp; restraining orders</span>
+            <span class="usecase-example">Arbitration &amp; mediation clauses</span>
+            <span class="usecase-example">Contract dispute terminology</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🏗️</div>
+          <h3>Contractors &amp; Freelancers</h3>
+          <p>Know your rights, deliverables, and liabilities before taking on any client or project agreement.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Scope of work &amp; deliverable definitions</span>
+            <span class="usecase-example">Payment milestone &amp; late-fee terms</span>
+            <span class="usecase-example">IP ownership &amp; work-for-hire clauses</span>
+            <span class="usecase-example">Termination &amp; kill-fee provisions</span>
+            <span class="usecase-example">Confidentiality obligations</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🏦</div>
+          <h3>Banking &amp; Loan Customers</h3>
+          <p>Read the fine print on every banking product so you are never surprised by a charge, rate change, or penalty.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Variable rate mortgage reset clauses</span>
+            <span class="usecase-example">Bank charge dispute procedures</span>
+            <span class="usecase-example">Overdraft interest &amp; fee schedules</span>
+            <span class="usecase-example">Collateral &amp; security agreement terms</span>
+            <span class="usecase-example">Debt restructuring &amp; forbearance terms</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">📱</div>
+          <h3>Tech &amp; App Users</h3>
+          <p>Understand what you actually agree to when signing up for apps, platforms, and digital services.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Terms of service &amp; acceptable use policies</span>
+            <span class="usecase-example">Data privacy &amp; cookie disclosures</span>
+            <span class="usecase-example">Subscription auto-renewal terms</span>
+            <span class="usecase-example">Content ownership &amp; licensing clauses</span>
+            <span class="usecase-example">Account suspension &amp; termination rules</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🚢</div>
+          <h3>Travellers &amp; Tourists</h3>
+          <p>Know your rights and what you have waived before you board a flight, cruise, or holiday package.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Airline passenger rights &amp; rebooking terms</span>
+            <span class="usecase-example">Travel insurance coverage conditions</span>
+            <span class="usecase-example">Hotel cancellation &amp; no-show policies</span>
+            <span class="usecase-example">Package holiday refund clauses</span>
+            <span class="usecase-example">Car hire liability &amp; damage waiver terms</span>
+          </div>
+        </div>
+
+        <div class="usecase-card">
+          <div class="usecase-icon">🏢</div>
+          <h3>Corporate &amp; HR Teams</h3>
+          <p>Help staff understand internal policies, compliance documents, and agreements written in dense corporate language.</p>
+          <div class="usecase-examples">
+            <span class="usecase-example">Employee handbook &amp; code of conduct</span>
+            <span class="usecase-example">Workplace health &amp; safety obligations</span>
+            <span class="usecase-example">Data protection &amp; GDPR policies</span>
+            <span class="usecase-example">Share option &amp; equity scheme rules</span>
+            <span class="usecase-example">Anti-bribery &amp; whistleblowing policies</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge badge-blue mb-16">Testimonials</span>
+        <h2 class="section-title">Real People, Real Clarity</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p class="testimonial-text">I was about to sign a lease agreement without understanding half of it. Complex Language Simplifier explained every clause in plain language. Turned out there was a clause that would have cost me thousands!</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#1C5C3A,#1B3A6B)">A</div>
+            <div>
+              <div class="author-name">Amaka Okafor</div>
+              <div class="author-role">Tenant, Lagos</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p class="testimonial-text">My dad's medical report was full of terms we couldn't understand. Within 10 seconds, Complex Language Simplifier gave us a clear summary of what everything meant. I feel so much more in control.</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#7A2040,#8B6914)">J</div>
+            <div>
+              <div class="author-name">James Mensah</div>
+              <div class="author-role">Caregiver, Accra</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="quote-mark">"</div>
+          <p class="testimonial-text">I run a small business and was sent a 20-page vendor contract. Complex Language Simplifier broke it down section by section. I found two clauses that were unfair to me and was able to negotiate them out.</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:linear-gradient(135deg,#1B3A6B,#1C5C3A)">S</div>
+            <div>
+              <div class="author-name">Sara Nwosu</div>
+              <div class="author-role">Business Owner, Abuja</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="padding:60px 0 96px">
+    <div class="container">
+      <div class="cta-banner">
+        <div class="cta-text">
+          <h2>Ready to Stop Being Confused?</h2>
+          <p>Join over 50,000 people using Complex Language Simplifier to understand what they're signing, reading, and agreeing to. Start for free — no account required.</p>
+        </div>
+        <div class="cta-actions">
+          <button class="btn btn-white btn-lg" onclick="showPage('tool')">Try It Free Now</button>
+          <button class="btn btn-secondary btn-lg" style="color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.3)" onclick="showPage('pricing')">See Pricing</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===== PAGE: TOOL (General) ===== -->
+<div class="page" id="page-tool">
+  <div class="tool-hero">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge badge-blue mb-16">✨ General Simplifier</span>
+        <h1 class="section-title">Paste Any Complex Text.<br><em style="font-family:var(--font-display);color:var(--primary)">Get Plain English.</em></h1>
+        <p class="section-subtitle">Works with legal contracts, medical reports, insurance policies, government forms, academic papers, financial documents, and more.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tool-container">
+    <div id="general-tool">
+      <!-- Category Tabs -->
+      <div class="category-tabs" id="categoryTabs">
+        <button class="cat-tab active" data-cat="auto" onclick="setCategory(this,'auto')"><span class="cat-icon">🔍</span> Auto-Detect</button>
+        <button class="cat-tab" data-cat="legal" onclick="setCategory(this,'legal')"><span class="cat-icon">⚖️</span> Legal</button>
+        <button class="cat-tab" data-cat="medical" onclick="setCategory(this,'medical')"><span class="cat-icon">🏥</span> Medical</button>
+        <button class="cat-tab" data-cat="insurance" onclick="setCategory(this,'insurance')"><span class="cat-icon">🛡️</span> Insurance</button>
+        <button class="cat-tab" data-cat="government" onclick="setCategory(this,'government')"><span class="cat-icon">🏛️</span> Government</button>
+        <button class="cat-tab" data-cat="financial" onclick="setCategory(this,'financial')"><span class="cat-icon">💰</span> Financial</button>
+      </div>
+
+      <!-- Simplifier Card -->
+      <div class="simplifier-card">
+        <div class="simplifier-top">
+          <div class="simplifier-top-row">
+            <span class="simplifier-title">📝 Paste your complex text here</span>
+            <span class="char-count" id="charCount">0 / 5000 chars</span>
+          </div>
+          <textarea class="text-input-area" id="textInput" placeholder="Paste any complex text here...
+
+Example 1 — Legal: 'The Executive consents to the granting of injunctive or other equitable relief without the necessity of posting bond or proving actual damages, in addition to any other remedies available at law...'
+
+Example 2 — Medical: 'Moderate periventricular white matter T2 hyperintensity consistent with chronic small vessel ischaemic disease. No restricted diffusion to suggest acute infarction. Mild generalised cerebral volume loss noted...'
+
+Example 3 — Insurance: 'The Insurer shall not be liable in respect of any loss arising out of cyber events, gradual deterioration, or contractual liability assumed by the Insured that would not otherwise exist at law...'" maxlength="5000" oninput="updateCharCount()"></textarea>
+        </div>
+
+        <div class="simplifier-actions">
+          <div class="action-options">
+            <button class="option-pill active" data-mode="simple" onclick="setMode(this)">Simple Mode</button>
+            <button class="option-pill" data-mode="detailed" onclick="setMode(this)">Detailed Mode</button>
+            <button class="option-pill" data-mode="key-terms" onclick="setMode(this)">Key Terms</button>
+            <button class="option-pill" data-mode="bullet" onclick="setMode(this)">Bullet Points</button>
+          </div>
+          <button class="simplifier-btn" id="simplifyBtn" onclick="simplifyText()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 4.5H14l-3.5 2.5L12 13l-4-3-4 3 1.5-5L2 5.5h4.5L8 1z" fill="white"/></svg>
+            Simplify Now
+          </button>
+        </div>
+
+        <!-- Error -->
+        <div class="error-banner" id="errorBanner">
+          <span>⚠️</span>
+          <span id="errorText">Something went wrong. Please try again.</span>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-state" id="loadingState">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Analyzing your text<span class="loading-dots"></span></p>
+          <p style="font-size:0.78rem;color:var(--text-light);margin-top:6px">Identifying complex terms and generating explanation</p>
+        </div>
+
+        <!-- Result -->
+        <div class="result-panel" id="resultPanel">
+          <div class="result-header">
+            <div class="result-label"><span class="result-label-icon">✅</span> Plain English Explanation</div>
+            <button class="result-copy-btn" onclick="copyResult()">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 4V2.5A1.5 1.5 0 008.5 1h-7A1.5 1.5 0 000 2.5v7A1.5 1.5 0 001.5 11H3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Copy
+            </button>
+          </div>
+          <div class="result-box" id="resultBox"></div>
+
+          <div class="result-breakdown" id="resultBreakdown">
+            <div class="breakdown-title">🔑 Key Terms Explained</div>
+            <div class="breakdown-items" id="breakdownItems"></div>
+          </div>
+
+          <div class="result-meta" id="resultMeta"></div>
+
+          <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" onclick="saveExplanation()">💾 Save Explanation</button>
+            <button class="btn btn-secondary btn-sm" onclick="clearAll()">🔄 Clear & Start Over</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div style="margin-top:24px; padding:20px 24px; background:#fff; border-radius:var(--radius); border:1px solid var(--border);">
+        <div style="font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-light); margin-bottom:12px;">💡 Tips for Best Results</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
+          <div style="font-size:0.84rem;color:var(--text-muted);">📌 Paste one clause or paragraph at a time for clearest results</div>
+          <div style="font-size:0.84rem;color:var(--text-muted);">🏷️ Select the correct document type for more targeted explanations</div>
+          <div style="font-size:0.84rem;color:var(--text-muted);">🔑 Use "Key Terms" mode to get a glossary of difficult words</div>
+          <div style="font-size:0.84rem;color:var(--text-muted);">💾 Save important explanations to revisit them anytime</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: TOOL LEGAL ===== -->
+<div class="page" id="page-tool-legal">
+  <div class="tool-hero" style="background:linear-gradient(135deg,#E8EDF2,#EDF0F5)">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge badge-blue mb-16">⚖️ Legal Document Decoder</span>
+        <h1 class="section-title">Stop Being Confused<br><em style="font-family:var(--font-display);color:var(--primary)">By Legal Language</em></h1>
+        <p class="section-subtitle">Contracts, NDAs, leases, employment agreements, terms of service — paste any legal text and we'll translate it into language you actually understand.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tool-container">
+    <div class="category-tabs" style="margin-bottom:20px">
+      <span style="font-size:0.85rem; color:var(--text-muted); font-weight:500; align-self:center;">Common Legal Texts:</span>
+      <button class="cat-tab" onclick="fillSample('legal-nda')">📋 NDA Sample</button>
+      <button class="cat-tab" onclick="fillSample('legal-lease')">🏠 Lease Sample</button>
+      <button class="cat-tab" onclick="fillSample('legal-employment')">💼 Employment Sample</button>
+    </div>
+    <div id="legal-tool-container"></div>
+  </div>
+</div>
+
+<!-- ===== PAGE: TOOL MEDICAL ===== -->
+<div class="page" id="page-tool-medical">
+  <div class="tool-hero" style="background:linear-gradient(135deg,#E4EDE8,#EBF2EC)">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge badge-green mb-16">🏥 Medical Report Translator</span>
+        <h1 class="section-title">Understand Your<br><em style="font-family:var(--font-display);color:var(--primary)">Medical Results</em></h1>
+        <p class="section-subtitle">Lab reports, diagnoses, clinical notes, prescriptions — we translate complex medical terminology into clear, understandable English.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tool-container">
+    <div class="category-tabs" style="margin-bottom:20px">
+      <span style="font-size:0.85rem; color:var(--text-muted); font-weight:500; align-self:center;">Common Medical Texts:</span>
+      <button class="cat-tab" onclick="fillSample('medical-lab')">🔬 Lab Result Sample</button>
+      <button class="cat-tab" onclick="fillSample('medical-diagnosis')">📋 Diagnosis Sample</button>
+      <button class="cat-tab" onclick="fillSample('medical-prescription')">💊 Prescription Sample</button>
+    </div>
+    <div id="medical-tool-container"></div>
+  </div>
+</div>
+
+<!-- ===== PAGE: TOOL INSURANCE ===== -->
+<div class="page" id="page-tool-insurance">
+  <div class="tool-hero" style="background:linear-gradient(135deg,#F0E8EC,#F5EDE8)">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge badge-orange mb-16">🛡️ Insurance Policy Clarity</span>
+        <h1 class="section-title">Know Exactly What<br><em style="font-family:var(--font-display);color:var(--secondary)">You're Covered For</em></h1>
+        <p class="section-subtitle">Life, health, auto, home, business insurance — understand your coverage, exclusions, and what the fine print actually means before it's too late.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tool-container">
+    <div class="category-tabs" style="margin-bottom:20px">
+      <span style="font-size:0.85rem; color:var(--text-muted); font-weight:500; align-self:center;">Common Insurance Texts:</span>
+      <button class="cat-tab" onclick="fillSample('insurance-exclusion')">❌ Exclusion Clause</button>
+      <button class="cat-tab" onclick="fillSample('insurance-claim')">📝 Claims Process</button>
+      <button class="cat-tab" onclick="fillSample('insurance-liability')">⚠️ Liability Terms</button>
+    </div>
+    <div id="insurance-tool-container"></div>
+  </div>
+</div>
+
+<!-- ===== PAGE: TOOL GOVERNMENT ===== -->
+<div class="page" id="page-tool-government">
+  <div class="tool-hero" style="background:linear-gradient(135deg,#E8EDF2,#EDF0EE)">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge mb-16" style="background:#E8EDF2;color:#1B3A6B">🏛️ Government Form Guide</span>
+        <h1 class="section-title">Navigate Bureaucracy<br><em style="font-family:var(--font-display);color:#1B3A6B">With Confidence</em></h1>
+        <p class="section-subtitle">Tax forms, immigration documents, court filings, social services applications — we explain exactly what each section means and what you need to do.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tool-container">
+    <div class="category-tabs" style="margin-bottom:20px">
+      <span style="font-size:0.85rem; color:var(--text-muted); font-weight:500; align-self:center;">Common Government Texts:</span>
+      <button class="cat-tab" onclick="fillSample('gov-tax')">📊 Tax Form</button>
+      <button class="cat-tab" onclick="fillSample('gov-immigration')">🛂 Immigration Form</button>
+      <button class="cat-tab" onclick="fillSample('gov-court')">⚖️ Court Notice</button>
+    </div>
+    <div id="government-tool-container"></div>
+  </div>
+</div>
+
+<!-- ===== PAGE: PRICING ===== -->
+<div class="page" id="page-pricing">
+  <div class="tool-hero">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge badge-green mb-16">Pricing</span>
+        <h1 class="section-title">Simple, Transparent Pricing</h1>
+        <p class="section-subtitle">Start free. Upgrade when you need more. No hidden fees, no long-term commitment.</p>
+      </div>
+    </div>
+  </div>
+  <section class="section">
+    <div class="container">
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-name">Free</div>
+          <div class="pricing-price">$0</div>
+          <div class="pricing-period">forever free</div>
+          <div class="pricing-features">
+            <div class="pricing-feature"><span class="check">✓</span> 10 simplifications/day</div>
+            <div class="pricing-feature"><span class="check">✓</span> All document types</div>
+            <div class="pricing-feature"><span class="check">✓</span> Simple mode only</div>
+            <div class="pricing-feature"><span class="check">✓</span> Copy results</div>
+            <div class="pricing-feature"><span class="cross" style="color:var(--text-light)">✕</span> <span style="color:var(--text-light)">Save explanations</span></div>
+            <div class="pricing-feature"><span class="cross" style="color:var(--text-light)">✕</span> <span style="color:var(--text-light)">Key terms mode</span></div>
+            <div class="pricing-feature"><span class="cross" style="color:var(--text-light)">✕</span> <span style="color:var(--text-light)">Priority processing</span></div>
+          </div>
+          <button class="btn btn-secondary" style="width:100%" onclick="showPage('tool')">Get Started Free</button>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-name">Pro</div>
+          <div class="pricing-price"><sup>$</sup>12</div>
+          <div class="pricing-period">per month</div>
+          <div class="pricing-features">
+            <div class="pricing-feature"><span class="check">✓</span> Unlimited simplifications</div>
+            <div class="pricing-feature"><span class="check">✓</span> All document types</div>
+            <div class="pricing-feature"><span class="check">✓</span> All explanation modes</div>
+            <div class="pricing-feature"><span class="check">✓</span> Save up to 500 explanations</div>
+            <div class="pricing-feature"><span class="check">✓</span> Key terms glossary</div>
+            <div class="pricing-feature"><span class="check">✓</span> Priority processing</div>
+            <div class="pricing-feature"><span class="cross" style="color:var(--text-light)">✕</span> <span style="color:var(--text-light)">API access</span></div>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="toast('Pro plan coming soon!','🚀')">Upgrade to Pro</button>
+        </div>
+        <div class="pricing-card">
+          <div class="pricing-name">Enterprise</div>
+          <div class="pricing-price"><sup style="font-size:0.9rem">$</sup>49</div>
+          <div class="pricing-period">per month</div>
+          <div class="pricing-features">
+            <div class="pricing-feature"><span class="check">✓</span> Everything in Pro</div>
+            <div class="pricing-feature"><span class="check">✓</span> Unlimited saves</div>
+            <div class="pricing-feature"><span class="check">✓</span> API access</div>
+            <div class="pricing-feature"><span class="check">✓</span> Team accounts (up to 10)</div>
+            <div class="pricing-feature"><span class="check">✓</span> Custom branding</div>
+            <div class="pricing-feature"><span class="check">✓</span> Priority email support</div>
+            <div class="pricing-feature"><span class="check">✓</span> Advanced analytics</div>
+          </div>
+          <button class="btn btn-secondary" style="width:100%" onclick="showPage('contact')">Contact Sales</button>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div style="margin-top:80px">
+        <div class="section-header">
+          <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFAQ(this)">
+              Is my data private and secure? Do you store what I paste?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">We take privacy seriously. Text you paste is processed in real-time and is not permanently stored on our servers. We use bank-grade TLS 1.3 encryption for all data in transit. We do not sell, share, or train models on your documents. Saved explanations (Pro feature) are encrypted at rest. You can delete them at any time.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFAQ(this)">
+              How accurate are the explanations?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">Our AI is trained on millions of legal, medical, and official documents and achieves a 98%+ accuracy rating in user satisfaction surveys. However, we always recommend consulting a qualified professional for major legal, medical, or financial decisions. Complex Language Simplifier is a comprehension tool, not a substitute for professional advice.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFAQ(this)">
+              What document types does Complex Language Simplifier support?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">Complex Language Simplifier supports legal documents (contracts, NDAs, leases, employment agreements), medical reports (lab results, diagnoses, prescriptions), insurance policies (life, health, auto, home), government forms (tax, immigration, court), financial documents (loan agreements, investment prospectuses), academic papers, and any other complex text you encounter.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFAQ(this)">
+              Can I cancel my subscription at any time?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">Yes, absolutely. You can cancel your Pro or Enterprise subscription at any time from your account settings. You'll continue to have access to your plan's features until the end of your current billing period, after which you'll revert to the free tier.</div>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFAQ(this)">
+              Is this a replacement for a lawyer or doctor?
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">No — Complex Language Simplifier is a reading and comprehension tool that helps you understand complex language. It is not legal, medical, or financial advice. For decisions with significant legal, health, or financial consequences, we always recommend consulting a qualified professional. Complex Language Simplifier helps you understand what's written so you can have better conversations with those professionals.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== PAGE: ABOUT ===== -->
+<div class="page" id="page-about">
+  <div class="about-hero">
+    <div class="container" style="position:relative;z-index:1;text-align:center">
+      <span class="badge mb-16" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8)">About Complex Language Simplifier</span>
+      <h1 class="section-title" style="max-width:700px;margin:0 auto 16px">We Believe Everyone Deserves to<br><em style="color:rgba(160,210,180,1)">Understand What They Sign</em></h1>
+      <p class="section-subtitle" style="max-width:580px;margin:0 auto">Complex Language Simplifier was founded on a simple belief: complex language shouldn't be a barrier to informed decisions. We're making document comprehension accessible to everyone.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; margin-bottom:80px">
+        <div>
+          <span class="badge badge-blue mb-16">Our Mission</span>
+          <h2 class="section-title" style="text-align:left">Closing the Comprehension Gap</h2>
+          <p style="color:var(--text-muted); line-height:1.8; margin-bottom:20px">Every day, millions of people sign documents they don't fully understand — lease agreements, employment contracts, insurance policies, medical forms. The consequences can be life-changing.</p>
+          <p style="color:var(--text-muted); line-height:1.8; margin-bottom:20px">Not everyone can afford a lawyer or doctor to explain every document. Complex Language Simplifier levels the playing field, putting the power of comprehension in your hands, instantly, affordably, and securely.</p>
+          <p style="color:var(--text-muted); line-height:1.8">We've helped over 50,000 people across 60+ countries understand their documents and make more informed decisions.</p>
+        </div>
+        <div>
+          <div style="background:#fff; border-radius:var(--radius-lg); padding:36px; border:1px solid var(--border); box-shadow:var(--shadow)">
+            <div style="margin-bottom:24px">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.88rem; font-weight:600;">
+                <span>Documents Simplified</span><span style="color:var(--primary)">1.2M+</span>
+              </div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:92%"></div></div>
+            </div>
+            <div style="margin-bottom:24px">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.88rem; font-weight:600;">
+                <span>User Satisfaction</span><span style="color:var(--accent)">98%</span>
+              </div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:98%;background:linear-gradient(90deg,var(--accent),var(--primary))"></div></div>
+            </div>
+            <div style="margin-bottom:24px">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.88rem; font-weight:600;">
+                <span>Countries Served</span><span style="color:var(--secondary)">60+</span>
+              </div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:72%;background:linear-gradient(90deg,var(--secondary),var(--accent-2))"></div></div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.88rem; font-weight:600;">
+                <span>Accuracy Rate</span><span style="color:var(--accent-2)">98%</span>
+              </div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:98%;background:linear-gradient(90deg,var(--accent-2),var(--secondary))"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div style="margin-bottom:80px">
+        <div class="section-header">
+          <span class="badge badge-green mb-16">🔒 Security First</span>
+          <h2 class="section-title">Built With Security at Its Core</h2>
+          <p class="section-subtitle">Your documents are sensitive. We've built Complex Language Simplifier with security as the foundation, not an afterthought.</p>
+        </div>
+        <div class="security-grid">
+          <div class="security-card">
+            <div class="security-icon">🔐</div>
+            <div class="security-text">
+              <h4>End-to-End Encryption</h4>
+              <p>All data transmitted to and from Complex Language Simplifier is encrypted using TLS 1.3, the same standard used by banks and financial institutions.</p>
+            </div>
+          </div>
+          <div class="security-card">
+            <div class="security-icon">🚫</div>
+            <div class="security-text">
+              <h4>Zero Data Retention</h4>
+              <p>Text you paste is processed in real-time and deleted immediately. We never store, log, or use your document content for training.</p>
+            </div>
+          </div>
+          <div class="security-card">
+            <div class="security-icon">🛡️</div>
+            <div class="security-text">
+              <h4>No Third-Party Sharing</h4>
+              <p>Your document content is never shared with third parties, advertisers, or data brokers — ever. Your privacy is non-negotiable.</p>
+            </div>
+          </div>
+          <div class="security-card">
+            <div class="security-icon">🔑</div>
+            <div class="security-text">
+              <h4>Encrypted Saves</h4>
+              <p>If you save explanations (Pro feature), they are encrypted at rest using AES-256 and only accessible by you with your credentials.</p>
+            </div>
+          </div>
+          <div class="security-card">
+            <div class="security-icon">🌐</div>
+            <div class="security-text">
+              <h4>GDPR & CCPA Compliant</h4>
+              <p>We fully comply with GDPR, CCPA, and other major data privacy regulations. You have full control over your data at all times.</p>
+            </div>
+          </div>
+          <div class="security-card">
+            <div class="security-icon">🔍</div>
+            <div class="security-text">
+              <h4>Regular Security Audits</h4>
+              <p>Our systems undergo regular third-party security audits and penetration testing to ensure your data is always protected.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== PAGE: SAVED ===== -->
+<div class="page" id="page-saved">
+  <div class="tool-hero">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge badge-blue mb-16">📂 Saved Explanations</span>
+        <h1 class="section-title">Your Explanation Library</h1>
+        <p class="section-subtitle">Quick access to all your saved simplified explanations. Build your personal reference library.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tool-container">
+    <div id="savedList">
+      <div style="text-align:center; padding:60px 20px; color:var(--text-muted)">
+        <div style="font-size:3rem; margin-bottom:16px">📭</div>
+        <h3 style="font-size:1.1rem; margin-bottom:8px; color:var(--text)">No Saved Explanations Yet</h3>
+        <p style="font-size:0.9rem; margin-bottom:24px">Simplify a document and click "Save Explanation" to see it here.</p>
+        <button class="btn btn-primary" onclick="showPage('tool')">Simplify a Document</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: CONTACT ===== -->
+<div class="page" id="page-contact">
+  <div class="tool-hero">
+    <div class="container">
+      <div class="tool-hero-inner">
+        <span class="badge badge-blue mb-16">Contact</span>
+        <h1 class="section-title">We'd Love to Hear From You</h1>
+        <p class="section-subtitle">Have a question, feedback, or need enterprise support? Our team typically responds within 24 hours.</p>
+      </div>
+    </div>
+  </div>
+  <section class="section">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h2 class="section-title" style="text-align:left;font-size:1.8rem">Get in Touch</h2>
+          <p>Whether you need help with the tool, have feedback to share, or want to discuss an enterprise plan, we're here to help.</p>
+          <div class="contact-methods">
+            <div class="contact-method">
+              <div class="contact-method-icon">📧</div>
+              <div class="contact-method-text">
+                <strong>Email Support</strong>
+                <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b434e4747446b48474a59424d524a4205484446">[email&#160;protected]</a></span>
+              </div>
+            </div>
+            <div class="contact-method">
+              <div class="contact-method-icon">💬</div>
+              <div class="contact-method-text">
+                <strong>Live Chat</strong>
+                <span>Available Mon–Fri, 9am–6pm WAT</span>
+              </div>
+            </div>
+            <div class="contact-method">
+              <div class="contact-method-icon">🏢</div>
+              <div class="contact-method-text">
+                <strong>Enterprise Sales</strong>
+                <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e4818a90819694968d9781a4878885968d829d858dca878b89">[email&#160;protected]</a></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input class="form-input" type="text" placeholder="John">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" type="text" placeholder="Doe">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <select class="form-select">
+              <option>General Question</option>
+              <option>Technical Support</option>
+              <option>Billing Inquiry</option>
+              <option>Enterprise Plan</option>
+              <option>Partnership</option>
+              <option>Report a Bug</option>
+              <option>Feature Request</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" placeholder="Describe your question or feedback in detail..."></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="submitContactForm(event)">
+            Send Message ✉️
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== NEWSLETTER SECTION (shown on most pages) ===== -->
+<section class="newsletter-section" id="newsletterSection">
+  <div class="container">
+    <div class="newsletter-inner">
+      <span class="badge mb-16" style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9)">Stay Informed</span>
+      <h2>Get Tips on Understanding Complex Documents</h2>
+      <p>Join 12,000+ subscribers who receive weekly guides on navigating legal, medical, and official documents.</p>
+      <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+        <input class="newsletter-input" type="email" placeholder="Enter your email address" id="newsletterEmail" required>
+        <button type="submit" class="btn btn-white">Subscribe</button>
+      </form>
+      <p class="newsletter-note">No spam. Unsubscribe anytime. We respect your privacy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:14px">
+          <div class="logo-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M3 6h16M3 11h10M3 16h13" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="17" cy="15.5" r="3.5" fill="white" opacity="0.9"/>
+              <path d="M15.5 15.5l1 1 2-2" stroke="#1C5C3A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="logo-text" style="color:#fff">Complex Language <span>Simplifier</span></span>
+        </div>
+        <p>Making complex language accessible to everyone. Understand what you sign, read, and agree to — instantly.</p>
+        <div class="footer-socials">
+          <button class="social-btn" title="Twitter/X">𝕏</button>
+          <button class="social-btn" title="LinkedIn">in</button>
+          <button class="social-btn" title="Instagram">ig</button>
+          <button class="social-btn" title="Facebook">f</button>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Tools</h4>
+        <div class="footer-links">
+          <a onclick="showPage('tool')">General Simplifier</a>
+          <a onclick="showPage('tool-legal')">Legal Documents</a>
+          <a onclick="showPage('tool-medical')">Medical Reports</a>
+          <a onclick="showPage('tool-insurance')">Insurance Policies</a>
+          <a onclick="showPage('tool-government')">Government Forms</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <div class="footer-links">
+          <a onclick="showPage('about')">About Us</a>
+          <a onclick="showPage('pricing')">Pricing</a>
+          <a onclick="showPage('contact')">Contact</a>
+          <a onclick="showPage('saved')">Saved</a>
+          <a>Careers</a>
+          <a>Blog</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <div class="footer-links">
+          <a>Privacy Policy</a>
+          <a>Terms of Service</a>
+          <a>Cookie Policy</a>
+          <a>GDPR Compliance</a>
+          <a>Security</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Complex Language Simplifier. All rights reserved. Not a substitute for professional legal, medical, or financial advice.</p>
+      <div class="footer-bottom-links">
+        <a>Privacy</a>
+        <a>Terms</a>
+        <a>Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✅</span>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ===== SECURITY HELPERS =====
+const DOMPurify = { sanitize: (str) => {
+  const tmp = document.createElement('div');
+  tmp.textContent = str;
+  return tmp.innerHTML;
+}};
+
+function escapeHTML(str) {
+  const d = document.createElement('div');
+  d.textContent = String(str);
+  return d.innerHTML;
+}
+
+// Rate limiting
+const rateLimiter = (() => {
+  let calls = [];
+  const maxCalls = 20, windowMs = 60000;
+  return {
+    check() {
+      const now = Date.now();
+      calls = calls.filter(t => now - t < windowMs);
+      if (calls.length >= maxCalls) return false;
+      calls.push(now); return true;
+    }
+  };
+})();
+
+// Input sanitization
+function sanitizeInput(input) {
+  return String(input).slice(0, 5000).replace(/[<>]/g, '');
+}
+
+// ===== STATE =====
+let currentCategory = 'auto';
+let currentMode = 'simple';
+let savedExplanations = JSON.parse(localStorage.getItem('cls_saved') || '[]');
+let currentResult = null;
+let isProcessing = false;
+
+// ===== PAGE NAVIGATION =====
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Init sub-page tools
+  if (pageId === 'tool-legal') initSubTool('legal-tool-container', 'legal');
+  if (pageId === 'tool-medical') initSubTool('medical-tool-container', 'medical');
+  if (pageId === 'tool-insurance') initSubTool('insurance-tool-container', 'insurance');
+  if (pageId === 'tool-government') initSubTool('government-tool-container', 'government');
+  if (pageId === 'saved') renderSaved();
+
+  // Show newsletter on all pages except newsletter/contact
+  const ns = document.getElementById('newsletterSection');
+  if (ns) ns.style.display = ['contact'].includes(pageId) ? 'none' : 'block';
+}
+
+function initSubTool(containerId, category) {
+  const c = document.getElementById(containerId);
+  if (!c || c.dataset.initialized) return;
+  c.dataset.initialized = '1';
+  c.innerHTML = buildToolHTML(containerId + '_input', containerId + '_count',
+    containerId + '_btn', containerId + '_load', containerId + '_result',
+    containerId + '_error', category);
+  bindToolEvents(containerId, category);
+}
+
+function buildToolHTML(inputId, countId, btnId, loadId, resultId, errId, cat) {
+  return `
+  <div class="simplifier-card">
+    <div class="simplifier-top">
+      <div class="simplifier-top-row">
+        <span class="simplifier-title">📝 Paste your ${cat} text here</span>
+        <span class="char-count" id="${countId}">0 / 5000 chars</span>
+      </div>
+      <textarea class="text-input-area" id="${inputId}" placeholder="Paste ${cat} document text here..." maxlength="5000" oninput="document.getElementById('${countId}').textContent=(this.value.length)+' / 5000 chars'"></textarea>
+    </div>
+    <div class="simplifier-actions">
+      <div class="action-options">
+        <button class="option-pill active" onclick="setSubMode(this,'simple','${resultId}')">Simple Mode</button>
+        <button class="option-pill" onclick="setSubMode(this,'detailed','${resultId}')">Detailed Mode</button>
+        <button class="option-pill" onclick="setSubMode(this,'key-terms','${resultId}')">Key Terms</button>
+      </div>
+      <button class="simplifier-btn" id="${btnId}" onclick="simplifySubText('${inputId}','${btnId}','${loadId}','${resultId}','${errId}','${cat}')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 4.5H14l-3.5 2.5L12 13l-4-3-4 3 1.5-5L2 5.5h4.5L8 1z" fill="white"/></svg>
+        Simplify Now
+      </button>
+    </div>
+    <div class="error-banner" id="${errId}"><span>⚠️</span><span id="${errId}_txt">Error</span></div>
+    <div class="loading-state" id="${loadId}">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Analyzing your text<span class="loading-dots"></span></p>
+    </div>
+    <div class="result-panel" id="${resultId}">
+      <div class="result-header">
+        <div class="result-label"><span>✅</span> Plain English Explanation</div>
+        <button class="result-copy-btn" onclick="copyResultById('${resultId}_box')">Copy</button>
+      </div>
+      <div class="result-box" id="${resultId}_box"></div>
+      <div class="result-breakdown" id="${resultId}_breakdown" style="display:none">
+        <div class="breakdown-title">🔑 Key Terms</div>
+        <div class="breakdown-items" id="${resultId}_terms"></div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="saveById('${inputId}','${resultId}_box','${cat}')">💾 Save</button>
+        <button class="btn btn-secondary btn-sm" onclick="clearSubTool('${inputId}','${resultId}','${countId}')">🔄 Clear</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindToolEvents(containerId, category) {}
+
+function setSubMode(btn, mode, resultId) {
+  btn.closest('.action-options').querySelectorAll('.option-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  btn.dataset.mode = mode;
+}
+
+async function simplifySubText(inputId, btnId, loadId, resultId, errId, cat) {
+  const textarea = document.getElementById(inputId);
+  if (!textarea) return;
+  const text = textarea.value.trim();
+  if (!text) { showSubError(errId, 'Please paste some text first.'); return; }
+  if (text.length < 10) { showSubError(errId, 'Please paste more text (at least 10 characters).'); return; }
+  if (!rateLimiter.check()) { showSubError(errId, 'Too many requests. Please wait a moment.'); return; }
+
+  const modeBtn = document.querySelector(`#${inputId}`)?.closest('.simplifier-card')?.querySelector('.option-pill.active');
+  const mode = modeBtn?.dataset.mode || 'simple';
+
+  hideSubError(errId);
+  document.getElementById(resultId).classList.remove('visible');
+  document.getElementById(loadId).classList.add('visible');
+  document.getElementById(btnId).disabled = true;
+
+  const result = await callClarifyAPI(sanitizeInput(text), cat, mode);
+
+  document.getElementById(loadId).classList.remove('visible');
+  document.getElementById(btnId).disabled = false;
+
+  if (result.error) { showSubError(errId, result.error); return; }
+
+  document.getElementById(resultId + '_box').innerHTML = result.html;
+  const breakdown = document.getElementById(resultId + '_breakdown');
+  const terms = document.getElementById(resultId + '_terms');
+  if (result.keyTerms && result.keyTerms.length > 0) {
+    terms.innerHTML = result.keyTerms.map(t =>
+      `<div class="breakdown-item"><span class="breakdown-term">${escapeHTML(t.term)}</span><span class="breakdown-def">${escapeHTML(t.def)}</span></div>`
+    ).join('');
+    breakdown.style.display = 'block';
+  } else { breakdown.style.display = 'none'; }
+  document.getElementById(resultId).classList.add('visible');
+}
+
+function showSubError(errId, msg) {
+  const el = document.getElementById(errId);
+  if (!el) return;
+  document.getElementById(errId + '_txt').textContent = msg;
+  el.classList.add('visible');
+}
+function hideSubError(errId) {
+  const el = document.getElementById(errId);
+  if (el) el.classList.remove('visible');
+}
+
+function copyResultById(boxId) {
+  const box = document.getElementById(boxId);
+  if (!box) return;
+  const text = box.innerText;
+  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!', '📋'));
+}
+
+function saveById(inputId, boxId, cat) {
+  const input = document.getElementById(inputId);
+  const box = document.getElementById(boxId);
+  if (!input || !box) return;
+  const item = {
+    id: Date.now(),
+    original: input.value.slice(0, 200),
+    explanation: box.innerText,
+    category: cat,
+    date: new Date().toLocaleDateString()
+  };
+  savedExplanations.unshift(item);
+  localStorage.setItem('cls_saved', JSON.stringify(savedExplanations.slice(0, 50)));
+  toast('Explanation saved!', '💾');
+}
+
+function clearSubTool(inputId, resultId, countId) {
+  const inp = document.getElementById(inputId);
+  if (inp) { inp.value = ''; }
+  document.getElementById(resultId).classList.remove('visible');
+  document.getElementById(countId).textContent = '0 / 5000 chars';
+}
+
+// ===== MAIN TOOL =====
+function updateCharCount() {
+  const v = document.getElementById('textInput').value;
+  document.getElementById('charCount').textContent = v.length + ' / 5000 chars';
+}
+
+function setCategory(btn, cat) {
+  currentCategory = cat;
+  document.querySelectorAll('#categoryTabs .cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setMode(btn) {
+  currentMode = btn.dataset.mode;
+  document.querySelectorAll('.action-options .option-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function simplifyText() {
+  if (isProcessing) return;
+  const text = document.getElementById('textInput').value.trim();
+  if (!text) { showError('Please paste some text to simplify.'); return; }
+  if (text.length < 10) { showError('Please paste more text (at least 10 characters).'); return; }
+  if (!rateLimiter.check()) { showError('Too many requests. Please wait a moment before trying again.'); return; }
+
+  isProcessing = true;
+  hideError();
+  document.getElementById('resultPanel').classList.remove('visible');
+  document.getElementById('loadingState').classList.add('visible');
+  document.getElementById('simplifyBtn').disabled = true;
+
+  const result = await callClarifyAPI(sanitizeInput(text), currentCategory, currentMode);
+
+  document.getElementById('loadingState').classList.remove('visible');
+  document.getElementById('simplifyBtn').disabled = false;
+  isProcessing = false;
+
+  if (result.error) { showError(result.error); return; }
+
+  currentResult = result;
+  document.getElementById('resultBox').innerHTML = result.html;
+
+  const bItems = document.getElementById('breakdownItems');
+  const bSection = document.getElementById('resultBreakdown');
+  if (result.keyTerms && result.keyTerms.length > 0) {
+    bItems.innerHTML = result.keyTerms.map(t =>
+      `<div class="breakdown-item"><span class="breakdown-term">${escapeHTML(t.term)}</span><span class="breakdown-def">${escapeHTML(t.def)}</span></div>`
+    ).join('');
+    bSection.style.display = 'block';
+  } else { bSection.style.display = 'none'; }
+
+  document.getElementById('resultMeta').innerHTML = `
+    <div class="meta-chip">📂 Category: ${escapeHTML(result.detectedCategory || currentCategory)}</div>
+    <div class="meta-chip">⏱️ ${result.processingTime || '<1s'}</div>
+    <div class="meta-chip">📊 ${text.length} chars processed</div>
+  `;
+
+  document.getElementById('resultPanel').classList.add('visible');
+}
+
+function showError(msg) {
+  document.getElementById('errorText').textContent = msg;
+  document.getElementById('errorBanner').classList.add('visible');
+}
+function hideError() {
+  document.getElementById('errorBanner').classList.remove('visible');
+}
+
+function copyResult() {
+  const box = document.getElementById('resultBox');
+  if (!box) return;
+  navigator.clipboard.writeText(box.innerText).then(() => toast('Copied to clipboard!', '📋'));
+}
+
+function clearAll() {
+  document.getElementById('textInput').value = '';
+  document.getElementById('charCount').textContent = '0 / 5000 chars';
+  document.getElementById('resultPanel').classList.remove('visible');
+  hideError();
+  currentResult = null;
+}
+
+function saveExplanation() {
+  const input = document.getElementById('textInput').value;
+  const box = document.getElementById('resultBox');
+  if (!input || !box) return;
+  const item = {
+    id: Date.now(),
+    original: input.slice(0, 200),
+    explanation: box.innerText,
+    category: currentCategory,
+    date: new Date().toLocaleDateString()
+  };
+  savedExplanations.unshift(item);
+  localStorage.setItem('cls_saved', JSON.stringify(savedExplanations.slice(0, 50)));
+  toast('Explanation saved to your library!', '💾');
+}
+
+// ===== API CALL — REAL CLAUDE AI =====
+async function callClarifyAPI(text, category, mode) {
+  const start = Date.now();
+  try {
+    const systemPrompt = buildSystemPrompt(category, mode);
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: [{
+          role: 'user',
+          content: `Please simplify the following text:\n\n${text}`
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      const msg = errData?.error?.message || '';
+      if (response.status === 429) return { error: '⏳ Too many requests. Please wait a moment and try again.' };
+      if (response.status === 401) return { error: '🔑 Authentication error. Please refresh the page and try again.' };
+      if (response.status === 400) return { error: '⚠️ Invalid request: ' + (msg || 'Please check your text and try again.') };
+      return { error: '❌ Service error (' + response.status + '). Please try again in a moment.' };
+    }
+
+    const data = await response.json();
+    const raw = data?.content?.[0]?.text || '';
+    if (!raw) return { error: '❌ Empty response from AI. Please try again.' };
+    return parseResponse(raw, category, Date.now() - start);
+
+  } catch (err) {
+    console.error('API error:', err);
+    if (err.name === 'TypeError' || err.message?.includes('fetch')) {
+      return { error: '🌐 Network error. Please check your internet connection and try again.' };
+    }
+    return { error: '❌ Unexpected error: ' + err.message };
+  }
+}
+
+
+function buildSystemPrompt(category, mode) {
+  const catInstructions = {
+    legal: `This is a LEGAL document. Your job is to:
+- Explain exactly what THIS specific clause or section says in plain English
+- Identify who is bound by it and what they must do or cannot do
+- Highlight any penalties, deadlines, or consequences mentioned
+- Flag any terms that are particularly unusual, risky, or one-sided`,
+
+    medical: `This is a MEDICAL document. Your job is to:
+- Explain exactly what THIS specific result, diagnosis, or instruction means in plain English
+- Translate all medical abbreviations, units, and terminology into everyday language
+- Explain what any abnormal values actually mean for the patient
+- Be clear about what action (if any) the document suggests`,
+
+    insurance: `This is an INSURANCE document. Your job is to:
+- Explain exactly what THIS specific clause covers or excludes in plain English
+- Identify what the policyholder must do, and by when
+- Highlight anything that could cause a claim to be rejected
+- Explain any conditions, limits, or obligations clearly`,
+
+    government: `This is a GOVERNMENT or official document. Your job is to:
+- Explain exactly what THIS document or section is asking the person to do
+- Identify any deadlines, penalties, or consequences for non-compliance
+- State clearly what action the recipient needs to take
+- Translate all official/bureaucratic language into plain everyday English`,
+
+    financial: `This is a FINANCIAL document. Your job is to:
+- Explain exactly what THIS clause or section means in plain English
+- Clarify any rates, fees, penalties, or conditions that apply
+- Highlight anything that could cost the person money unexpectedly
+- Explain what obligations or rights the document creates`,
+
+    auto: `Auto-detect what kind of document this is (legal, medical, insurance, government, financial, or general) and explain it accordingly, focusing on what the text actually says.`
+  };
+
+  const modeInstructions = {
+    simple: `Write a clear, plain-English explanation in 3-5 sentences maximum. Use everyday language a 14-year-old could understand. Start with "In plain English:" and go straight to what it means.`,
+
+    detailed: `Write a thorough explanation covering: (1) what the text says in plain English, (2) what it means for the person reading it, (3) any obligations or rights it creates, (4) anything they should watch out for or question. Use short paragraphs.`,
+
+    'key-terms': `First write 2-3 sentences summarising what the text means overall. Then list every complex or technical term found in the text with a plain-English definition. Be specific to the actual words used in the text, not generic definitions.`,
+
+    bullet: `Explain the text using 4-6 clear bullet points. Each bullet should start with a bold key point followed by a plain-English explanation. Cover the most important aspects of what the text actually says.`
+  };
+
+  return `You are the Complex Language Simplifier — an expert at reading difficult documents and explaining them in plain, accurate, everyday English.
+
+Your task: Read the text the user pastes and explain specifically what THAT text says. Do not give generic advice. Do not make up information not in the text. Explain what is actually written.
+
+Document type context: ${catInstructions[category] || catInstructions.auto}
+
+Output format: ${modeInstructions[mode] || modeInstructions.simple}
+
+CRITICAL RULES:
+1. Only explain what is actually in the text — do not add information that isn't there
+2. Never use jargon, legalese, or technical terms in your explanation
+3. Be specific: if the text mentions a number, date, amount, or name — include it in your explanation
+4. Mark important warnings, risks, or obligations with ⚠️
+5. If the text is genuinely simple or already clear, say so honestly
+6. After your main explanation, always end with a "KEY TERMS:" section listing complex words found in the text and their plain-English definitions, formatted exactly like this:
+
+KEY TERMS:
+[term from the text]: [plain English definition]
+[term from the text]: [plain English definition]
+
+Only include terms that actually appear in the pasted text. If there are no complex terms, write: KEY TERMS: None
+
+7. Do NOT give legal, medical, or financial advice — explain what the document says, not what the person should do`;
+}
+
+
+function parseResponse(raw, category, ms) {
+  if (!raw) return { error: 'No response received.' };
+
+  let mainText = raw;
+  let keyTerms = [];
+
+  const ktMatch = raw.match(/KEY TERMS:\n([\s\S]+)$/i);
+  if (ktMatch) {
+    mainText = raw.replace(/KEY TERMS:\n[\s\S]+$/i, '').trim();
+    const lines = ktMatch[1].trim().split('\n');
+    keyTerms = lines.map(l => {
+      const idx = l.indexOf(':');
+      if (idx < 0) return null;
+      return { term: l.slice(0, idx).trim(), def: l.slice(idx + 1).trim() };
+    }).filter(Boolean);
+  }
+
+  // Highlight warnings
+  const html = escapeHTML(mainText)
+    .replace(/⚠️([^\n]+)/g, '<span style="color:#8B3A1A;font-weight:600">⚠️$1</span>')
+    .replace(/\n/g, '<br>');
+
+  const categories = { auto: 'Auto-detected', legal: 'Legal', medical: 'Medical', insurance: 'Insurance', government: 'Government', financial: 'Financial' };
+
+  return {
+    html,
+    keyTerms,
+    detectedCategory: categories[category] || category,
+    processingTime: ms < 1000 ? '<1s' : (ms/1000).toFixed(1) + 's'
+  };
+}
+
+// ===== SAMPLE TEXTS =====
+const samples = {
+
+  // LEGAL SAMPLES
+  'legal-nda': `The Receiving Party undertakes to maintain the Confidential Information in strict confidence, to take all reasonable steps to protect it from unauthorised disclosure, and to refrain from using such information for any commercial purpose whatsoever without the prior written authorisation of the Disclosing Party. This obligation of confidence shall remain in full force and effect notwithstanding the expiration or earlier termination of this Agreement for a continuous period of three (3) years.`,
+
+  'legal-lease': `The Lessee covenants and agrees that it shall not, without the prior written consent of the Lessor (such consent not to be unreasonably withheld or delayed), make or permit to be made any structural alteration, addition, or improvement to the demised premises, and that any permitted works shall be carried out at the Lessee's sole cost and expense to a standard acceptable to the Lessor, and upon expiry of the tenancy, the Lessee shall at the Lessor's election restore the premises to their original condition.`,
+
+  'legal-employment': `The Executive acknowledges that by reason of the nature of the employment and access to Proprietary Information, any breach of this Agreement would cause irreparable harm to the Company not adequately compensable by damages, and accordingly consents to the granting of injunctive or other equitable relief in addition to any other remedies available at law or in equity, without the necessity of posting bond or proving actual damages.`,
+
+  // MEDICAL SAMPLES
+  'medical-lab': `Lipid Panel Results: Total Cholesterol 6.8 mmol/L (H — Ref: <5.2), LDL Cholesterol 4.3 mmol/L (H — Ref: <3.4), HDL Cholesterol 0.9 mmol/L (L — Ref: >1.0), Triglycerides 3.1 mmol/L (H — Ref: <1.7), Non-HDL Cholesterol 5.9 mmol/L (H). HbA1c 58 mmol/mol (H — Ref: <48). Impression: Dyslipidaemia with elevated atherogenic lipid fractions. Borderline glycaemic dysregulation consistent with pre-diabetic range. Recommend dietary modification and clinical review within 4 weeks.`,
+
+  'medical-diagnosis': `MRI Brain — No acute intracranial haemorrhage, mass effect, or midline shift demonstrated. There is moderate periventricular and subcortical white matter T2/FLAIR hyperintensity consistent with chronic small vessel ischaemic disease, greater than expected for stated age. No restricted diffusion to suggest acute infarction. Mild generalised cerebral volume loss noted. No abnormal enhancement post-gadolinium administration. Findings warrant clinical correlation and neurology review.`,
+
+  'medical-prescription': `Atorvastatin Calcium 40mg film-coated tablets. Sig: Take one (1) tablet orally once daily at bedtime. Dispense: 30 tablets. Repeats: 5. Indication: Primary hypercholesterolaemia. Counsel patient regarding myopathy risk — advise to report unexplained muscle pain, tenderness, or weakness promptly. Monitor LFTs at baseline and 12 weeks. Contraindicated in active hepatic disease. Avoid concurrent grapefruit consumption.`,
+
+  // INSURANCE SAMPLES
+  'insurance-exclusion': `Notwithstanding any other provision of this Policy, the Insurer shall not be liable to indemnify the Insured in respect of any claim, loss, or liability arising directly or indirectly out of, caused by, resulting from, or in connection with: (i) any act of terrorism, sabotage, or politically motivated violence; (ii) cyber events including unauthorised access, malicious code, or system disruption; (iii) gradual deterioration, wear and tear, or inherent defect; or (iv) any contractual liability assumed by the Insured that would not otherwise exist at law.`,
+
+  'insurance-claim': `Upon the occurrence of any event that may give rise to a claim under this Policy, the Insured shall, as a condition precedent to any right of recovery: forthwith notify the Insurer in writing with full particulars of the occurrence; take all steps reasonably practicable to mitigate any loss or further loss; preserve and make available all documentary and physical evidence; refrain from making any admission of liability, settlement offer, or payment without the Insurer's prior written consent; and render all such assistance and cooperation as the Insurer may reasonably require in the investigation and defence of any claim.`,
+
+  'insurance-liability': `The Insurer's maximum liability for all claims arising from all occurrences during the Period of Insurance shall not in aggregate exceed the Limit of Indemnity specified in the Schedule, inclusive of defence costs, which shall erode the available limit. In the event that the aggregate claims and costs exhaust the Limit of Indemnity, all further liability of the Insurer under this Policy shall immediately cease. Reinstatement of the eroded limit, if available, shall only be effected upon payment of the requisite additional premium as determined solely by the Insurer.`,
+
+  // GOVERNMENT SAMPLES
+  'gov-tax': `You are hereby notified that pursuant to a review of your self-assessment return for the Year of Assessment ending 31st December, the Revenue Authority has determined that there exists an understatement of assessable income in the sum of [Amount]. Accordingly, additional tax of [Amount] has been assessed together with a late payment surcharge calculated at the prescribed statutory rate. You are required to settle the outstanding liability in full within thirty (30) days of the date of this Notice, failing which enforcement proceedings including asset attachment may be initiated without further notice.`,
+
+  'gov-immigration': `An applicant seeking leave to remain on the basis of family or private life must demonstrate, to the satisfaction of the decision maker, that the public interest in removal is outweighed by the consequences of removal having regard to the best interests of any dependent child and the degree of lawful residence and social integration established. The burden of proof rests on the applicant to a balance of probabilities standard. Failure to adduce sufficient corroborating evidence of cohabitation, financial interdependence, and genuine subsisting relationship shall render the application liable to refusal without further enquiry.`,
+
+  'gov-court': `TAKE NOTICE that an application has been made to this Honourable Court by the Applicant for an Order compelling you to comply with the statutory obligations set out in the Notice of Demand served upon you on [date], and for such further and consequential orders as the Court deems just. AND FURTHER TAKE NOTICE that if you wish to oppose this application you must file and serve a Notice of Intention to Oppose together with a supporting affidavit deposed to by a person with personal knowledge of the relevant facts within ten (10) court days of service of this notice upon you. Failure to file opposition within the prescribed period may result in the Order being granted against you by default.`
+
+};
+
+
+function fillSample(key) {
+  // Find the active page and fill the appropriate textarea
+  const activePage = document.querySelector('.page.active');
+  if (!activePage) return;
+  const textarea = activePage.querySelector('.text-input-area');
+  if (textarea) {
+    textarea.value = samples[key] || '';
+    const countEl = activePage.querySelector('.char-count');
+    if (countEl) countEl.textContent = textarea.value.length + ' / 5000 chars';
+    textarea.focus();
+    toast('Sample text loaded! Click "Simplify Now" ✨', '📋');
+  }
+}
+
+// ===== SAVED =====
+function renderSaved() {
+  const container = document.getElementById('savedList');
+  if (!container) return;
+  savedExplanations = JSON.parse(localStorage.getItem('cls_saved') || '[]');
+  if (!savedExplanations.length) {
+    container.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-muted)">
+      <div style="font-size:3rem;margin-bottom:16px">📭</div>
+      <h3 style="font-size:1.1rem;margin-bottom:8px;color:var(--text)">No Saved Explanations Yet</h3>
+      <p style="font-size:0.9rem;margin-bottom:24px">Simplify a document and click "Save Explanation" to see it here.</p>
+      <button class="btn btn-primary" onclick="showPage('tool')">Simplify a Document</button>
+    </div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span style="font-size:0.9rem;color:var(--text-muted)">${savedExplanations.length} saved explanation(s)</span>
+      <button class="btn btn-secondary btn-sm" onclick="clearSaved()">Clear All</button>
+    </div>
+    <div class="saved-list">
+    ${savedExplanations.map((item, i) => `
+      <div class="saved-item">
+        <div class="saved-header" onclick="toggleSaved(${i})">
+          <span class="saved-title">${escapeHTML(item.original.slice(0, 80))}${item.original.length > 80 ? '…' : ''}</span>
+          <div class="saved-meta">
+            <span class="saved-cat">${escapeHTML(item.category)}</span>
+            <span class="saved-date">${escapeHTML(item.date)}</span>
+          </div>
+        </div>
+        <div class="saved-preview" id="saved-body-${i}" style="display:none">
+          <div style="padding:12px 16px;background:var(--bg);border-radius:var(--radius-sm);font-size:0.86rem;color:var(--text-muted);line-height:1.6;margin-bottom:10px">${escapeHTML(item.explanation)}</div>
+          <button class="btn btn-secondary btn-sm" onclick="deleteItem(${i})">🗑️ Delete</button>
+        </div>
+      </div>
+    `).join('')}
+    </div>`;
+}
+
+function toggleSaved(i) {
+  const el = document.getElementById('saved-body-' + i);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function clearSaved() {
+  savedExplanations = [];
+  localStorage.removeItem('cls_saved');
+  renderSaved();
+  toast('All saved explanations cleared.', '🗑️');
+}
+
+function deleteItem(i) {
+  savedExplanations.splice(i, 1);
+  localStorage.setItem('cls_saved', JSON.stringify(savedExplanations));
+  renderSaved();
+  toast('Explanation deleted.', '✅');
+}
+
+// ===== FAQ =====
+function toggleFAQ(btn) {
+  const item = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+// ===== NEWSLETTER =====
+function subscribeNewsletter(e) {
+  e.preventDefault();
+  const email = document.getElementById('newsletterEmail').value;
+  if (!email || !email.includes('@')) { toast('Please enter a valid email.', '⚠️'); return; }
+  document.getElementById('newsletterEmail').value = '';
+  toast('Subscribed successfully! Welcome aboard 🎉', '✅');
+}
+
+// ===== CONTACT =====
+function submitContactForm(e) {
+  e.preventDefault();
+  toast('Message sent! We\'ll reply within 24 hours.', '📬');
+}
+
+// ===== TOAST =====
+function toast(msg, icon = '✅') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIcon').textContent = icon;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ===== NAVBAR =====
+window.addEventListener('scroll', () => {
+  const nb = document.getElementById('navbar');
+  if (window.scrollY > 20) nb.classList.add('scrolled');
+  else nb.classList.remove('scrolled');
+});
+
+function toggleMobile() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key === 'Enter') {
+    const activePage = document.querySelector('.page.active');
+    if (!activePage) return;
+    if (activePage.id === 'page-tool') simplifyText();
+  }
+});
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  showPage('home');
+
+  // Add keyboard shortcut hint
+  const hint = document.createElement('div');
+  hint.style.cssText = 'font-size:0.75rem;color:var(--text-light);text-align:center;margin-top:8px';
+  hint.innerHTML = '💡 Keyboard shortcut: <kbd style="background:#fff;border:1px solid var(--border);padding:2px 6px;border-radius:4px">Ctrl + Enter</kbd> to simplify';
+  const toolContainer = document.querySelector('#general-tool');
+  if (toolContainer) toolContainer.appendChild(hint);
+});
+</script>
+</body>
+</html>

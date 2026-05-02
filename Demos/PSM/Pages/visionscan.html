@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vision Scan — Parts Salvage Marketplace</title>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .page-hero { padding: calc(var(--nav-h) + 64px) 0 56px; background: radial-gradient(ellipse 600px 400px at 20% 60%, rgba(234,179,8,0.06) 0%, transparent 70%); }
+
+    .tab-shell { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+    .tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+    .tab { flex: 1; padding: 14px 8px; text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--muted); border: none; background: none; cursor: pointer; transition: all 0.2s; border-bottom: 2px solid transparent; letter-spacing: 0.3px; }
+    .tab.on { color: var(--gold-lt); border-bottom-color: var(--gold); background: rgba(234,179,8,0.04); }
+    .tab:hover { color: var(--cream2); }
+    .tab-panel { display: none; padding: 28px; }
+    .tab-panel.on { display: block; }
+
+    .big-drop { border: 2px dashed rgba(234,179,8,0.25); border-radius: 8px; padding: 52px 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .big-drop:hover, .big-drop.over { border-color: var(--gold); background: rgba(234,179,8,0.04); }
+    .bd-icon { font-size: 3.2rem; display: block; margin-bottom: 14px; }
+    .big-drop h3 { font-size: 1.15rem; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+    .big-drop p  { font-size: 0.82rem; }
+    .tips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 18px; }
+    .tip { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2); border-radius: 3px; padding: 4px 10px; font-family: var(--font-m); font-size: 0.65rem; color: var(--gold); }
+
+    .url-row { display: flex; gap: 10px; }
+    .url-row .field { flex: 1; }
+
+    .s-result { display: none; margin-top: 20px; }
+    .s-result.show { display: block; }
+    .conf-row { display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(234,179,8,0.05); border: 1px solid rgba(234,179,8,0.18); border-radius: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .conf-ring { width: 70px; height: 70px; border-radius: 50%; flex-shrink: 0; position: relative; display: flex; align-items: center; justify-content: center; }
+    .conf-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+    .conf-inner { position: relative; z-index: 1; text-align: center; }
+    .conf-pct { font-size: 1.1rem; font-weight: 900; color: var(--gold-lt); line-height: 1; display: block; }
+    .conf-lbl { font-family: var(--font-m); font-size: 0.55rem; color: var(--muted); letter-spacing: 1px; display: block; margin-top: 1px; }
+    .res-name { font-size: 0.95rem; font-weight: 800; color: var(--white); }
+    .res-meta { font-family: var(--font-m); font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+    .res-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
+    .alts { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 12px; }
+    .alt { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 6px; padding: 12px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+    .alt:hover { border-color: var(--border-a); }
+    .alt-icon { font-size: 1.5rem; display: block; margin-bottom: 5px; }
+    .alt-name { font-size: 0.72rem; font-weight: 700; color: var(--cream2); }
+    .alt-conf { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+    .res-btns { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .rbt { padding: 10px 18px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 4px; text-decoration: none; border: none; cursor: pointer; transition: all 0.15s; }
+    .rbt-p { background: var(--gold); color: #000; }
+    .rbt-p:hover { background: var(--gold-lt); }
+    .rbt-s { background: rgba(255,255,255,0.06); color: var(--cream2); border: 1px solid var(--border); }
+    .rbt-s:hover { background: rgba(255,255,255,0.1); }
+
+    .tech-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; }
+    .tech-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 26px; }
+    .tech-step { font-family: var(--font-m); font-size: 0.62rem; color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+    .tech-card h3 { font-size: 1.05rem; color: var(--white); margin-bottom: 8px; }
+    .tech-card p  { font-size: 0.85rem; }
+
+    @media (max-width:640px) { .tabs { flex-wrap: wrap; } .tab { min-width: 50%; } .alts { grid-template-columns: repeat(2,1fr); } .tech-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <script src="../assets/nav.js"></script>
+  <div class="pt-nav">
+
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="tag">🔍 Feature</span>
+        <h1 class="hero-title" style="margin-bottom:18px;">Vision<br><span class="italic-accent">Scan</span></h1>
+        <p style="font-size:1.05rem;max-width:520px;margin-bottom:28px;">Upload any broken component. AI names the exact part with brand and model precision — even from corroded or partial pieces.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="#demo" class="btn btn-gold">Try It Now →</a>
+          <a href="#how"  class="btn btn-outline">How It Works</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="demo" style="padding-top:0;">
+      <div class="wrap">
+        <div class="tab-shell">
+          <div class="tabs">
+            <button class="tab on" onclick="switchTab('upload',this)">📷 Upload Photo</button>
+            <button class="tab"    onclick="switchTab('url',this)">🔗 Image URL</button>
+            <button class="tab"    onclick="switchTab('camera',this)">📱 Camera</button>
+            <button class="tab"    onclick="switchTab('text',this)">✏️ Describe</button>
+          </div>
+
+          <!-- Upload -->
+          <div class="tab-panel on" id="tp-upload">
+            <div class="big-drop" id="bd-upload"
+              ondragover="event.preventDefault();this.classList.add('over')"
+              ondragleave="this.classList.remove('over')"
+              ondrop="event.preventDefault();this.classList.remove('over');runScan('upload')"
+              onclick="document.getElementById('fi-upload').click()">
+              <span class="bd-icon">📷</span>
+              <h3>Drop your part photo here</h3>
+              <p>Any broken, worn, or unidentified component</p>
+              <input type="file" id="fi-upload" accept="image/*" style="display:none" onchange="runScan('upload')"/>
+              <div class="tips">
+                <span class="tip">✓ Good lighting</span>
+                <span class="tip">✓ Multiple angles</span>
+                <span class="tip">✓ Visible markings</span>
+              </div>
+            </div>
+            <div class="s-result" id="sr-upload"></div>
+          </div>
+
+          <!-- URL -->
+          <div class="tab-panel" id="tp-url">
+            <p style="margin-bottom:14px;font-size:0.875rem;">Paste the URL of any image showing the part.</p>
+            <div class="url-row">
+              <input type="text" class="field" placeholder="https://example.com/broken-part.jpg"/>
+              <button class="btn btn-gold" onclick="runScan('url')">Scan →</button>
+            </div>
+            <div class="s-result" id="sr-url"></div>
+          </div>
+
+          <!-- Camera -->
+          <div class="tab-panel" id="tp-camera">
+            <div class="big-drop" onclick="document.getElementById('fi-cam').click()">
+              <span class="bd-icon">📱</span>
+              <h3>Use Your Camera</h3>
+              <p>Best on mobile — opens your camera directly on the part</p>
+              <button class="btn btn-gold" style="margin:16px auto 0;" onclick="event.stopPropagation();document.getElementById('fi-cam').click()">Open Camera</button>
+              <input type="file" id="fi-cam" accept="image/*" capture="environment" style="display:none" onchange="runScan('camera')"/>
+            </div>
+            <div class="s-result" id="sr-camera"></div>
+          </div>
+
+          <!-- Text -->
+          <div class="tab-panel" id="tp-text">
+            <p style="margin-bottom:14px;font-size:0.875rem;">Describe the part — brand, appearance, failure mode, any visible numbers.</p>
+            <textarea class="field" id="text-in" style="resize:vertical;min-height:100px;margin-bottom:12px;" placeholder="e.g. Circular rubber seal about 8cm diameter, cracked, from bottom of a Samsung front-loader. Part number starts DC31-…"></textarea>
+            <button class="btn btn-gold" onclick="runScan('text')">Identify Part →</button>
+            <div class="s-result" id="sr-text"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how" style="padding-top:0;">
+      <div class="wrap">
+        <div style="margin-bottom:36px;">
+          <span class="tag">🧠 Technology</span>
+          <h2 class="section-title" data-reveal>How the AI sees parts.</h2>
+        </div>
+        <div class="tech-grid">
+          <div class="tech-card" data-reveal data-d="1">
+            <div class="tech-step">Step 01 · Preprocessing</div>
+            <h3>Image Normalization</h3>
+            <p>Photos are de-noised, white-balanced, and segmented. Edge enhancement sharpens part markings and wear patterns for recognition.</p>
+          </div>
+          <div class="tech-card" data-reveal data-d="2">
+            <div class="tech-step">Step 02 · Recognition</div>
+            <h3>Multi-Layer Vision Model</h3>
+            <p>Our CNN — trained on 14 million labeled part images — classifies shape, material type, brand markings, and failure signatures simultaneously.</p>
+          </div>
+          <div class="tech-card" data-reveal data-d="3">
+            <div class="tech-step">Step 03 · Cross-Reference</div>
+            <h3>Global Parts Database</h3>
+            <p>The identified signature matches against OEM catalogs and community parts across 6,400+ appliance models and 140+ brands.</p>
+          </div>
+          <div class="tech-card" data-reveal data-d="4">
+            <div class="tech-step">Step 04 · Results</div>
+            <h3>Ranked Solutions</h3>
+            <p>Blueprints, compatible parts, and salvage listings are ranked by confidence, proximity, cost, and community rating.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="pf-footer">
+      <div class="wrap">
+        <div class="footer-bottom" style="border-top:none;padding-top:0;">
+          <p>© 2025 Parts Salvage Marketplace · <a href="../index.html" style="color:var(--gold);">← Back to Home</a></p>
+          <span>VISION SCAN v2.4</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const PARTS = [
+      {icon:'💧',name:'Samsung WF Pump Seal — DC31-00054A',meta:'97.3% · Samsung WF-Series 2016–2023 · TPU Rubber',tags:['Rubber Seal','Pump','Front-Load','Samsung'],alts:[{i:'💧',n:'DC31-00074A Alt',c:'91%'},{i:'🔵',n:'LG Compatible',c:'84%'},{i:'📐',n:'3D Printable',c:'100%'}]},
+      {icon:'🔐',name:'LG Door Latch — AEJ73110306',meta:'94.1% · LG TrueSteam 2014–2022 · Steel',tags:['Latch','Door','Dishwasher','LG'],alts:[{i:'🔐',n:'AEJ73110201',c:'88%'},{i:'⚙️',n:'Bosch Crossfit',c:'76%'},{i:'📐',n:'3D Printable',c:'100%'}]},
+      {icon:'🔥',name:'Whirlpool Heating Element — 279838',meta:'99.2% · Whirlpool WED-Series 2010–2024',tags:['Heating','240V','Coil','Whirlpool'],alts:[{i:'🔥',n:'279838B Update',c:'97%'},{i:'⚡',n:'AP3094254',c:'92%'},{i:'✅',n:'Kenmore Match',c:'95%'}]},
+    ];
+    let idx = 0;
+    function runScan(tab) {
+      const d = PARTS[idx++ % PARTS.length];
+      const conf = Math.round(90 + Math.random() * 9);
+      const r = 29, circ = Math.round(2 * Math.PI * r);
+      const dash = Math.round(circ * (1 - conf / 100));
+      document.getElementById('sr-' + tab).innerHTML = `
+        <div class="conf-row">
+          <div class="conf-ring">
+            <svg width="70" height="70" viewBox="0 0 70 70">
+              <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(234,179,8,0.15)" stroke-width="5"/>
+              <circle cx="35" cy="35" r="${r}" fill="none" stroke="#EAB308" stroke-width="5"
+                stroke-dasharray="${circ}" stroke-dashoffset="${dash}" stroke-linecap="round"
+                style="transition:stroke-dashoffset 1s ease;"/>
+            </svg>
+            <div class="conf-inner"><span class="conf-pct">${conf}%</span><span class="conf-lbl">match</span></div>
+          </div>
+          <div style="flex:1;min-width:140px;">
+            <div style="font-family:var(--font-m);font-size:0.62rem;color:var(--gold);letter-spacing:1.5px;margin-bottom:4px;">✓ IDENTIFIED</div>
+            <div class="res-name">${d.icon} ${d.name}</div>
+            <div class="res-meta">${d.meta}</div>
+            <div class="res-tags">${d.tags.map(t=>`<span class="badge badge-gold">${t}</span>`).join('')}</div>
+          </div>
+        </div>
+        <div style="font-family:var(--font-m);font-size:0.62rem;color:var(--gold);letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;">Alternative Matches</div>
+        <div class="alts">
+          ${d.alts.map(a=>`<div class="alt"><span class="alt-icon">${a.i}</span><div class="alt-name">${a.n}</div><div class="alt-conf">${a.c}</div></div>`).join('')}
+        </div>
+        <div class="res-btns">
+          <a href="blueprintvault.html" class="rbt rbt-p">📐 Blueprints</a>
+          <a href="compatengine.html"   class="rbt rbt-s">⚙️ Compat</a>
+          <a href="salvagehub.html"     class="rbt rbt-s">🔧 Salvage</a>
+        </div>`;
+      document.getElementById('sr-' + tab).classList.add('show');
+    }
+    function switchTab(name, btn) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+      btn.classList.add('on');
+      document.getElementById('tp-' + name).classList.add('on');
+    }
+  </script>
+</body>
+</html>

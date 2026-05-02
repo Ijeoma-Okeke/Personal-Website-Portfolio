@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blueprint Vault — Parts Salvage Marketplace</title>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .page-hero { padding: calc(var(--nav-h) + 64px) 0 48px; background: radial-gradient(ellipse 600px 400px at 80% 40%, rgba(249,115,22,0.06) 0%, transparent 70%); }
+    .hero-stats-row { display:flex; gap:36px; flex-wrap:wrap; margin-top:32px; padding-top:28px; border-top:1px solid var(--border); }
+    .hs-n { font-size:2rem; font-weight:900; color:var(--gold-lt); line-height:1; }
+    .hs-l { font-family:var(--font-m); font-size:0.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+
+    .search-bar { display:flex; gap:10px; margin:36px 0 16px; }
+    .search-bar .field { flex:1; }
+
+    .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+    .chip { background:var(--bg2); border:1px solid var(--border); border-radius:3px; padding:6px 14px; font-size:0.78rem; font-weight:600; color:var(--muted); cursor:pointer; transition:all 0.18s; letter-spacing:0.2px; }
+    .chip.on, .chip:hover { background:rgba(234,179,8,0.1); border-color:var(--gold); color:var(--gold-lt); }
+
+    .bp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .bp-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; transition:border-color 0.2s, transform 0.2s; }
+    .bp-card:hover { border-color:var(--border-a); transform:translateY(-3px); }
+
+    .bp-preview { height:140px; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    .bp-preview svg { width:100%; height:100%; }
+    .bp-badge-free { position:absolute; top:8px; right:8px; background:rgba(34,197,94,0.85); color:#fff; font-family:var(--font-m); font-size:0.58rem; font-weight:700; padding:3px 7px; border-radius:2px; letter-spacing:1px; }
+    .bp-badge-pro  { position:absolute; top:8px; right:8px; background:rgba(239,68,68,0.85); color:#fff; font-family:var(--font-m); font-size:0.58rem; font-weight:700; padding:3px 7px; border-radius:2px; letter-spacing:1px; }
+    .bp-badge-mat  { position:absolute; top:8px; left:8px; background:rgba(234,179,8,0.85); color:#000; font-family:var(--font-m); font-size:0.58rem; font-weight:700; padding:3px 7px; border-radius:2px; letter-spacing:1px; }
+
+    .bp-body { padding:16px; }
+    .bp-name  { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:2px; }
+    .bp-brand { font-family:var(--font-m); font-size:0.68rem; color:var(--muted); margin-bottom:10px; }
+    .bp-stats { display:flex; gap:14px; margin-bottom:12px; }
+    .bps strong { display:block; font-size:0.88rem; font-weight:800; color:var(--gold-lt); line-height:1; }
+    .bps span   { font-family:var(--font-m); font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-top:2px; display:block; }
+
+    .bp-actions { display:flex; gap:7px; }
+    .bpa { flex:1; text-align:center; padding:8px; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; border-radius:4px; border:none; cursor:pointer; transition:all 0.15s; }
+    .bpa-prev { background:rgba(255,255,255,0.06); color:var(--cream2); }
+    .bpa-prev:hover { background:rgba(255,255,255,0.1); }
+    .bpa-dl   { background:var(--gold); color:#000; }
+    .bpa-dl:hover { background:var(--gold-lt); }
+    .bpa-lock { background:rgba(239,68,68,0.1); color:#F87171; cursor:not-allowed; }
+
+    .no-results { text-align:center; padding:64px 20px; color:var(--muted); }
+    .no-results div { font-size:2.5rem; margin-bottom:12px; }
+
+    .contribute-box { background:var(--bg2); border:1px solid var(--border-a); border-radius:var(--r-lg); padding:48px; text-align:center; margin-top:48px; }
+
+    @media (max-width:900px) { .bp-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:560px) { .bp-grid { grid-template-columns:1fr; } .search-bar { flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <script src="../assets/nav.js"></script>
+  <div class="pt-nav">
+
+    <!-- HERO -->
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="tag">📐 Feature</span>
+        <h1 class="hero-title" style="margin-bottom:16px;">Blueprint<br><span class="italic-accent">Vault</span></h1>
+        <p style="font-size:1.05rem; max-width:520px;">180,000+ community and licensed 3D-print files for replacement parts. Download and print at home, or order from our local print shop network.</p>
+        <div class="hero-stats-row">
+          <div><div class="hs-n">180K+</div><div class="hs-l">Blueprints</div></div>
+          <div><div class="hs-n">42K</div><div class="hs-l">Contributors</div></div>
+          <div><div class="hs-n">6.4M</div><div class="hs-l">Downloads</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH & GRID -->
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+
+        <div class="search-bar">
+          <input type="text" class="field" id="bpQ"
+            placeholder="Search — Samsung pump seal, LG door latch, Bosch spray arm…"
+            oninput="filterBP()"/>
+          <button class="btn btn-gold" style="white-space:nowrap;" onclick="filterBP()">Search</button>
+        </div>
+
+        <div class="filters" id="chip-row">
+          <span class="chip on"  onclick="setF('All',this)">All</span>
+          <span class="chip"     onclick="setF('Washing Machine',this)">Washing Machine</span>
+          <span class="chip"     onclick="setF('Dishwasher',this)">Dishwasher</span>
+          <span class="chip"     onclick="setF('Dryer',this)">Dryer</span>
+          <span class="chip"     onclick="setF('Refrigerator',this)">Refrigerator</span>
+          <span class="chip"     onclick="setF('Small Appliance',this)">Small Appliance</span>
+          <span class="chip"     onclick="setF('HVAC',this)">HVAC</span>
+          <span class="chip"     onclick="setF('free',this)">Free Only</span>
+        </div>
+
+        <div class="bp-grid" id="bp-grid"></div>
+
+        <div id="no-results" class="no-results" style="display:none;">
+          <div>🔍</div>
+          <p>No blueprints match your search. Try a different keyword or category.</p>
+        </div>
+
+        <div style="text-align:center; margin-top:28px;">
+          <button class="btn btn-outline"
+            onclick="alert('The full 180K+ blueprint library is available in the production platform.')">
+            Load More ↓
+          </button>
+        </div>
+
+        <!-- CONTRIBUTE -->
+        <div class="contribute-box" data-reveal>
+          <span class="tag" style="margin-bottom:14px;">🤝 Contribute</span>
+          <h2 class="section-title" style="margin-bottom:12px;">Share Your Blueprint</h2>
+          <p style="max-width:420px; margin:0 auto 24px;">Designed a replacement part? Upload your STL, STEP, or OBJ and earn credits every time someone downloads it.</p>
+          <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-gold"
+              onclick="alert('Blueprint upload — create a free account to contribute.')">
+              Upload Blueprint
+            </button>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com?subject=Blueprint+Partnership"
+               class="btn btn-outline">Partner With Us</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="pf-footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <span style="font-family:var(--font); font-weight:900; font-size:1.2rem; color:var(--white);">PSM <span style="color:var(--gold);">MARKETPLACE</span></span>
+            <p>Global P2P marketplace for salvaged appliance parts. Fix more. Buy less. Waste nothing.</p>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Platform</span>
+            <a href="visionscan.html">Vision Scan</a>
+            <a href="blueprintvault.html">Blueprint Vault</a>
+            <a href="salvagehub.html">Salvage Hub</a>
+            <a href="compatengine.html">Compat Engine</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Company</span>
+            <a href="pricing.html">Pricing</a>
+            <a href="about.html">About Us</a>
+            <a href="about.html#mission">Mission</a>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com">Contact</a>
+          </div>
+          <div class="footer-col">
+            <span class="footer-col-title">Community</span>
+            <a href="salvagehub.html">List a Machine</a>
+            <a href="blueprintvault.html">Submit Blueprint</a>
+            <a href="#" onclick="PF.openSub(); return false;">Newsletter</a>
+            <a href="mailto:ijeomannamdi.okeke@gmail.com">Partner With Us</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2025 Parts Salvage Marketplace · <a href="../index.html" style="color:var(--gold);">← Home</a></p>
+          <span>BLUEPRINT VAULT v3.1</span>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- end pt-nav -->
+
+  <script>
+    const BPS = [
+      { n:'Samsung WF Pump Seal Ring',    cat:'Washing Machine',  brand:'Samsung WF45R6100AW',     dl:'14.2K', rat:'4.9', mat:'TPU',  time:'1h 20m', free:true,  e:'💧' },
+      { n:'LG Dishwasher Door Latch',      cat:'Dishwasher',       brand:'LG LDP6797ST',            dl:'8.7K',  rat:'4.8', mat:'PLA',  time:'45m',    free:true,  e:'🔐' },
+      { n:'Whirlpool Dryer Lint Screen',   cat:'Dryer',            brand:'Whirlpool WED5000DW',     dl:'22.1K', rat:'4.7', mat:'PETG', time:'2h 10m', free:true,  e:'🔥' },
+      { n:'GE Fridge Door Handle Bracket', cat:'Refrigerator',     brand:'GE Profile PFE28KSKSS',   dl:'6.3K',  rat:'4.6', mat:'ASA',  time:'55m',    free:false, e:'🧊' },
+      { n:'Bosch Dishwasher Spray Arm Cap',cat:'Dishwasher',       brand:'Bosch SHPM88Z75N',        dl:'11.8K', rat:'5.0', mat:'PLA',  time:'30m',    free:true,  e:'🌀' },
+      { n:'Carrier HVAC Fan Blade Clip',   cat:'HVAC',             brand:'Carrier 24ACC636',        dl:'4.1K',  rat:'4.5', mat:'ABS',  time:'35m',    free:false, e:'🌬️' },
+      { n:'Keurig K-Cup Needle Holder',    cat:'Small Appliance',  brand:'Keurig K-Elite',          dl:'31.5K', rat:'4.9', mat:'PETG', time:'20m',    free:true,  e:'☕' },
+      { n:'Dyson DC35 Cyclone Clip',       cat:'Small Appliance',  brand:'Dyson DC35',              dl:'18.9K', rat:'4.8', mat:'PLA',  time:'25m',    free:true,  e:'🌪️' },
+      { n:'Electrolux Washer Shock Clip',  cat:'Washing Machine',  brand:'Electrolux EFLS627UTT',   dl:'3.2K',  rat:'4.4', mat:'TPU',  time:'1h 5m',  free:true,  e:'🔩' },
+    ];
+
+    let curF = 'All';
+
+    function svgBP() {
+      const lines =
+        [0,1,2,3,4,5].map(i => `<line x1="${20+i*56}" y1="0" x2="${20+i*56}" y2="140" stroke="#EAB308" stroke-width="0.4" opacity="0.2"/>`).join('') +
+        [0,1,2,3,4].map(i => `<line x1="0" y1="${14+i*24}" x2="340" y2="${14+i*24}" stroke="#EAB308" stroke-width="0.4" opacity="0.2"/>`).join('');
+      return `<svg viewBox="0 0 340 140" xmlns="http://www.w3.org/2000/svg">
+        ${lines}
+        <circle cx="170" cy="70" r="38" fill="none" stroke="#EAB308" stroke-width="1.2" opacity="0.5"/>
+        <circle cx="170" cy="70" r="22" fill="none" stroke="#F97316" stroke-width="0.8" opacity="0.35"/>
+        <circle cx="170" cy="70" r="7"  fill="#EAB308" opacity="0.4"/>
+        <line x1="132" y1="70" x2="208" y2="70" stroke="#EAB308" stroke-width="0.7" opacity="0.35" stroke-dasharray="3 3"/>
+        <line x1="170" y1="32" x2="170" y2="108" stroke="#EAB308" stroke-width="0.7" opacity="0.35" stroke-dasharray="3 3"/>
+      </svg>`;
+    }
+
+    function render(list) {
+      const grid = document.getElementById('bp-grid');
+      const none = document.getElementById('no-results');
+
+      if (!list.length) {
+        grid.innerHTML = '';
+        none.style.display = 'block';
+        return;
+      }
+      none.style.display = 'none';
+
+      grid.innerHTML = list.map(b => {
+        const dlOnclick = b.free
+          ? `alert('Downloading: ${b.n}\\n\\nYour slicer will open with optimised settings.')`
+          : `alert('Pro tier required — $4.99/mo unlocks all premium blueprints.')`;
+        return `
+        <div class="bp-card">
+          <div class="bp-preview">
+            ${svgBP()}
+            <span class="${b.free ? 'bp-badge-free' : 'bp-badge-pro'}">${b.free ? 'FREE' : 'PRO'}</span>
+            <span class="bp-badge-mat">${b.mat}</span>
+          </div>
+          <div class="bp-body">
+            <div class="bp-name">${b.e} ${b.n}</div>
+            <div class="bp-brand">${b.brand}</div>
+            <div class="bp-stats">
+              <div class="bps"><strong>${b.dl}</strong><span>Downloads</span></div>
+              <div class="bps"><strong>⭐ ${b.rat}</strong><span>Rating</span></div>
+              <div class="bps"><strong>${b.time}</strong><span>Print time</span></div>
+            </div>
+            <div class="bp-actions">
+              <button class="bpa bpa-prev"
+                onclick="alert('Preview: ${b.n}\\n\\nFull 3D viewer available in the production platform.')">
+                Preview
+              </button>
+              <button class="bpa ${b.free ? 'bpa-dl' : 'bpa-lock'}"
+                onclick="${dlOnclick}">
+                ${b.free ? '⬇ Download' : '🔒 Pro'}
+              </button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function filterBP() {
+      const q = document.getElementById('bpQ').value.toLowerCase().trim();
+      const filtered = BPS.filter(b => {
+        const matchCat  = curF === 'All' || b.cat === curF || (curF === 'free' && b.free);
+        const matchText = !q || b.n.toLowerCase().includes(q) || b.brand.toLowerCase().includes(q) || b.mat.toLowerCase().includes(q);
+        return matchCat && matchText;
+      });
+      render(filtered);
+    }
+
+    function setF(f, el) {
+      curF = f;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+      el.classList.add('on');
+      filterBP();
+    }
+
+    // Initial render
+    render(BPS);
+  </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compat Engine — Parts Salvage Marketplace</title>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    .page-hero { padding: calc(var(--nav-h) + 64px) 0 48px; background: radial-gradient(ellipse 600px 400px at 70% 40%, rgba(249,115,22,0.07) 0%, transparent 70%); }
+    .ce-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 32px; }
+    .ce-inputs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: end; margin-bottom: 18px; }
+    .vs-badge { width: 42px; height: 42px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; color: var(--orange); flex-shrink: 0; align-self: end; margin-bottom: 0; }
+    .ce-extras { display: flex; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
+    .ce-sel-wrap { flex: 1; min-width: 140px; }
+    .ce-sel { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: var(--r); padding: 11px 13px; color: var(--cream2); font-size: 0.85rem; outline: none; cursor: pointer; }
+
+    .ce-result { display: none; margin-top: 24px; }
+    .ce-result.show { display: block; }
+    .verdict { border-radius: 8px; padding: 22px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; }
+    .verdict.ok   { background: rgba(34,197,94,0.07);  border: 1px solid rgba(34,197,94,0.3); }
+    .verdict.warn { background: rgba(234,179,8,0.07);  border: 1px solid rgba(234,179,8,0.3); }
+    .verdict.fail { background: rgba(239,68,68,0.07);  border: 1px solid rgba(239,68,68,0.3); }
+    .v-icon { font-size: 2.4rem; flex-shrink: 0; }
+    .v-title { font-size: 1.5rem; font-weight: 800; color: var(--white); }
+    .verdict.ok   .v-title { color: #4ADE80; }
+    .verdict.warn .v-title { color: var(--gold-lt); }
+    .verdict.fail .v-title { color: #F87171; }
+    .v-sub  { font-size: 0.85rem; margin-top: 4px; }
+    .v-note { font-size: 0.78rem; color: var(--muted); margin-top: 5px; }
+    .det-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+    .det { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+    .det-lbl { font-family: var(--font-m); font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+    .det-val { font-size: 0.88rem; font-weight: 700; }
+    .det-ok   { color: #4ADE80; }
+    .det-warn { color: var(--gold-lt); }
+    .det-fail { color: #F87171; }
+    .swap-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+    .swap-title { font-family: var(--font-m); font-size: 0.62rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+    .swap-step { display: flex; gap: 12px; margin-bottom: 11px; align-items: flex-start; }
+    .swap-n { width: 26px; height: 26px; border-radius: 50%; background: rgba(234,179,8,0.12); border: 1px solid var(--border-a); display: flex; align-items: center; justify-content: center; font-family: var(--font-m); font-size: 0.65rem; color: var(--gold); flex-shrink: 0; }
+    .swap-text { font-size: 0.85rem; line-height: 1.6; }
+
+    .qc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .qc { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 8px 14px; font-size: 0.78rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.18s; }
+    .qc:hover { border-color: var(--gold); color: var(--gold-lt); }
+
+    .rep-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; margin-bottom: 12px; }
+    .rep-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+    .rep-q { font-family: var(--font-s); font-style: italic; font-size: 0.92rem; color: var(--cream2); line-height: 1.6; }
+    .rep-by { font-family: var(--font-m); font-size: 0.65rem; color: var(--muted); margin-top: 7px; }
+
+    @media (max-width:700px) { .ce-inputs { grid-template-columns: 1fr; } .vs-badge { display: none; } .det-grid { grid-template-columns: repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+  <script src="../assets/nav.js"></script>
+  <div class="pt-nav">
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="tag">⚙️ Feature</span>
+        <h1 class="hero-title" style="margin-bottom:16px;">Compat<br><span class="italic-accent">Engine</span></h1>
+        <p style="font-size:1.05rem;max-width:520px;">"Will the 2018 Samsung pump fit my 2022 model?" Instant answer — verified by our cross-reference database and thousands of community fitment reports.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div class="ce-card">
+          <span class="tag" style="margin-bottom:14px;">🔬 Check Compatibility</span>
+          <h2 style="font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:22px;">Enter your part and target machine</h2>
+          <div class="ce-inputs">
+            <div>
+              <label class="field-label">Source Part / Machine</label>
+              <input class="field" id="ce-src" placeholder="e.g. Samsung WF45R — Water Pump DC31-00054A"/>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div>
+              <label class="field-label">Target Machine</label>
+              <input class="field" id="ce-tgt" placeholder="e.g. Samsung WF50R8500AV 2022"/>
+            </div>
+          </div>
+          <div class="ce-extras">
+            <div class="ce-sel-wrap">
+              <label class="field-label">Part Type</label>
+              <select class="ce-sel"><option>Water Pump</option><option>Door Seal</option><option>Heating Element</option><option>Door Latch</option><option>Control Board</option><option>Fan Motor</option><option>Other</option></select>
+            </div>
+            <div class="ce-sel-wrap">
+              <label class="field-label">Year Range</label>
+              <select class="ce-sel"><option>Any Year</option><option>2020–2025</option><option>2015–2020</option><option>2010–2015</option></select>
+            </div>
+          </div>
+          <button class="btn btn-gold" style="font-size:0.95rem;padding:13px 32px;" onclick="runCheck()">⚙️ Check Compatibility</button>
+          <div class="ce-result" id="ce-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div style="margin-bottom:18px;">
+          <span class="tag">⚡ Popular Checks</span>
+          <h2 style="font-size:1.4rem;font-weight:800;color:var(--white);" data-reveal>Frequently verified swaps</h2>
+        </div>
+        <div class="qc-chips">
+          <span class="qc" onclick="quick('Samsung WF45R','Samsung WF50R')">Samsung WF45R → WF50R</span>
+          <span class="qc" onclick="quick('LG Front Load 2018','LG Top Load 2022')">LG Front → Top Load</span>
+          <span class="qc" onclick="quick('Bosch Series 4','Bosch Series 6')">Bosch Series 4 → 6</span>
+          <span class="qc" onclick="quick('Whirlpool Cabrio','Whirlpool Duet')">Whirlpool Cabrio → Duet</span>
+          <span class="qc" onclick="quick('GE Profile 2018','GE Profile 2023')">GE Profile 2018 → 2023</span>
+          <span class="qc" onclick="quick('Maytag Bravos','Maytag Maxima')">Maytag Bravos → Maxima</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;padding-bottom:80px;">
+      <div class="wrap">
+        <div style="margin-bottom:18px;">
+          <span class="tag">👥 Community</span>
+          <h2 style="font-size:1.4rem;font-weight:800;color:var(--white);" data-reveal>Verified fitment reports</h2>
+        </div>
+        <div id="reports"></div>
+      </div>
+    </section>
+
+    <footer class="pf-footer">
+      <div class="wrap">
+        <div class="footer-bottom" style="border-top:none;padding-top:0;">
+          <p>© 2025 Parts Salvage Marketplace · <a href="../index.html" style="color:var(--gold);">← Home</a></p>
+          <span>COMPAT ENGINE v4.0</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const VERDICTS = [
+      {type:'ok',icon:'✅',title:'Fully Compatible',sub:'Direct fit — no modifications required.',note:'Verified by 847 community members.',
+        det:[{l:'Physical Fit',v:'✓ Exact match',c:'ok'},{l:'Electrical',v:'✓ Same voltage',c:'ok'},{l:'Flow Rate',v:'✓ Matched',c:'ok'},{l:'Connector',v:'✓ Identical',c:'ok'},{l:'Model Years',v:'2016–2024',c:'ok'},{l:'OEM Ref.',v:'DC31-00054A',c:'ok'}],
+        steps:['Remove access panel — 4 screws T20 torx at bottom-rear.','Disconnect harness connector (press tab, pull straight back).','Unclip pump mounting bracket — squeeze both tabs.','Press new seal ring onto pump head until it clicks.','Reconnect and reverse. Run empty cycle to verify.']},
+      {type:'warn',icon:'⚠️',title:'Partial Compatibility',sub:'Works with a minor modification — ~30 min extra.',note:'Compatible with a $4 adapter harness. Confirmed by 312 users.',
+        det:[{l:'Physical Fit',v:'✓ Same diameter',c:'ok'},{l:'Electrical',v:'⚠ Adapter needed',c:'warn'},{l:'Flow Rate',v:'✓ Within spec',c:'ok'},{l:'Connector',v:'⚠ Different pin',c:'warn'},{l:'Model Years',v:'2018–2022 only',c:'warn'},{l:'OEM Ref.',v:'Compatible alt.',c:'ok'}],
+        steps:['Purchase 3-pin to 2-pin adapter harness (~$4).','Release old pump connector clip.','Attach adapter harness in-line.','Mount pump — all bolt holes align perfectly.','Test cycle before full reassembly.']},
+      {type:'fail',icon:'❌',title:'Not Compatible',sub:'Different pump family — will not fit safely.',note:'We found 3 compatible alternatives below.',
+        det:[{l:'Physical Fit',v:'✗ 12mm wider',c:'fail'},{l:'Electrical',v:'✗ Voltage diff.',c:'fail'},{l:'Flow Rate',v:'✗ 40% over spec',c:'fail'},{l:'Connector',v:'✗ Incompatible',c:'fail'},{l:'Model Years',v:'Diff. platform',c:'fail'},{l:'OEM Ref.',v:'Wrong series',c:'fail'}],
+        steps:['This part cannot be safely installed in the target machine.','Search for DC31-00074A or a verified compatible equivalent.','Check Blueprint Vault for a 3D-printable alternative.','Use Salvage Hub to find a donor machine of the correct model.']},
+    ];
+    let vi = 0;
+    function runCheck() {
+      const src = document.getElementById('ce-src').value, tgt = document.getElementById('ce-tgt').value;
+      if (!src && !tgt) { document.getElementById('ce-src').style.borderColor='#EF4444'; return; }
+      const d = VERDICTS[vi++ % VERDICTS.length];
+      document.getElementById('ce-result').innerHTML = `
+        <div class="verdict ${d.type}">
+          <div class="v-icon">${d.icon}</div>
+          <div><div class="v-title">${d.title}</div><div class="v-sub">${d.sub}</div><div class="v-note">${d.note}</div></div>
+        </div>
+        <div class="det-grid">${d.det.map(x=>`<div class="det"><div class="det-lbl">${x.l}</div><div class="det-val det-${x.c}">${x.v}</div></div>`).join('')}</div>
+        <div class="swap-box">
+          <div class="swap-title">${d.type==='fail'?'Next Steps':'Swap Guide'}</div>
+          ${d.steps.map((s,i)=>`<div class="swap-step"><div class="swap-n">${String(i+1).padStart(2,'0')}</div><div class="swap-text">${s}</div></div>`).join('')}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+          <a href="blueprintvault.html" class="btn btn-outline" style="font-size:0.78rem;padding:10px 16px;">📐 Blueprints</a>
+          <a href="salvagehub.html" class="btn btn-outline" style="font-size:0.78rem;padding:10px 16px;">🔧 Salvage</a>
+        </div>`;
+      document.getElementById('ce-result').classList.add('show');
+      document.getElementById('ce-result').scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+    function quick(src, tgt) {
+      document.getElementById('ce-src').value = src + ' (pump assembly)';
+      document.getElementById('ce-tgt').value = tgt;
+      runCheck();
+    }
+    const REPORTS = [
+      {ok:true,user:'Marcus O.',loc:'Lagos, NG',date:'Mar 2025',from:'WF45R → WF50R',q:'Perfect drop-in swap. 20 minutes. No adapters, no modifications. Runs like new.'},
+      {ok:true,user:'Sigrid R.',loc:'Stockholm, SE',date:'Feb 2025',from:'LDP6797ST → LDP7797ST',q:'Works with the adapter harness — ordered for €3.50. Pump runs quiet and perfect.'},
+      {ok:false,user:'Jin-ho L.',loc:'Seoul, KR',date:'Jan 2025',from:'WF35R → WF50R',q:'Dimensions are close but the mounting bracket is a completely different design. Do not attempt.'},
+      {ok:true,user:'Priya S.',loc:'Mumbai, IN',date:'Dec 2024',from:'WED5000DW 2018 → 2021',q:'Identical part. Bought from Salvage Hub for $15 instead of $60 OEM. Still going 4 months later.'},
+    ];
+    document.getElementById('reports').innerHTML = REPORTS.map(r => `
+      <div class="rep-card">
+        <div class="rep-head">
+          <span class="badge ${r.ok?'badge-green':'badge-red'}">${r.ok?'✅ Confirmed Fit':'❌ Does Not Fit'}</span>
+          <span style="font-family:var(--font-m);font-size:0.65rem;color:var(--muted);">${r.from} · ${r.date}</span>
+        </div>
+        <div class="rep-q">"${r.q}"</div>
+        <div class="rep-by">${r.user} · ${r.loc}</div>
+      </div>`).join('');
+  </script>
+</body>
+</html>
